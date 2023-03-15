@@ -29,7 +29,7 @@ featuredImage: /assets/marg-dumpster-promo.webp
 svgImage: 
 scrollable: true
 nftdrop: "2023-02-09T10:00:00"
-contentinvideo: true
+contentinvideo: false
 clicktoplay: false
 bumpertext: ""
 marating1: QA

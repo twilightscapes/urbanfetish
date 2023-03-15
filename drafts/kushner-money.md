@@ -31,7 +31,7 @@ featuredImage: /assets/jared-2billion-promo.webp
 svgImage: 
 scrollable: true
 nftdrop: "2023-02-11T10:00:00"
-contentinvideo: true
+contentinvideo: false
 bumpertext: ""
 marating1: YB
 marating2: SS

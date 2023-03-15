@@ -7,9 +7,9 @@ description: Then you remember that you're at an abandoned civil war fort and ce
 youtuber: ""
 youtuber2: 
 youtubeshoworiginal: false
-youtubersuggestion1: "https://youtu.be/yEn8_X7Ei3A"
-youtubersuggestion2: "https://youtu.be/yEn8_X7Ei3A"
-youtubersuggestion3: "https://youtu.be/dQw4w9WgXcQ"
+youtubersuggestion1: 
+youtubersuggestion2: 
+youtubersuggestion3: 
 youtubestart: "0"
 youtubeend: "10"
 youtubemute: false

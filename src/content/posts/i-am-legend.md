@@ -7,9 +7,9 @@ description: Exclusive! Trailer of YellowStone season 5 Part Two is here! There'
 youtuber: ""
 youtuber2: 
 youtubeshoworiginal: false
-youtubersuggestion1: "https://youtu.be/yEn8_X7Ei3A"
-youtubersuggestion2: "https://youtu.be/yEn8_X7Ei3A"
-youtubersuggestion3: "https://youtu.be/dQw4w9WgXcQ"
+youtubersuggestion1: ""
+youtubersuggestion2: ""
+youtubersuggestion3: ""
 youtubestart: "0"
 youtubeend: "10"
 youtubemute: false
@@ -31,7 +31,7 @@ underlayImage:
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned10.jpg
 svgImage: 
 scrollable: true
-nftdrop: "2023-02-11T10:00:00"
+nftdrop: ""
 contentinvideo: false
 marating1: YB
 marating2: SS

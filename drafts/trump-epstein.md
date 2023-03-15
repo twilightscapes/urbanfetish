@@ -31,7 +31,7 @@ featuredImage: /assets/trump-epstein-promo.webp
 svgImage: 
 scrollable: true
 nftdrop: "2023-02-11T10:00:00"
-contentinvideo: true
+contentinvideo: false
 bumpertext: "These guys were bros"
 marate: SICK
 viewerwarning: You may lose brain cells after viewing this

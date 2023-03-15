@@ -4,7 +4,7 @@ title: We Come In Pieces - modular homes of the 60's
 slug: /we-come-in-pieces
 date: 2023-02-10 10:43
 description: The Futuro home was a kit that you could set up your dream home anywhere
-youtuber: 
+youtuber: ""
 youtuber2: ""
 youtubeshoworiginal: false
 youtubersuggestion1:

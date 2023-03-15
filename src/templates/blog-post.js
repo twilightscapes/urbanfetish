@@ -1250,7 +1250,7 @@ zindex:'1'
       
       {/* Render tags if they exist */}
       {tags && tags.length > 0 && (
-        <div>
+        <div style={{position:'absolute', zindex:'2'}}>
           <h4>Tags:</h4>
           {tags.map((tag) => (
             <Link to={`/tag/${tag}`} key={tag}>

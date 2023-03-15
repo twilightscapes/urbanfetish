@@ -29,7 +29,7 @@ featuredImage: /assets/murica-promo.png
 svgImage: /assets/murica.svg
 scrollable: true
 nftdrop: "2023-02-09T10:00:00"
-contentinvideo: true
+contentinvideo: false
 marating1: ACAB
 marating2: SR
 marating3: DV

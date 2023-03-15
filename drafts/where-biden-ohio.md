@@ -32,7 +32,7 @@ featuredImage: /assets/hunter-rockstar-promo.webp
 svgImage: 
 scrollable: true
 nftdrop: "2023-02-11T10:00:00"
-contentinvideo: true
+contentinvideo: false
 viewerwarning: Warning
 marate: MA
 marating1: VL

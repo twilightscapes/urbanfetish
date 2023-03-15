@@ -31,7 +31,7 @@ featuredImage: /assets/sparklemotion-promo.webp
 svgImage: 
 scrollable: true
 nftdrop: "2023-02-11T10:00:00"
-contentinvideo: true
+contentinvideo: false
 bumpertext: "Sometimes, I doubt your commitment to SparkleMotion!"
 marating1: YB
 marating2: SS

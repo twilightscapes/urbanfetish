@@ -32,7 +32,7 @@ featuredImage: /assets/kimberly-makeup-promo.webp
 svgImage: 
 scrollable: true
 nftdrop: "2023-02-22T10:00:00"
-contentinvideo: true
+contentinvideo: false
 viewerwarning: Viewer Discretion Strongly Advised
 marate: MA
 marating1: EW

@@ -32,7 +32,7 @@ featuredImage: /assets/election-fraud-promo.webp
 svgImage: /assets/election-fraud-central.svg
 scrollable: true
 nftdrop: "2023-02-11T10:00:00"
-contentinvideo: true
+contentinvideo: false
 marating1: YB
 marating2: SS
 marating3: LH
