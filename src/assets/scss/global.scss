@@ -90,10 +90,10 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 .grid-container{column-gap:2em; margin:0 auto; max-width:96%; }
 .grid-container *{ display:inline-block; width:100%}
 
-@media only screen and (min-width:1024px) {
+@media only screen and (min-width:1201px) {
 .grid-container{column-count:3;}
 }
-@media only screen and (max-width:1023px) and (min-width:768px) {
+@media only screen and (max-width:1200px) and (min-width:768px) {
 .grid-container{column-count:2}
 }
 @media only screen and (max-width:767px) and (min-width:540px) {

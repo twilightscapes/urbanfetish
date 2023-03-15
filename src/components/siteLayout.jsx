@@ -370,8 +370,8 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
   
   <div>
     <button aria-label="Dark/Light Mode" onClick={toggleArchiveView} style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
-      {archiveView === 'grid' ? <MdOutlineRectangle  style={{width:'3vh', height:'3vw'}} /> : <BiGridHorizontal  style={{width:'3.8vh', height:'3vw'}} /> }
-      <span className="themetext">{archiveView === 'grid' ? 'swipe' : ' grids '}</span>
+      {archiveView === 'grid' ? <MdOutlineRectangle  style={{width:'3vh', height:'3vw'}} /> : <BiGridHorizontal  style={{width:'4vh', height:'3vw'}} /> }
+      <span className="themetext">{archiveView === 'grid' ? 'swipe' : ' scroll '}</span>
     </button>
 </div>
 
