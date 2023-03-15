@@ -102,10 +102,13 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   column-count: 1;
 }
 
-.grid-container .featured-image1 img{
-  max-height: 40vh;
+.grid-container .featured-image1 img {
+  max-height: 40vh !important;
 }
 
+.grid-container .featured-image1{
+  max-height: 30vh !important;
+}
 
 .post-card1 {
   width: 100%;

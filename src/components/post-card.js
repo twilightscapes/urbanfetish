@@ -64,7 +64,7 @@ const PostCard = ({ data }) => (
           placeholder="blurred"
               // loading="eager"
     
-              style={{position:'relative', zIndex:'1', maxHeight:'65vh', margin:'0 auto'}}
+              style={{position:'relative', zIndex:'1', maxHeight:'', margin:'0 auto'}}
         />
       </Link>
       
