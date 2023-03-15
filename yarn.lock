@@ -16346,6 +16346,11 @@ watchpack@^2.4.0:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
+waterfall.js@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/waterfall.js/-/waterfall.js-1.0.2.tgz#2ddac22aa7466dcad345c7b99f3013d0cb91c38a"
+  integrity sha512-AqyzC1P7zFdRHVF+J1qFt2MrDQitrrBQ947lUzrvPRvL8YkF45onBPoyAHyLRcUbg7XBGVaXR6HJvRxagrmOAA==
+
 weak-lru-cache@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/weak-lru-cache/-/weak-lru-cache-1.2.2.tgz#fdbb6741f36bae9540d12f480ce8254060dccd19"
