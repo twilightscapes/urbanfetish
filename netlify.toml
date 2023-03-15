@@ -1,0 +1,22 @@
+[build]
+  publish = "public"
+  command = "gatsby build"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NODE_OPTIONS = "--max_old_space_size=4096"
+
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+
+
+
+
+
+
+

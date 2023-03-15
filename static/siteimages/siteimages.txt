@@ -1,0 +1,31 @@
+npx pwa-asset-generator ./src/img/logo.svg ./static/siteimages --background "linear-gradient(180deg, #43186b 1%, #9851c476 80%)" --scrape false --xhtml true --opaque false
+
+
+npx pwa-asset-generator ./src/img/logo.svg ./static/siteimages --background "linear-gradient(180deg, #43186b 1%, #9851c476 80%)" --scrape false --xhtml true --opaque false
+
+
+
+
+
+
+const pwaAssetGenerator = require('pwa-asset-generator');
+
+// Generate images over a module function call, instead of using CLI commands
+(async () => {
+  const { savedImages, htmlMeta, manifestJsonContent } = await pwaAssetGenerator.generateImages(
+    '../src/img/logo.svg',
+    '../static/siteimages',
+    {
+      scrape: false,
+      background: "linear-gradient(180deg, #43186b 1%, #9851c476 80%)",
+      splashOnly: true,
+      portraitOnly: true,
+      log: false
+    });
+})();
+
+// Access to static data for Apple Device specs that are used for generating launch images
+const appleDeviceSpecsForLaunchImages = pwaAssetGenerator.appleDeviceSpecsForLaunchImages;
+
+
+npx pwa-asset-generator  https://elegantapp.github.io/pwa-asset-generator/static/blm.png ./blm -p "15%" -b "linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1)"

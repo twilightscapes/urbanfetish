@@ -1,0 +1,464 @@
+backend:
+  # name: test-repo
+  name: git-gateway
+  branch: main
+  commit_messages:
+    create: "Create {{collection}} “{{slug}}”"
+    update: "Update {{collection}} “{{slug}}”"
+    delete: "Delete {{collection}} “{{slug}}”"
+    uploadMedia: "[skip ci] Upload “{{path}}”"
+    deleteMedia: "[skip ci] Delete “{{path}}”"
+
+# Uncomment local_backend when you need to develop in your local
+# local_backend: true # run npx netlify-cms-proxy-server for local testing
+logo_url: https://memegenes.com/assets/logo.svg
+media_folder: "static/assets"
+public_folder: "/assets"
+
+collections:
+  - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
+    label: "Posts" # Used in the UI
+    label_singular: "Post" # Used in the UI, ie: "New Post"
+    description: >
+      Create awesome stuff here.
+    folder: "src/content/posts"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}} — {{year}}/{{month}}/{{day}}"
+    create: true # Allow users to create new documents in this collection
+    fields: # The fields each document in this collection have
+      - {
+          label: "Template",
+          name: "template",
+          widget: "hidden",
+          default: "blog-post",
+        }
+      - { label: "Title", name: "title", widget: "string", tagname: "h1" }
+      - {
+          label: "Slug",
+          name: "slug",
+          widget: "string",
+          hint: "Start slug with /. Use only alphanumeric characters, - and _. Avoid spaces in any cases.",
+        }
+      - {
+          label: "Publish Date",
+          name: "date",
+          widget: "datetime",
+          date_format: "YYYY-MM-DD",
+          time_format: "HH:mm",
+          format: "YYYY-MM-DD HH:mm",
+        }
+      - { label: "SEO Description", name: "description", widget: "text" }
+      - { label: "YouTube Url", name: "youtuber", widget: "string", required: false }
+      - { label: "Second YouTube Url", name: "youtuber2", widget: "string", required: false, hint: "You can use this to rebute things or show alternate content" }
+      - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
+      - { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: "false", required: false }
+      - { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: "false", required: false }
+      - { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: "false", required: false }
+      - { label: "Show Custom Player Controls", name: "customcontrols", widget: "boolean", default: "false", required: false }
+      - { label: "YouTube Start", name: "youtubestart", widget: "string", hint: "This is measured in seconds - 32 would start the video at the 32-second mark", required: false }
+      - { label: "YouTube End", name: "youtubeend", widget: "string", hint: "This is measured in seconds - 102 would end the video at the 1-min  and 42-second mark", required: false }
+      - { label: "YouTube - Loop Video", name: "youtubeloop", widget: "boolean", hint: "Set video to loop", default: "true", required: false }
+      - { label: "YouTube - Show Original?", name: "youtubeshoworiginal", widget: "boolean", hint: "It's nice manners when using a video, you should link to the original", default: "true", required: false }
+      - { label: "YouTube - Suggestion 1", name: "youtubersuggestion1", widget: "string", required: false }
+      - { label: "YouTube - Suggestion 2", name: "youtubersuggestion2", widget: "string", required: false }
+      - { label: "YouTube - Suggestion 3", name: "youtubersuggestion3", widget: "string", required: false }
+      - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "" }
+      - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "" }
+      - { label: "Content Rating", name: "marate", widget: "string", default: "PG" }
+      - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC" }
+      - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description" }
+      - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC" }
+      - { label: "Content Sub Rating Desc", name: "maratingtx2", widget: "string", default: "Sub Rating description" }
+      - { label: "Content Sub Rating", name: "marating3", widget: "string", default: "NC" }
+      - { label: "Content Sub Rating Desc", name: "maratingtx3", widget: "string", default: "Sub Rating description" }
+      - { label: "Content Sub Rating", name: "marating4", widget: "string", default: "NC" }
+      - { label: "Content Sub Rating Desc", name: "maratingtx4", widget: "string", default: "Sub Rating description" }
+      - { label: "Make Comments Available?", name: "comments", widget: "boolean", default: "true", required: false }
+      - { label: "Make Post Shareable?", name: "shareable", widget: "boolean", default: "true", required: false }
+      - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "false", hint: "Allows post to be scrolled vertically", required: false }
+      - { label: "Place content inside Video Frame", name: "contentinvideo", widget: "boolean", default: "false", hint: "For Devs to inject the content of the post directly into video frame area, allowing for custom layout and features - By doing so, this replaces the normally visible content on your page - BEWARE", required: false }
+      - { label: "Fact Checked NO Mark", name: "liarliar", widget: "boolean", default: "false", hint: "Shows Red X mark next to 2nd Video", required: false }
+      - { label: "Secondary Video Title", name: "audiotitle", widget: "string", hint: "The button title for the secondary video", required: false }
+      - { label: "For NFT DROP - enter drop time", name: "nftdrop", widget: "datetime", date_format: "YYYY-MM-DD", time_format: "HH:mm", format: "YYYY-MM-DDTHH:mm:ss", required: false }
+      - { label: "Page Tags", name: "tags", widget: "string", default: "" }
+      - { label: "Category", name: "category", widget: "string", default: "" }
+
+
+      
+      - {
+          label: "Featured Image",
+          name: "featuredImage",
+          widget: "image",
+          hint: "The primary image used for all social media, blog previews and the feature image at the top of the post",
+          required: false,
+          tagname: "",
+        }
+      - {
+          label: "Underlay Image",
+          name: "underlayImage",
+          widget: "image",
+          hint: "This is used to put a transparent png over the video but under the animation layer",
+          required: false,
+          tagname: "",
+        }
+      - {
+          label: "SVG",
+          name: "svgImage",
+          widget: "image",
+          hint: "This is the animation layer where your animated or static SVG image goes - it is on the top of the stack",
+          required: false,
+          tagname: "",
+        }
+      - { label: "SVG Z-Index", name: "svgzindex", widget: "string", required: false, tagname: "", }
+
+
+
+      - {
+          label: "Body",
+          name: "body",
+          widget: "markdown",
+          hint: "Main content goes here.",
+        }
+    preview_template: "preview-templates/posts.js"
+
+  - label: "Pages"
+    name: "pages"
+    files:
+      - label: "Home"
+        name: "home"
+        file: "src/content/pages/index.md"
+        fields:
+          - {
+              label: "Template",
+              name: "template",
+              widget: "hidden",
+              default: "index-page",
+            }
+          - { label: "Slug", name: "slug", widget: "hidden", default: "/" }
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Featured Image", name: "featuredImage", widget: "image", required: false }
+          - { label: "Secondary Image", name: "secondaryImage", widget: "image", hint: "this image is used for the background on the homepage", required: false }
+          - { label: "Underlay Image", name: "underlayImage", widget: "image", required: false }
+          - { label: "SVG Image", name: "svgImage", widget: "image", required: false}
+          - { label: "SVG Z-Index", name: "svgzindex", widget: "string", required: false }
+
+          - { label: "YouTube Url", name: "youtuber", widget: "string",required: false }
+          - { label: "YouTube Start", name: "youtubestart", widget: "string", required: false } 
+          - { label: "YouTube End", name: "youtubeend", widget: "string", required: false } 
+          - { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false }
+          - { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false } 
+          - { label: "YouTube Audio End", name: "audioend", widget: "string", required: false }
+          - { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false } 
+
+          - { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: "false", required: false }
+          - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
+          - { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: "true", required: false }
+          - { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: "false", required: false }
+          - { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: "true", required: false }
+          - { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: "false", required: false }
+          - { label: "Embed Content inside Video (BEWARE)", 
+            hint: "Do not use this unless you understand how to put custom html and css into your content panel. Please ask     before using and breaking your website", name: "contentinvideo", widget: "boolean", default: "false", required: false }
+          - { label: "Turn Fact Check On", name: "liarliar", widget: "boolean", default: "false", required: false }
+
+          - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "" }
+          - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "" }
+
+          - { label: "Content Rating", name: "marate", widget: "string", default: "PG" }
+
+          - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC" }
+          - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description" }
+          - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC" }
+          - { label: "Content Sub Rating Desc", name: "maratingtx2", widget: "string", default: "Sub Rating description" }
+          - { label: "Content Sub Rating", name: "marating3", widget: "string", default: "NC" }
+          - { label: "Content Sub Rating Desc", name: "maratingtx3", widget: "string", default: "Sub Rating description" }
+          - { label: "Content Sub Rating", name: "marating4", widget: "string", default: "NC" }
+          - { label: "Content Sub Rating Desc", name: "maratingtx4", widget: "string", default: "Sub Rating description" }
+          - { label: "Cover Letter Text", name: "coverText", widget: "string", default: "" }
+          - { label: "Cover Letter Link", name: "coverLink", widget: "string", default: "" }
+
+          - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "true", hint: "Allows page to be scrolled vertically", required: false }
+
+          - { label: "Address Text", name: "addressText", widget: "string", default: "" }
+          - { label: "Address Text2", name: "addressText2", widget: "string", default: "" }
+
+          - { label: "Profile Title", name: "profTitle", widget: "string", default: "" }
+          - { label: "Profile Text", name: "profText", widget: "string", default: "" }
+
+          - { label: "Skills Title", name: "skillsTitle", widget: "string", default: "" }
+          - { label: "Skills Text", name: "skillsText", widget: "string", default: "" }
+          
+
+
+          - { label: "Body", name: "body", widget: "markdown" }
+
+          - label: "CTA"
+            name: "cta"
+            widget: "object"
+            fields:
+              - name: "ctaText"
+                label: "CTA text"
+                widget: "string"
+              - name: "ctaLink"
+                label: "CTA Link"
+                widget: "string"
+
+          - label: "Cover Letter"
+            name: "coverletter"
+            widget: "object"
+            fields:
+              - name: "coverText"
+                label: "Custom Cover Letter Text"
+                widget: "string"
+              - name: "coverLink"
+                label: "Custom Cover Link"
+                widget: "string"
+                
+      - label: "About"
+        name: "about"
+        file: "src/content/pages/about.md"
+        fields:
+          - {
+              label: "Template",
+              name: "template",
+              widget: "hidden",
+              default: "about-page",
+            }
+          - { label: "Slug", name: "slug", widget: "hidden", default: "/about" }
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown" }
+      - label: "Contact"
+        name: "contact"
+        file: "src/content/pages/contact.md"
+        fields:
+          - {
+              label: "Template",
+              name: "template",
+              widget: "hidden",
+              default: "contact-page",
+            }
+          - {
+              label: "Slug",
+              name: "slug",
+              widget: "hidden",
+              default: "/contact",
+            }
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Body", name: "body", widget: "markdown" }
+  - name: settings
+    label: Settings
+    files:
+      - name: general
+        label: General
+        file: "src/util/site.json"
+        fields:
+          - label: meta
+            name: meta
+            widget: object
+            fields:
+              - widget: string
+                name: title
+                label: Site Title
+                required: true
+              - widget: string
+                name: titleTemplate
+                label: Title Template (ignore)
+                default: "%s"
+                required: true
+              - widget: string
+                name: siteUrl
+                label: Website URL
+                required: true
+              - widget: text
+                name: description
+                label: Description
+                default: ""
+                required: false
+              - widget: image
+                name: image
+                label: Default OG Image
+                required: true
+                default: "/assets/default-og-image.jpg"
+              - widget: image
+                name: iconimage
+                label: Site Logo (should be SVG if at all possible)
+              - widget: image
+                name: favicon16x16
+                label: Site Favicon 16x16 (name image like 'favicon-16x16.png')
+                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
+                default: "/assets/favicon-16x16.png"
+              - widget: image
+                name: favicon32x32
+                label: Site Favicon 32x32 (name image like 'favicon-16x16.png')
+                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
+                default: "/assets/favicon-32x32.png"
+              - widget: image
+                name: icon192
+                label: Site Icon 192x192 (name image like 'icon-192x192.png')
+                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
+                default: "/assets/icon-192x192.png"
+              - widget: image
+                name: icon512
+                label: Site Icon 512x512 (name image like 'icon-512x512.png')
+                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
+                default: "/assets/icon-512x512.png"
+              - widget: string
+                name: twitterUsername
+                label: Twitter user (no '@' justthename)
+                required: false
+              - widget: string
+                name: companyname
+                label: Company Name or Site Name
+                required: true
+              - widget: boolean
+                name: showfooter
+                label: Show the Footer
+                required: false
+              - widget: boolean
+                name: showFeature 
+                label: Show Feature 
+                required: false
+
+              - widget: boolean
+                name: showInfo 
+                label: Show Info 
+                required: false
+
+              - widget: boolean
+                name: showPosts 
+                label: Show Posts 
+                required: false
+
+              - widget: boolean
+                name: showNav 
+                label: Show Top Nav
+                required: false
+
+              - widget: boolean
+                name: showNav2 
+                label: Show Side Nav
+                required: false
+
+              - widget: boolean
+                name: showSocial 
+                label: Show Social Links
+                required: false
+
+
+
+              - widget: boolean
+                name: showCover
+                label: Show Cover Link
+                required: false
+
+              - widget: boolean
+                name: showResume
+                label: Show Resume
+                required: false
+
+              - widget: boolean
+                name: showSkills
+                label: Show Skills
+                required: false
+
+              - widget: string
+                name: font1
+                label: Google Font
+                required: false
+
+              - widget: string
+                name: menu1
+                label: Menu Title 1
+                required: false
+                default: Info
+
+              - widget: string
+                name: menu2
+                label: Menu Title 
+                required: false
+                default: Posts
+
+              - widget: string
+                name: menu3 
+                label: Menu Title 3
+                required: false
+                default: Resume
+
+              - widget: string
+                name: menu4
+                label: Menu Title 4
+                required: false
+                default: Skills
+                
+              
+
+          - label: "Commenting – Go to: https://commentbox.io - sign up for free account "
+            name: comments
+            widget: string
+            hint: "Add your CommentBox ID – should look like xxxxxxxxxxxxxxxx-proj"
+            required: false
+          - label: "Google Analytics"
+            name: ga
+            widget: string
+            hint: "Add your tracking ID, should look like UA-XXXXXXXXX-X or G-XXXXXXXXXX"
+      - label: Social Icons
+        name: socialIcons
+        file: "src/util/socialmedia.json"
+        fields:
+          - label: Social Icons
+            name: socialIcons
+            widget: list
+            collapsed: true
+            hint: "Here you can add social icons, Click on 'Add social icons'"
+            fields:
+              - label: "Icons"
+                name: "icon"
+                widget: "select"
+                options:
+                  [
+                    "facebook",
+                    "twitter",
+                    "linkedin",
+                    "youtube",
+                    "instagram",
+                    "rss",
+                    "github",
+                    "telegram",
+                    "pinterest",
+                    "snapchat",
+                    "skype",
+                    "wordpress",
+                    "dribbble",
+                    "medium",
+                    "behance",
+                    "vk",
+                  ]
+                hint: "Select the Icon"
+              - widget: string
+                name: url
+                label: url
+                required: true
+                hint: "Paste the 'URL' of your Social media"
+
+  - label: "Appearance"
+    name: "appearance"
+    identifier_field: "name"
+    files:
+      - label: "Default Theme"
+        name: "themescolors"
+        file: "src/util/default-colors.json"
+        fields:
+          - label: "Primary Color"
+            name: "siteColor"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+      - label: "Dark Theme"
+        name: "darkthemescolors"
+        file: "src/util/dark-theme-colors.json"
+        fields:
+          - label: "Primary Color"
+            name: "siteColor"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
