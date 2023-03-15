@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
     useEffect(() => {
       // Retrieve the selected option from local storage or default to 'grid'
       const storedArchiveView = localStorage.getItem('archiveView');
-      setArchiveView(storedArchiveView || 'grid');
+      setArchiveView(storedArchiveView || 'swipe');
     }, []);
   
     useEffect(() => {
