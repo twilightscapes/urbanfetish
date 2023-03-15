@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useState, useRef,forwardRef, useEffect } from "react";
+import { useState, useRef,forwardRef } from "react";
 import { jsx } from "theme-ui"
 import { graphql, Link } from "gatsby"
 import PropTypes from "prop-types";
@@ -21,8 +21,7 @@ import { MdVolumeOff } from "react-icons/md"
 import { MdVolumeUp } from "react-icons/md"
 // import { RiArrowRightDownFill } from "react-icons/ri"
 import TwilightLogo from "../../static/assets/logo.svg"
-import { BiGridHorizontal } from "react-icons/bi"
-import { MdOutlineRectangle } from "react-icons/md"
+
 
 // import SearchSlider from "../components/search1"
 
