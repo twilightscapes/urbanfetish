@@ -1,6 +1,6 @@
 ---
 template: blog-post
-title: Last Gas(petrol) fpr next 300 miles
+title: Last Gas for next 300 miles
 slug: /last-gasp
 date: 2023-02-10 10:43
 description: That sinking feeling of hope that there is another gas station ahead
