@@ -43,7 +43,7 @@ maratingtx1: Vile Language
 maratingtx2: Sexual Situations
 maratingtx3: Deranged Violence
 maratingtx4: Hunter Biden levels
-category: memes
+category: decay
 tags: [humor]
 ---
 

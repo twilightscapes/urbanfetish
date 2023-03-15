@@ -43,7 +43,7 @@ maratingtx1: Souless Perverts
 maratingtx2: Love Story
 maratingtx3: Political Humor
 maratingtx4: Adult Language
-category: memes
+category: decay
 tags: [trump, epstein, pedo]
 ---
 

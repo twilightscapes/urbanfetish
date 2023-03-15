@@ -40,7 +40,7 @@ maratingtx1:
 maratingtx2: Systemic Racism
 maratingtx3: Deranged Views
 maratingtx4: Definitely a Cult
-category: memes
+category: decay
 tags: [traitor, threetoes, secession]
 ---
 

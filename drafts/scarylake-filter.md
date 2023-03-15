@@ -43,7 +43,7 @@ maratingtx1: Eww!
 maratingtx2: Qrazy
 maratingtx3: Drama Queen
 maratingtx4: Tramp to Trump
-category: memes
+category: decay
 tags: [grifter, liar]
 ---
 <div class="contentinside lake1" style="">

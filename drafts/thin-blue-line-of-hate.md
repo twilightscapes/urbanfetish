@@ -38,7 +38,7 @@ maratingtx1: Defund Police Fund Community
 maratingtx2: Systemic Racism
 maratingtx3: Deranged Violence
 maratingtx4: Definitely a Cult
-category: memes
+category: decay
 tags: [racist, acab, police, trump]
 ---
 

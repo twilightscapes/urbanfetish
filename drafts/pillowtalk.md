@@ -40,7 +40,7 @@ maratingtx1: Use your brain please
 maratingtx2: Spontaneous & Sporadic
 maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
-category: memes
+category: decay
 tags: [mypillow, lindell, pillowtalk]
 ---
 <div style="text-align:left !important;">

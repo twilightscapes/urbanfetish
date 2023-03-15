@@ -38,7 +38,7 @@ maratingtx1: Use your brain please
 maratingtx2: Spontaneous & Sporadic
 maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
-category: memes
+category: decay
 tags: [biden,]
 ---
 At first, Joe didn't really take to his new accommodations, but after an ice-cream cone and reassurance from Jill, he has take to "stair time" as one of his favorite events of the day.

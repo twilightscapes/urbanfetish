@@ -43,7 +43,7 @@ maratingtx1: Vile Grifter
 maratingtx2: 
 maratingtx3: Drama Queen
 maratingtx4: It's all about me
-category: memes
+category: decay
 tags: [trump, water, worst]
 ---
 <!-- <div class="contentinside lake1" style=""> -->

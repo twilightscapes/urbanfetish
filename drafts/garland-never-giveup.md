@@ -42,7 +42,7 @@ maratingtx1: Use your brain please
 maratingtx2: 
 maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
-category: memes
+category: decay
 tags: [garland, giveup]
 ---
 <!-- <div class="contentinside lake1" style=""> -->
