@@ -373,12 +373,12 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
   }}
 >
   {archiveView === "grid" ? (
-    <BiGridHorizontal style={{ width: "4vh", height: "3vw" }} />
-  ) : (
     <MdOutlineRectangle style={{ width: "3vh", height: "3vw" }} />
+  ) : (
+    <BiGridHorizontal style={{ width: "4vh", height: "3vw" }} />
   )}
   <span className="themetext">
-    {archiveView === "grid" ? "scroll" : "swipe"}
+    {archiveView === "grid" ? "swipe" : "scroll"}
   </span>
 </button>
 
