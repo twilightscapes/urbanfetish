@@ -51,7 +51,27 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 
-  .grid-container.contentpanel {padding-top: 2vh; background:rgba(0,0,0,.7); z-index: 1;}
+  .contentpanel {padding-top: 2vh; z-index: 1;
+    
+      /* padding-top: 1rem !important; */
+      /* filter: invert(100%) hue-rotate(180deg) brightness(120%) contrast(150%); */
+    
+    }
+    
+    #showPosts::before, body.search::before{
+      top:0;
+      content:" hello ";
+      left:0;
+      opacity:.8;
+      position:fixed;
+      height:100%;
+      width:100%;
+      display: block;
+      background-size: 100%;
+      background-color: #263238;
+      background: url("data:image/svg+xml; base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCI+CjxmaWx0ZXIgaWQ9Im4iPgo8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjciIG51bU9jdGF2ZXM9IjEwIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIj48L2ZlVHVyYnVsZW5jZT4KPC9maWx0ZXI+CjxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiBmaWxsPSIjMDAwIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iNTAwIiBmaWx0ZXI9InVybCgjbikiIG9wYWNpdHk9IjAuNCI+PC9yZWN0Pgo8L3N2Zz4=");
+
+    }
 
 
 // .contentpanel .gatsby-image-wrapper{overflow: hidden !important; flex-wrap: nowrap; flex-flow: nowrap;}
@@ -69,6 +89,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   flex-direction: column;
   justify-content: start;
   height: auto;
+  max-height: 75vh;
 }
 
 // .post-card1 img {
@@ -358,10 +379,14 @@ body.blogpost #menu li .fullscreenButt{display:flex}
 .contact-form textarea{min-height:200px}
 .contact-page .description{line-height:1.5}
 .contact-page .wrapper{margin:0 auto;max-width:768px}
-.featured-image1 img{background-position:bottom;background-repeat:no-repeat;background-size:contain;border-radius:8px!important;margin:0 auto;
+.featured-image1 img{
+  background-size:contain;
+  // border-radius:8px!important;
+  // margin:0 auto;
   max-height:90vh;
   object-fit:scale-down!important;
-  overflow:hidden;width:100%!important}
+  overflow:hidden;width:100%!important;
+}
 
 .pagination{padding:0;text-align:center}
 .pagination a{display:inline-block;line-height:1}
