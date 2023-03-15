@@ -55,8 +55,13 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 .contentpanel .gatsby-image-wrapper{overflow: hidden !important; flex-wrap: nowrap; flex-flow: nowrap;}
 
-.grid-container{column-gap:2em; margin:0 auto; max-width:96%; }
-.grid-container *{ display:inline-block; width:100%}
+.grid-container{
+  column-gap:3vw; 
+  margin:0 auto; 
+  max-width:96%; 
+}
+
+.grid-container a, .grid-container div{ display:inline-block; width:100%}
 
 @media only screen and (min-width:1201px) {
 .grid-container{column-count:3;}
