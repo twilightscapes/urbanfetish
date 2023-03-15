@@ -879,13 +879,13 @@ Click to play
 
         
 
-{frontmatter.scrollable ? (
+{/* {frontmatter.scrollable ? (
 <div style={{width:'100vw', height:'10vh', position:'fixed', zIndex:'2', top:'82vh', border:'0px solid yellow', textAlign:'center', animation:'poof 1.4s forwards', animationDelay:'4s'}}>
   <div style={{marginTop:'', background:'rgba(9, 9, 10, 0.866)', width:'20vw', padding:'1vh 2vw', margin:'0 auto', borderRadius:'10px', color:'#fff',}}>SCROLL DOWN</div>
 </div>
 ) : (
 ""
-  )}
+  )} */}
 
 
 

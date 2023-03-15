@@ -265,7 +265,7 @@ to{opacity:0;z-index:-3}
 .videohide{border:0px solid yellow; margin-top:-10px;}
 
 .horizontal-scroll{margin:0;max-height:100vw;overflow-x:hidden;overflow-y:auto;position:relative;scroll-padding:0 5%;transform:rotate(-90deg) translateY(-100%);transform-origin:right top;transition:transform .2s;width:100%}
-.horizontal-scroll img{max-height:45vh;object-fit:contain!important}
+.horizontal-scroll img{max-height:65vh;object-fit:contain!important}
 .horizontal-scroll,.horizontal-scroll>*{display:block;overscroll-behavior:contain;padding:0}
 .horizontal-scroll>*{scroll-snap-align:center;transform:rotate(90deg);transform-origin:right top}
 .panels>*{margin:0 0 50%;text-align:center;width:auto}
