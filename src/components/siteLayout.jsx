@@ -61,7 +61,7 @@ const Layout = ({ children }) => {
       el.classList.remove('horizontal-scroll', 'panels');
       el.classList.add('grid-container');
     });
-    localStorage.setItem('archiveView', 'grid');
+    localStorage.setItem('archiveView', 'scroll');
   };
 
   const resizeSwipe = () => {
@@ -78,9 +78,9 @@ const Layout = ({ children }) => {
 
 
   const toggleArchiveView = () => {
-    const newArchiveView = archiveView === 'grid' ? 'swipe' : 'grid';
+    const newArchiveView = archiveView === 'scroll' ? 'swipe' : 'scroll';
     setArchiveView(newArchiveView);
-    if (newArchiveView === 'grid') {
+    if (newArchiveView === 'scroll') {
       resizeGrid();
     } else if (newArchiveView === 'swipe') {
       resizeSwipe();
@@ -370,8 +370,8 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
   
   <div>
     <button aria-label="Dark/Light Mode" onClick={toggleArchiveView} style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
-      {archiveView === 'grid' ? <MdOutlineRectangle  style={{width:'3vh', height:'3vw'}} /> : <BiGridHorizontal  style={{width:'4vh', height:'3vw'}} /> }
-      <span className="themetext">{archiveView === 'grid' ? 'swipe' : ' scroll '}</span>
+      {archiveView === 'scroll' ? <MdOutlineRectangle  style={{width:'3vh', height:'3vw'}} /> : <BiGridHorizontal  style={{width:'4vh', height:'3vw'}} /> }
+      <span className="themetext">{archiveView === 'scroll' ? 'swipe' : ' scroll '}</span>
     </button>
 </div>
 
