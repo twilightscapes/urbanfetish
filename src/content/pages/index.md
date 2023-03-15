@@ -46,7 +46,7 @@ skillsText:
 cta:
   ctaText: Contact Gene
   ctaLink: ""
-svgImage: 
+svgImage: /assets/null.svg
 secondaryImage: /assets/default-user.webp
 title: Do these memes make my butt look fat?
 youtubeend: "60"

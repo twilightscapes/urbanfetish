@@ -250,7 +250,7 @@ module.exports = {
     //     htmlTitle: `Meme Genes CMS`,
     //     htmlFavicon: `static/siteimages/manifest-icon-192.png`,
     //     includeRobots: false,
-    //     logo_url: 'https://memegenes.com/assets/logo.svg'
+    //     logo_url: 'https://urbanfetish.com/assets/logo.svg'
     //   },
     // },
 
@@ -298,8 +298,8 @@ module.exports = {
     // {
     //   resolve: 'gatsby-plugin-robots-txt',
     //   options: {
-    //     host: 'https://memegenes.com',
-    //     sitemap: 'https://memegenes.com/sitemap.xml',
+    //     host: 'https://urbanfetish.com',
+    //     sitemap: 'https://urbanfetish.com/sitemap.xml',
     //     resolveEnv: () => process.env.GATSBY_ENV,
     //     env: {
     //       development: {
@@ -314,10 +314,10 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `MemeGenes`,
-        short_name: `MemeGenes`,
+        name: `UrbanFetish`,
+        short_name: `UrbanFetish`,
         start_url: `/?user_mode=app`,
-        description: `MemeGenes`,
+        description: `UrbanFetish`,
         background_color: `#111`,
         lang: `en`,
         theme_color: `#111`,

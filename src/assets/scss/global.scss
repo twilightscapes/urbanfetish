@@ -22,7 +22,21 @@ body.blogpost .wrap-element iframe,body.homepage .wrap-element iframe{border:0;l
 body.homepage section{border:0 solid #ff0!important;margin-bottom:0!important;margin-top:0!important;min-height:100vh!important}
 body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
-
+.bglogo{
+  max-width:50vw;
+  opacity:.8;
+  position:fixed;
+  top:1vh;
+  left:10%;
+  right:10%;
+  margin:0 auto;
+  display:grid;
+  place-content: center;
+  place-self:center;
+}
+.bglogo.darkened{
+  filter:brightness(0.8)contrast(1.4)saturate(.9); 
+}
 
 
 
@@ -345,7 +359,10 @@ body.blogpost #menu li .fullscreenButt{display:flex}
 .contact-form textarea{min-height:200px}
 .contact-page .description{line-height:1.5}
 .contact-page .wrapper{margin:0 auto;max-width:768px}
-.featured-image1 img{background-position:bottom;background-repeat:no-repeat;background-size:contain;border-radius:8px!important;margin:0 auto;max-height:70vh;object-fit:scale-down!important;overflow:hidden;width:100%!important}
+.featured-image1 img{background-position:bottom;background-repeat:no-repeat;background-size:contain;border-radius:8px!important;margin:0 auto;
+  max-height:90vh;
+  object-fit:scale-down!important;
+  overflow:hidden;width:100%!important}
 
 .pagination{padding:0;text-align:center}
 .pagination a{display:inline-block;line-height:1}

@@ -6,6 +6,7 @@ import { FaImage } from "react-icons/fa"
 import { AiOutlinePicLeft } from "react-icons/ai"
 import Layout from "../../components/siteLayout"
 import { Helmet } from "react-helmet"
+import TwilightLogo from "../../../static/assets/logo.svg"
 // import TimeAgo from 'react-timeago'
 
 function clearfield() {  
@@ -58,7 +59,7 @@ const SearchPage = ({ data }) => {
 
       </div>
 
-
+      <TwilightLogo className="bglogo darkened" />
       <div className="contentpanel horizontal-scroll panels" style={{padding:''}}>
 
 <div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>

@@ -11,7 +11,7 @@ backend:
 
 # Uncomment local_backend when you need to develop in your local
 # local_backend: true # run npx netlify-cms-proxy-server for local testing
-logo_url: https://memegenes.com/assets/logo.svg
+logo_url: https://urbanfetish.com/assets/logo.svg
 media_folder: "static/assets"
 public_folder: "/assets"
 

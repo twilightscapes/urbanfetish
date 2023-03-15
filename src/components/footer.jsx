@@ -241,7 +241,7 @@ export default function Footer() {
 <br />
 <br /> */}
 
-<a href="https://mysresume.site" target="_blank" rel="noreferrer">Web App by MemeGenes</a> &nbsp; | &nbsp; <a href={speedIt} target="_blank" rel="noreferrer">Site Report Card</a>
+<a href="https://mysresume.site" target="_blank" rel="noreferrer">Web App by UrbanFetish</a> &nbsp; | &nbsp; <a href={speedIt} target="_blank" rel="noreferrer">Site Report Card</a>
 </div>
 <br />
 <br />

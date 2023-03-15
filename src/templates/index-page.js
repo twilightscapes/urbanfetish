@@ -20,7 +20,7 @@ import { MdVolumeOff } from "react-icons/md"
 // import { MdVolumeDown } from "react-icons/md"
 import { MdVolumeUp } from "react-icons/md"
 // import { RiArrowRightDownFill } from "react-icons/ri"
-
+import TwilightLogo from "../../static/assets/logo.svg"
 import { BiGridHorizontal } from "react-icons/bi"
 import { MdOutlineRectangle } from "react-icons/md"
 
@@ -435,7 +435,7 @@ zindex:'1'
       {/* <div className="youtubeblockertop" style={{position:'absolute', display:'block', height:'58px', width:'100%', zIndex:'0', top:'0', right:'0', textAlign:'center', padding:'12px',
             background:'#000',
             animation:'fadeout 4s forwards', animationDelay:'6s', border:'0px solid yellow'
-          }}>MemeGenes.com</div> */}
+          }}>UrbanFetish.com</div> */}
   </div>
   ) : (
     ""
@@ -839,7 +839,7 @@ Click to play
 
 
 
-
+  <TwilightLogo className="bglogo darkened" />
 <div className="contentpanel horizontal-scroll panels" style={{padding:''}}>
 
 <div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
@@ -1166,7 +1166,7 @@ style={{fontSize:'clamp(1.2rem, 1.3vw, 2.2rem)'}}
 
  {/* <GoogleMap /> */}
 <div id="bottom" className="usability" style={{position:'relative', zIndex:'', bottom:'0', display:'flex', placeSelf:'center', placeContent:'center', width:'100%', margin:'2vh auto', alignContent:'center', alignItems:'center', justifyContent:'center', border:'0px solid blue', textAlign:'center'}}>
-<div id="branding" style={{position:'relative', left:'0', bottom:'5px', fontSize:'90%'}}><a href="https://memegenes.com" target="_blank" rel="noreferrer">MemeGenes.com</a></div>
+<div id="branding" style={{position:'relative', left:'0', bottom:'5px', fontSize:'90%'}}><a href="https://urbanfetish.com" target="_blank" rel="noreferrer">UrbanFetish.com</a></div>
 </div>
 <br/><br/><br/>
 

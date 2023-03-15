@@ -178,7 +178,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {showNav ? (
-<div id="menu" className="menu print panel" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 1% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px',  }}>
+<div id="menu" className="menu print panel" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 3% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px',  }}>
 
 <ul sx={navStyle} style={{ fontSize:'clamp(.8rem, 2.3vw, 2.5rem)',  textAlign:'center',maxHeight:'70px', display:'flex', justifyContent:'space-around', gap:'2vw',  alignItems:'center'}}>
       
@@ -355,7 +355,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 <div style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'70px', alignItems:'center'}}>
 
 <div>
-   <Link aria-label="Search MemeGenes" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
+   <Link aria-label="Search UrbanFetish" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
     <SearchIcon style={{width:'3vh', height:'3vw'}} />
     <span className="themetext">search</span>
    </Link>
@@ -377,12 +377,12 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
  
 
-    <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'10px', textAlign:'center'}}>
+    {/* <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'10px', textAlign:'center'}}>
    
    <Fullscreen style={{width:'2vh', height:'2vw'}} />
    <span className="themetext">fullscreen</span>
 
-        </div>
+        </div> */}
 </div>
       
 
@@ -541,7 +541,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
       
 
-   <Link aria-label="Search MemeGenes" className="sherlock" to="/search/" style={{display:'flex',justifyContent:'space-around', marginTop:'5px'}}>
+   <Link aria-label="Search UrbanFetish" className="sherlock" to="/search/" style={{display:'flex',justifyContent:'space-around', marginTop:'5px'}}>
     <SearchIcon />
    </Link>
     
