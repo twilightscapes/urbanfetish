@@ -7,7 +7,7 @@ import { AiOutlinePicLeft } from "react-icons/ai"
 import Layout from "../../components/siteLayout"
 import { Helmet } from "react-helmet"
 import TwilightLogo from "../../../static/assets/logo.svg"
-
+import { StaticImage } from "gatsby-plugin-image"
 
 // import TimeAgo from 'react-timeago'
 
@@ -62,7 +62,7 @@ const SearchPage = ({ data }) => {
       </div>
 
       <TwilightLogo className="bglogo darkened" />
-      <div className="contentpanel horizontal-scroll panels" style={{padding:''}}>
+      <div className="contentpanel horizontal-scroll panels" style={{justifyContent:'center', alignItems:'center',}}>
 
 <div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
 
@@ -80,14 +80,29 @@ const SearchPage = ({ data }) => {
 
 
 
+<div
+    className="post-card1"
+    style={{  alignItems:'center'}}
+  >
 
 
 
-
-            <GatsbyImage
-              image={node.frontmatter.featuredImage?.childImageSharp?.gatsbyImageData}
-              alt={node.frontmatter.title}
-            />
+{node.frontmatter.featuredImage ? (
+      <Link to={node.frontmatter.slug}>
+        <GatsbyImage
+          image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
+          alt={node.frontmatter.title + " - Featured image"}
+          className="featured-image1"
+          placeholder="blurred"
+              // loading="eager"
+    
+              style={{position:'relative', zIndex:'1', maxHeight:'', margin:'0 auto'}}
+        />
+      </Link>
+      
+    ) : (
+      <Link  to={node.frontmatter.slug}><StaticImage className="featured-image1" src="../../static/assets/default-og-image.jpg" alt="Default Image" style={{position:'relative', zIndex:''}} /></Link>
+    )}
 
 
 {node.frontmatter.youtuber ? (
@@ -109,21 +124,20 @@ Play Multimedia
 
 
 
-<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#fff' }}>
+<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto'}}>
 
-<h2 className="title1" style={{}}>
-{node.frontmatter.title} 
+<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
+
+<h2 className="title1" style={{ }}>
+    {node.frontmatter.title}
 </h2>
 
-{/* <p style={{minWidth:'', position:'', textAlign:'center', border:'0px solid red', fontSize:'70%'}}>
-              <TimeAgo date={node.frontmatter.date}/>
-            </p> */}
-            {/* <p>{node.excerpt}</p> */}
+
             </div>
 
+            </div>
 
-
-
+</div>
             
           </Link>
         ))}
