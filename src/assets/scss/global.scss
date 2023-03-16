@@ -110,9 +110,9 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   column-count: 1;
 }
 
-.grid-container .featured-image1 img {
-  max-height: 40vh !important;
-}
+// .grid-container .featured-image1 img {
+//   max-height: 40vh !important;
+// }
 
 .grid-container .featured-image1{
   max-height: 30vh !important;
@@ -128,7 +128,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 
-.post-card1 {
+.grid-container .post-card1 {
   width: 100%;
   height: 350px;
   padding: 0;
