@@ -1,7 +1,7 @@
 {
-  "siteColor": "#222",
+  "siteColor": "#333",
   "bodyBg": "rgba(0, 0, 0, .45)",
-  "bodyColor": "#222",
+  "bodyColor": "#444",
   "fontFamily": "Titan One",
   "cardBg": "rgba(0, 0, 0, .4)",
   "textShadow": "rgba(0, 0, 0, .1)"
