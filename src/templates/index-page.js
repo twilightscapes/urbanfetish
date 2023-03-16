@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useState, useRef,forwardRef } from "react";
+import { useState, useRef,forwardRef, useEffect } from "react";
 import { jsx } from "theme-ui"
 import { graphql, Link } from "gatsby"
 import PropTypes from "prop-types";
@@ -20,7 +20,7 @@ import { MdVolumeOff } from "react-icons/md"
 // import { MdVolumeDown } from "react-icons/md"
 import { MdVolumeUp } from "react-icons/md"
 // import { RiArrowRightDownFill } from "react-icons/ri"
-import TwilightLogo from "../../static/assets/logo.svg"
+// import TwilightLogo from "../../static/assets/logo.svg"
 
 
 // import SearchSlider from "../components/search1"
@@ -237,7 +237,17 @@ const ClickToPlay = frontmatter.clicktoplay
 
 
 
+const [showLogo, setShowLogo] = useState(true);
+const [logoDisplayed, setLogoDisplayed] = useState(false);
 
+useEffect(() => {
+  if (showLogo && !logoDisplayed) {
+    setTimeout(() => {
+      setShowLogo(false);
+      setLogoDisplayed(true);
+    }, 4000);
+  }
+}, [showLogo, logoDisplayed]);
 
 
 
@@ -613,6 +623,7 @@ display:'flex', justifyContent:'center', maxHeight:'80px !important', height:'15
       // const { iconimage } = useSiteMetadata()
   
   
+      
       return (
   
   <div>
@@ -838,7 +849,9 @@ Click to play
 
 
 
-  <TwilightLogo className="bglogo darkened" />
+
+  
+  {/* <TwilightLogo className="bglogo darkened" /> */}
 <div className="contentpanel" style={{padding:''}}>
 
 <div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
