@@ -194,15 +194,11 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {showNav ? (
-<div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 2% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px', color:'#fff', background:'#ff0000'  }}>
+<div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'4px 2% 0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff', background:'#ff0000'  }}>
 
-<ul sx={navStyle} style={{ fontSize:'clamp(.8rem, 2.3vw, 2.5rem)',  textAlign:'center',maxHeight:'70px', display:'flex', justifyContent:'space-between', gap:'2vw',  alignItems:'center'}}>
-      
-
-
-
+<ul id="cornerlogo" style={{position:'relative', top:'', left:'', border:'0px solid white'}}>
 {prefersReducedMotion ? (
-            <li className="nomo" style={{position:'relative', marginRight:'2rem'}}>
+            <li className="nomo" style={{position:'relative', marginRight:'0'}}>
             <button className=""  aria-label="Return to Home">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100" height="70" />
@@ -212,7 +208,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
             </button>
           </li>
           ) : (
-            <li className="momo" style={{position:'relative', marginRight:'2rem'}}>
+            <li className="momo" style={{position:'relative', margin:'0 0 0 0'}}>
                         <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'150px', height:'60px', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100" height="70" />
@@ -220,16 +216,23 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
             </AnchorLink>
-            {/* <button className="" onClick={() => { navigate(-1) }}>
-            {iconimage ? (
-      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100px" height="70px" />
-                ) : (
-                  <div style={{fontWeight:'bold',}}>{companyname}</div>
-                )}
-            </button> */}
-            {/* <a onClick={() => window.history.back()}>Go back</a> */}
                         </li>
           )}
+
+</ul>
+          
+
+
+
+
+
+<ul sx={navStyle} style={{ fontSize:'clamp(.6rem, 2vw, 2rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.5vh 2% 0 2%', border:'0px solid white'}}>
+      
+
+
+
+
+
       
       
 {/* <li>
@@ -322,8 +325,6 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 <li>
 <Link aria-label="About" className="navbar-item" to="/about" style={{paddingRight:'',}}>
-  
-{/* {menu1} */}
 Magazine
 </Link> 
 </li>
@@ -372,11 +373,11 @@ Magazine
   </li> */}
 </ul>
 
-<div style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'70px', alignItems:'center'}}>
+<div id="missioncontrol" className="sitecontrols" style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'70px', alignItems:'center', padding:'.5% .5% 0 0'}}>
 
 <div>
    <Link aria-label="Search UrbanFetish" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
-    <SearchIcon style={{width:'3vh', height:'3vw'}} />
+    <SearchIcon style={{}} />
     <span className="themetext">search</span>
    </Link>
         </div>
@@ -403,9 +404,9 @@ Magazine
   }}
 >
   {archiveView === "grid" ? (
-    <MdOutlineRectangle style={{ width: "3vh", height: "3vw" }} />
+    <MdOutlineRectangle style={{ width: "30px", height: "30px" }} />
   ) : (
-    <BiGridHorizontal style={{ width: "4vh", height: "3vw" }} />
+    <BiGridHorizontal style={{ width: "30px", height: "30px" }} />
   )}
   <span className="themetext">
     {archiveView === "grid" ? "swipe" : "scroll"}
@@ -425,7 +426,7 @@ Magazine
 
     {/* <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'10px', textAlign:'center'}}>
    
-   <Fullscreen style={{width:'2vh', height:'2vw'}} />
+   <Fullscreen style={{width:'', height:''}} />
    <span className="themetext">fullscreen</span>
 
         </div> */}
