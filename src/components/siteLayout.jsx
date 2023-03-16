@@ -81,7 +81,7 @@ const Layout = ({ children }) => {
           el.classList.remove('grid-container');
           el.classList.add('horizontal-scroll', 'panels');
           document.body.classList.remove('scroll');
-          document.querySelector('#menuicon').style.transform = 'translateX(110%)';
+          document.querySelector('#menuicon').style.transform = 'translateY(100%)';
         }
       });
       window.scrollTo(0, 0);
