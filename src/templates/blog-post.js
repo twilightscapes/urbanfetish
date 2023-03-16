@@ -2,7 +2,8 @@
 // import * as React from "react"
 
 import { useState, useRef,forwardRef } from "react";
-
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 // import Controls from "../components/Controls";
 import { document } from "browser-monads"
 import PropTypes from "prop-types";
@@ -928,8 +929,9 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
 
 </div>
     ) : (
-
+<Zoom>
 <div className="imageonly">
+
 {FrontImage ? (
 
 
@@ -941,14 +943,15 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
         loading="eager"
         // layout="constrained"
         style={{position:'relative', top:'0', zIndex:'0', minHeight:'300px'}}
+
       />
 
     ) : (
       ""
     )}
-
+    
 </div>
-
+</Zoom>
     )}
 
 

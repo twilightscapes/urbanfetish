@@ -478,6 +478,10 @@ body.blogpost #menu li .fullscreenButt{display:flex}
   overflow:hidden;width:100%!important;
 }
 
+[data-rmiz-modal-overlay="visible"] {
+  background-color: rgb(0, 0, 0);
+}
+
 .pagination{padding:0;text-align:center}
 .pagination a{display:inline-block;line-height:1}
 .pagination a.is-active{pointer-events:none}
