@@ -62,7 +62,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
       top:0;
       content:" hello ";
       left:0;
-      opacity:.8;
+      opacity:.99;
       position:fixed;
       height:100%;
       width:100%;
@@ -414,7 +414,7 @@ to{opacity:0;z-index:-3}
 .themetext{
     display:block;
     font-family: sans-serif;
-    color:var(--theme-ui-colors-text);
+    // color:var(--theme-ui-colors-text);
     font-size: clamp(.7rem,1vw,1rem);
     text-shadow:none !important;
     text-align:center;

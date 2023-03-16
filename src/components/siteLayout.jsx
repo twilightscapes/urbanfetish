@@ -168,7 +168,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {showNav ? (
-<div id="menu" className="menu print panel" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 3% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px',  }}>
+<div id="menu" className="menu print panel" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 3% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px', color:'#fff', background:'rgba(0,0,0,.6)'  }}>
 
 <ul sx={navStyle} style={{ fontSize:'clamp(.8rem, 2.3vw, 2.5rem)',  textAlign:'center',maxHeight:'70px', display:'flex', justifyContent:'space-around', gap:'2vw',  alignItems:'center'}}>
       
@@ -629,7 +629,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 {children}
 </div>
       
-<img className="backimage" src={image} alt="Default Background" style={{height:'100vh', width:'100vw', position:'fixed', zIndex:'-2', top:'0', objectFit:'cover',}} width="10" height="10" />
+{/* <img className="backimage" src={image} alt="Default Background" style={{height:'100vh', width:'100vw', position:'fixed', zIndex:'-2', top:'0', objectFit:'cover',}} width="10" height="10" /> */}
       
       {/* <Consent /> */}
      {/* <Install /> */}
