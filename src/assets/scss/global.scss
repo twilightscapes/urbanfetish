@@ -547,9 +547,11 @@ position:absolute !important; top:72vh ;
 #menu {flex-direction: column !important;}
 
 #missioncontrol {position:absolute; right:4vw; top:10px; gap:5vw !important;}
-#cornerlogo{max-height: 50px; left:18%;}
+.cornerlogo{ left:18%; max-height: 100px !important;}
 
 .spacer{display:block; height:120px !important;}
+
+.topmenu {margin-top:5vh !important;}
 
 .horizontal-scroll .post-content{
   position:absolute !important; top:35vh !important;

@@ -210,37 +210,37 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 {showNav ? (
 <div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'4px 2% 0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff', background:'#ff0000'  }}>
 
-<ul id="cornerlogo" style={{position:'relative', top:'', left:'', border:'0px solid white'}}>
+
 {prefersReducedMotion ? (
-            <li className="nomo" style={{position:'relative', marginRight:'0'}}>
-            <button className=""  aria-label="Return to Home">
+    
+            <button className="cornerlogo" style={{position:'absolute', top:'5px', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
             {iconimage ? (
-      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100" height="70" />
+      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="100" height="70" />
                 ) : (
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
             </button>
-          </li>
+          
           ) : (
-            <li className="momo" style={{position:'relative', margin:'0 0 0 0'}}>
+          
                         <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'150px', height:'60px', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
-      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100" height="70" />
+      <img className="cornerlogo" style={{position:'absolute', top:'.5vh', left:'4%', border:'0px solid white'}} src={iconimage} alt={companyname} width="100" height="70" />
                 ) : (
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
             </AnchorLink>
-                        </li>
+                        
           )}
 
-</ul>
+
           
 
 
 
 
 
-<ul sx={navStyle} style={{ fontSize:'clamp(.6rem, 2vw, 2rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.5vh 2% 0 2%', border:'0px solid white'}}>
+<ul className="topmenu" sx={navStyle} style={{ fontSize:'clamp(.6rem, 2vw, 2rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.5vh 2% 0 2%', border:'0px solid white'}}>
       
 
 
