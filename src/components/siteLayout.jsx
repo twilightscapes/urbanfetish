@@ -35,7 +35,19 @@ import SignUp from "../components/newssign"
 // import { navigate } from "gatsby";
 const Layout = ({ children }) => {
 
-  
+  useEffect(() => {
+    let prevScrollpos = window.pageYOffset;
+
+    window.onscroll = function() {
+      const currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+        document.querySelector('.header').style.transform = 'translateY(0)';
+      } else {
+        document.querySelector('.header').style.transform = 'translateY(-100%)';
+      }
+      prevScrollpos = currentScrollPos;
+    };
+  }, []);
 
     const [archiveView, setArchiveView] = useState('');
   
@@ -137,6 +149,8 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
     <link id="yyy" rel="stylesheet"
           href={fontUrl} crossorigin="anonymous" />
   )} 
+
+  
 </Helmet>
 
 <Seo />
@@ -167,10 +181,11 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 
-{showNav ? (
-<div id="menu" className="menu print panel" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 3% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px', color:'#fff', background:'rgba(0,0,0,.6)'  }}>
 
-<ul sx={navStyle} style={{ fontSize:'clamp(.8rem, 2.3vw, 2.5rem)',  textAlign:'center',maxHeight:'70px', display:'flex', justifyContent:'space-around', gap:'2vw',  alignItems:'center'}}>
+{showNav ? (
+<div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 2% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px', color:'#aaa', background:'rgba(0,0,0,.6)'  }}>
+
+<ul sx={navStyle} style={{ fontSize:'clamp(.8rem, 2.3vw, 2.5rem)',  textAlign:'center',maxHeight:'70px', display:'flex', justifyContent:'space-between', gap:'2vw',  alignItems:'center'}}>
       
 
 
@@ -295,7 +310,11 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 )}
 
 <li>
-<Link aria-label="About" className="navbar-item" to="/about" style={{paddingRight:'',}}>{menu1}</Link> 
+<Link aria-label="About" className="navbar-item" to="/about" style={{paddingRight:'',}}>
+  
+{/* {menu1} */}
+Magazine
+</Link> 
 </li>
 
 
