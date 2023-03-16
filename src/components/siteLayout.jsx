@@ -176,7 +176,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {prefersReducedMotion ? (
-            <li className="nomo" style={{position:'relative',}}>
+            <li className="nomo" style={{position:'relative', marginRight:'2rem'}}>
             <button className=""  aria-label="Return to Home">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100" height="70" />
@@ -186,7 +186,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
             </button>
           </li>
           ) : (
-            <li className="momo" style={{position:'relative',}}>
+            <li className="momo" style={{position:'relative', marginRight:'2rem'}}>
                         <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'150px', height:'60px', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'60px', border:'none'}} width="100" height="70" />
@@ -331,7 +331,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 )}
 
 <li>
-<Link aria-label="Contact" className="navbar-item" to="/contact" style={{paddingRight:'',}}>Contact</Link> 
+<Link aria-label="Contact" className="navbar-item" to="/contact" style={{paddingRight:'',}}>Submissions</Link> 
 </li>
 
 
