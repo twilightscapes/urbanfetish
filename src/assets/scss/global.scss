@@ -50,7 +50,11 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   
 
   .header {
-    transform: translateY(-100%);
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+  }
+  #menuicon {
+    transform: translateX(0);
     transition: transform 0.3s ease-out;
   }
 
@@ -63,7 +67,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
     
     #showPosts::before, body.search::before{
       top:0;
-      content:" hello ";
+      content:"  ";
       left:0;
       opacity:.69;
       position:fixed;
