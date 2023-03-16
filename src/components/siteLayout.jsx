@@ -215,7 +215,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
     
             <button className="cornerlogo" style={{position:'absolute', top:'5px', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
             {iconimage ? (
-      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="100" height="70" />
+      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="120" height="60" />
                 ) : (
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
@@ -225,7 +225,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
           
                         <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'150px', height:'60px', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
-      <img className="cornerlogo" style={{position:'absolute', top:'.5vh', left:'4%', border:'0px solid white'}} src={iconimage} alt={companyname} width="100" height="70" />
+      <img className="cornerlogo" style={{position:'absolute', top:'.5vh', left:'4%', border:'0px solid white'}} src={iconimage} alt={companyname} width="120" height="60" />
                 ) : (
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
