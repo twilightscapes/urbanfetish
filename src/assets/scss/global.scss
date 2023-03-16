@@ -30,7 +30,8 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   left:10%;
   right:10%;
   margin:0 auto;
-  display:grid;
+  // display:grid;
+  display:none;
   place-content: center;
   place-self:center;
   z-index: 1;
@@ -65,7 +66,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
     
     }
     
-    #showPosts::before, body.search::before{
+    #showPosts::before, body.search::before, body::before{
       top:0;
       content:"  ";
       left:0;
@@ -116,6 +117,14 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 .grid-container .featured-image1{
   max-height: 30vh !important;
 }
+
+.grid-container .title1{
+  font-family: sans-serif !important;
+  background: none ;
+  color:white !important;
+}
+
+// .grid-container .title1{background:rgba(0,0,0,.8);}
 
 .post-card1 {
   width: 100%;
@@ -190,7 +199,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 
-#menu,.font,.full-width-image:after,.h1,.h2,.h3,.h4,.header .menu-icon:before,.horizontal-scroll:before,.intro:after,.intro:before,.scrolldown,h1,h2,h3,h4,input.special{font-family:var(--theme-ui-colors-fontFamily),Sans-Serif!important}
+#menu,.font,.full-width-image:after,.h1,.h2,.h3,.h4,.header .menu-icon:before,.horizontal-scroll:before,.intro:after,.intro:before,.scrolldown,h1,h2,h3,h4,input.special{font-family:var(--theme-ui-colors-fontFamily), sans-serif}
 
 
 
@@ -418,7 +427,9 @@ to{opacity:0;z-index:-3}
 
 .panel{-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--theme-ui-colors-text);margin-top:0;overflow:hidden;text-shadow:0 2px 1px var(--theme-ui-colors-textShadow)!important}
 .panel.legal{border:0 solid red!important;margin:10vh auto 1rem}
-.panel:before{background:linear-gradient(hsla(0,6%,7%,0) 50%,rgba(0,0,0,.4) 0),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06));background-size:100% 2px,3px 100%;bottom:0;content:" ";display:block;left:0;opacity:.5;pointer-events:none;position:absolute;right:0;top:0;z-index:-1}
+
+.panel:before{background:linear-gradient(hsla(0,6%,7%,0) 50%,rgba(0,0,0,.4) 0),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06));background-size:100% 2px,3px 100%;bottom:0;content:" ";display:block;left:0;opacity:.8;pointer-events:none;position:absolute;right:0;top:0;z-index:-1}
+
 .themer{display:flex; flex-direction: column; justify-content: center;}
 .themetext{
     display:block;
