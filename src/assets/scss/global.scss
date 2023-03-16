@@ -567,6 +567,7 @@ position:absolute !important; top:72vh ;
 #resume span{display:flex;flex-direction:column;gap:20px;position:-webkit-sticky;position:sticky;top:0}
 #resume span div{display:block!important;width:100%!important}
 .nameblock{background:transparent!important;color:inherit!important;text-shadow:none!important}
+#gobacker{position:fixed; top:105px !important; right:1vw; z-index:2;}
 }
 @media(hover:none) {
 .horizontal-scroll{scroll-snap-type:y mandatory}

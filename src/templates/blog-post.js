@@ -134,6 +134,7 @@ const Pagination = props => (
 
 const Post = ({ data, pageContext }) => {
 
+  
 
 
   const { markdownRemark } = data // data.markdownRemark holds your post data
@@ -832,7 +833,7 @@ Click to play
       )}
 
 
-
+<div id="gobacker" style={{position:'fixed', top:'60px', right:'1vw', zIndex:'2'}}><GoBack /></div>
 
 
 <div className="pagemenu panel" style={{position:'fixed', bottom:'20px', zIndex:'4', left:'1vw', right:'', display:'flex', justifyContent:'center', width:'auto', maxWidth:'80vw', margin:'0 auto', gap:'5vw',	background:'rgba(0, 0, 0, .5)', padding:'', border:'1px solid #666', borderRadius:'', textShadow:'0 1px 1px rgba(0, 0, 0, .7)', fontSize:'clamp(2rem, 3vw, 3rem)', verticalAlign:'center' }}>

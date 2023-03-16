@@ -19,7 +19,7 @@ import SearchIcon from "../../static/assets/search"
 // import SearchForm from "./searchbox"
 import useSiteMetadata from "../hooks/SiteMetadata"
 
-
+import GoBack from "../components/goBack"
 
 import { BiGridHorizontal } from "react-icons/bi"
 import { MdOutlineRectangle } from "react-icons/md"
@@ -59,6 +59,21 @@ const Layout = ({ children }) => {
 
     const [archiveView, setArchiveView] = useState('');
   
+    useEffect(() => {
+      sessionStorage.setItem("scrollPos", window.pageYOffset)
+    }, [])
+  
+    // Restore the previous scroll position when the component unmounts (i.e. when the user clicks the back button)
+    useEffect(() => {
+      if (window.history.scrollRestoration) {
+        const scrollPos = sessionStorage.getItem("scrollPos")
+        window.history.scrollRestoration = "manual"
+        window.scrollTo(0, scrollPos)
+        window.history.scrollRestoration = "auto"
+      }
+    }, [])
+
+    
     useEffect(() => {
       // Retrieve the selected option from local storage or default to 'grid'
       const storedArchiveView = localStorage.getItem('archiveView');
@@ -436,13 +451,14 @@ Magazine
         
            
       
-            
+
             </div>
 
 ) : (
   ""
 )}
 
+{/* <div id="gobacker" style={{position:'absolute', top:'50px', right:'3vw', zIndex:'2'}}><GoBack /></div> */}
 
 
 <header id="top" name="pagetop" style={{}} >
