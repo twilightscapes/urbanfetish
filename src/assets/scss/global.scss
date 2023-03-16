@@ -33,7 +33,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   display:grid;
   place-content: center;
   place-self:center;
-  z-index: 0;
+  z-index: 1;
 }
 .bglogo.darkened{
   filter:brightness(0.8)contrast(1.4)saturate(.9); 

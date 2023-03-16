@@ -37,15 +37,15 @@ const Layout = ({ children }) => {
 
   useEffect(() => {
     let prevScrollpos = window.pageYOffset;
-
+  
     window.onscroll = function() {
       const currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos) {
+      if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 100) {
         document.querySelector('.header').style.transform = 'translateY(0)';
         document.querySelector('#menuicon').style.transform = 'translateX(0)';
         // document.body.classList.remove('scroll');
-              // document.body.classList.add('scroll');
-      } else {
+        // document.body.classList.add('scroll');
+      } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 100) {
         document.querySelector('.header').style.transform = 'translateY(-100%)';
         document.querySelector('#menuicon').style.transform = 'translateX(110%)';
         document.body.classList.add('scroll');
