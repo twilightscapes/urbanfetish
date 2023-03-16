@@ -40,12 +40,12 @@ const Layout = ({ children }) => {
   
     window.onscroll = function() {
       const currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 100) {
+      if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 75) {
         document.querySelector('.header').style.transform = 'translateY(0)';
         document.querySelector('#menuicon').style.transform = 'translateX(0)';
         // document.body.classList.remove('scroll');
         // document.body.classList.add('scroll');
-      } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 100) {
+      } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 75) {
         document.querySelector('.header').style.transform = 'translateY(-100%)';
         document.querySelector('#menuicon').style.transform = 'translateX(110%)';
         document.body.classList.add('scroll');
