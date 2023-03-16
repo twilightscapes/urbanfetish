@@ -22,7 +22,7 @@ const theme = {
     buttonHoverColor: lightness("siteColor", 0.8),
     modes: {
       dark: {
-        text: "#ddd",
+        text: "#aaa",
         background: "rgba(0, 0, 0, .8)",
         primary: "var(--primary)",
         accent: "#5C2941",

@@ -87,7 +87,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 .post-card1 {
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: center;
   height: auto;
   // max-height: 75vh;
 }
@@ -97,7 +97,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 .grid-container {
   list-style: none;
-  column-gap: 2vw;
+  column-gap: 3vw;
   padding: 2vh 3%;
   column-count: 1;
 }
@@ -112,12 +112,13 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 .post-card1 {
   width: 100%;
-  height: 400px;
+  height: 350px;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   // border: 1px solid #333;
   break-inside: avoid;
+  border-radius: 8px;
 }
 
 @media (min-width: 320px) and (max-width: 759.5px) {
