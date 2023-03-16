@@ -194,7 +194,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {showNav ? (
-<div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 2% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px', color:'#aaa', background:'rgba(0,0,0,.6)'  }}>
+<div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10',  color:'', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'0 2% 0 3%', alignItems:'center', borderRadius:'0', display:'flex', justifyContent:'space-between', gap:'10px', color:'#fff', background:'#ff0000'  }}>
 
 <ul sx={navStyle} style={{ fontSize:'clamp(.8rem, 2.3vw, 2.5rem)',  textAlign:'center',maxHeight:'70px', display:'flex', justifyContent:'space-between', gap:'2vw',  alignItems:'center'}}>
       
