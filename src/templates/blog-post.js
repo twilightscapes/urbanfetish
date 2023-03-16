@@ -4,6 +4,10 @@
 import { useState, useRef,forwardRef } from "react";
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+
+// import ReactImageZoom from 'react-image-zoom';
+
+
 // import Controls from "../components/Controls";
 import { document } from "browser-monads"
 import PropTypes from "prop-types";
@@ -130,6 +134,8 @@ const Pagination = props => (
 
 const Post = ({ data, pageContext }) => {
 
+
+
   const { markdownRemark } = data // data.markdownRemark holds your post data
   const { frontmatter, html, excerpt } = markdownRemark
 
@@ -145,7 +151,7 @@ const Post = ({ data, pageContext }) => {
     ? frontmatter.underlayImage.childImageSharp.gatsbyImageData
     : ""
 
-
+    
 
 
 
@@ -431,6 +437,7 @@ const YouTube = frontmatter.youtuber
     next,
   }
 
+  
 
 
   const { siteUrl } = useSiteMetadata()
@@ -929,9 +936,9 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
 
 </div>
     ) : (
-<Zoom>
-<div className="imageonly">
 
+<div className="imageonly">
+<Zoom>
 {FrontImage ? (
 
 
@@ -949,10 +956,14 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
     ) : (
       ""
     )}
-    
+    </Zoom>
 </div>
-</Zoom>
+
     )}
+
+
+
+
 
 
 {/* { NftDrop ? (
@@ -1485,6 +1496,10 @@ Click to play original video
 
 
 export default Post
+
+
+
+
 
 export const pageQuery = graphql`
   query BlogPostQueryBlogPostQuery($id: String!) {
