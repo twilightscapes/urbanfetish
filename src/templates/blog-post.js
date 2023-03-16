@@ -134,7 +134,6 @@ const Pagination = props => (
 
 const Post = ({ data, pageContext }) => {
 
-  
 
 
   const { markdownRemark } = data // data.markdownRemark holds your post data

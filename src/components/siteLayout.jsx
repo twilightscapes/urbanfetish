@@ -58,12 +58,11 @@ const Layout = ({ children }) => {
   
 
     const [archiveView, setArchiveView] = useState('');
-  
+
     useEffect(() => {
       sessionStorage.setItem("scrollPos", window.pageYOffset)
     }, [])
   
-    // Restore the previous scroll position when the component unmounts (i.e. when the user clicks the back button)
     useEffect(() => {
       if (window.history.scrollRestoration) {
         const scrollPos = sessionStorage.getItem("scrollPos")
