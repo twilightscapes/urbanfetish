@@ -57,46 +57,72 @@ const BlogList = ({ data, pageContext }) => {
               {/* Render featured image thumbnail if it exists */}
               {featuredImg && (
                 <Link to={node.fields.slug}>
-                  <GatsbyImage image={featuredImg.childImageSharp.gatsbyImageData} alt="" style={{maxHeight:'60vh'}} />
+
+
+<GatsbyImage
+          image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
+          alt={node.frontmatter.title + " - Featured image"}
+          className="featured-image1"
+          placeholder="blurred"
+              // loading="eager"
+    
+              style={{position:'relative', zIndex:'1', maxHeight:'', margin:'0 auto'}}
+        />
+
+      
+
+
+
+
+       
 
                   
                   
 
 
-                  {node.frontmatter.youtuber ? (
+                  <div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
+
+{node.frontmatter.youtuber ? (
 <Link to={node.frontmatter.slug} style={{}}>
-  <div className="spotlight" style={{position:'absolute'}}>
-<div className="posticons" style={{bottom:''}}>
-<div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff',}}>
+
+  <div className="spotlight" style={{marginLeft:'10%', marginTop:'-28%', margin:'-24% 10% 0 10%'}}>
+
+<div className="posticons" style={{flexDirection:'column', margin:'0 auto'}}>
+
+<div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff', }}>
 <FaImage className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
     <ImPlay className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
     <AiOutlinePicLeft className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
 </div>
+
 Play Multimedia
 </div>
+
 </div>
+
 </Link>
 ) : (
   ""
 )}
 
 
-                  <div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'left', padding:'2vh 3vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'8px', color:'#fff' }}>
 
-<h2 className="title" style={{fontSize:'clamp(1rem, 2vw, 3rem)', }}>
-{node.frontmatter.title}
+
+
+<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
+
+<h2 className="title1" style={{ }}>
+    {node.frontmatter.title}
 </h2>
 
-{/* <p style={{minWidth:'', position:'', textAlign:'center', border:'0px solid red', fontSize:'70%'}}>
-              <TimeAgo date={node.frontmatter.date}/>
-            </p> */}
-            {/* <p>{node.excerpt}</p> */}
+
             </div>
 
+            </div>
+
+
             
-
-
-                </Link>
+          </Link>
               )}
 
 

@@ -597,7 +597,7 @@ body{background:#fff;color:#000}
 .posticon{height:5vh!important}
 body.homepage .horizontal-holder{height:inherit!important}
 body.homepage:before{display:none}
-body:before{animation:fadeout 2s forwards;animation-delay:4s;background:rgba(0,0,0,.9);border:2px solid red;color:#cc0d0d!important;content:" ↻ PLEASE ROTATE YOUR DEVICE ↻";display:inline-block;display:grid;margin:80vh 0 0 15%;opacity:1;padding:10px;place-content:center;position:fixed;text-align:center;text-shadow:2px 2px 2px #333;width:70vw;z-index:3}
+// body:before{animation:fadeout 2s forwards;animation-delay:4s;background:rgba(0,0,0,.9);border:2px solid red;color:#cc0d0d!important;content:" ↻ PLEASE ROTATE YOUR DEVICE ↻";display:inline-block;display:grid;margin:80vh 0 0 15%;opacity:1;padding:10px;place-content:center;position:fixed;text-align:center;text-shadow:2px 2px 2px #333;width:70vw;z-index:3}
 }
 
 @media(max-width:48rem) {
