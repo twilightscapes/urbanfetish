@@ -76,20 +76,26 @@ const PostCard = ({ data }) => (
 
 
 
-
+<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
 
 {data.frontmatter.youtuber ? (
 <Link to={data.frontmatter.slug} style={{}}>
-  <div className="spotlight" style={{maxHeight:''}}>
-<div className="posticons" style={{}}>
-<div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff',}}>
+
+  <div className="spotlight" style={{marginLeft:'10%', marginTop:'-24%', margin:'-24% 10% 0 10%'}}>
+
+<div className="posticons" style={{flexDirection:'column', margin:'0 auto'}}>
+
+<div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff', }}>
 <FaImage className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
     <ImPlay className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
     <AiOutlinePicLeft className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
 </div>
+
 Play Multimedia
 </div>
+
 </div>
+
 </Link>
 ) : (
   ""
@@ -97,7 +103,7 @@ Play Multimedia
 
 
 
-<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto'}}>
+
 
 
 

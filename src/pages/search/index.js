@@ -49,13 +49,13 @@ const SearchPage = ({ data }) => {
 
 <div id="top" className="spacer" style={{height:'80px', border:'0px solid yellow'}}></div>
 
-      <div className="searchform" style={{position:'fixed', left:'1%', right:'1%', width:'380px', margin:'0 auto 0 auto', padding:'0 1vw', zIndex:'3', display:'grid', placeSelf:'center'}}>
+      <div className="searchform" style={{position:'fixed', left:'1%', right:'1%', width:'380px', margin:'0 auto 0 auto', padding:'2vh 1vw', zIndex:'3', display:'grid', placeSelf:'center'}}>
 
       <label style={{border:'1px solid #fff', outline:'#fff', display:'block', borderRadius:'10px'}}>
         <input id="clearme" type="text" placeholder="filter by keyword" onChange={handleSearch} style={{maxWidth:'80vw'}} /> 
-<button type="reset" value="reset" onClick={() => clearfield()} style={{position:'absolute', right:'2.5vw', top:'1.5vh', color:'#fff'}}>clear</button>
+<button type="reset" value="reset" onClick={() => clearfield()} style={{position:'absolute', right:'2.5vw', top:'3vh', color:'#fff'}}>clear</button>
 
-              <div style={{position:'absolute', right:'80px', top:'10px', textAlign:'center', fontSize:'10px', color:'#fff'}}>{filteredPosts.length} <br />result{filteredPosts.length !== 1 && 's'}</div>
+              <div style={{position:'absolute', right:'6vw', top:'2.8vh', textAlign:'center', fontSize:'10px', color:'#fff'}}>{filteredPosts.length} <br />result{filteredPosts.length !== 1 && 's'}</div>
       </label>
               
 
@@ -104,19 +104,26 @@ const SearchPage = ({ data }) => {
       <Link  to={node.frontmatter.slug}><StaticImage className="featured-image1" src="../../static/assets/default-og-image.jpg" alt="Default Image" style={{position:'relative', zIndex:''}} /></Link>
     )}
 
+<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
 
 {node.frontmatter.youtuber ? (
 <Link to={node.frontmatter.slug} style={{}}>
-  <div className="spotlight" style={{maxHeight:''}}>
-<div className="posticons" style={{}}>
-<div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff',}}>
+
+  <div className="spotlight" style={{marginLeft:'10%', marginTop:'-28%', margin:'-24% 10% 0 10%'}}>
+
+<div className="posticons" style={{flexDirection:'column', margin:'0 auto'}}>
+
+<div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff', }}>
 <FaImage className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
     <ImPlay className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
     <AiOutlinePicLeft className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
 </div>
+
 Play Multimedia
 </div>
+
 </div>
+
 </Link>
 ) : (
   ""
@@ -124,7 +131,7 @@ Play Multimedia
 
 
 
-<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto'}}>
+
 
 <div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
 

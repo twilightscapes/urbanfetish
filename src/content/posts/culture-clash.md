@@ -4,7 +4,7 @@ title: Culture Clash
 slug: /culture-clash
 date: 2023-02-11 03:00
 description: Contrasting culture captivates curious creatives
-youtuber: ""
+youtuber: "https://youtu.be/k8TjgvwoVgE"
 youtuber2: 
 youtubeshoworiginal: false
 youtubersuggestion1: ""

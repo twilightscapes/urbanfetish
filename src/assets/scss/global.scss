@@ -47,7 +47,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 
-  // .grid-container .posticons, .grid-container .spotlight{display:none !important;}
+  // .grid-container .posticons, .grid-container .spotlight{visibility:none !important;}
   
 
   .header {
@@ -197,7 +197,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 .grid-container article{ flex-wrap: none; display: grid;}
 
-.spacer{display:block; height:60px !important;}
+.spacer{display:block; height:70px !important;}
 
 .sliderSpacer{display:none;}
 .horizontal-scroll .sliderSpacer{display:block !important; height:50%; padding-top:50%; }
@@ -313,14 +313,26 @@ body.homepage .resp-sharing-button__icon svg{height:5vh;width:5vw}
 .form input,.form select,.form textarea,.select,.upload{background:#333;border:0;border:1px solid #666!important;color:#fff!important;margin-bottom:1.3em;outline:0;padding:1vh!important;width:100%}
 .label{-webkit-user-select:none;cursor:pointer;display:block;font-size:22px;margin-bottom:12px;padding-left:35px;position:relative;user-select:none}
 .label input{cursor:pointer;opacity:0;position:absolute}
-.posticons{background:rgba(0,0,0,.7);border-radius:12px;bottom:120px;color:#ccc;display:flex;font-weight:700;height:auto;left:30vw;padding:1vh 2vw;right:30vw;width:34vw; max-width: 300px;}
-.posticons,.spotlight{flex-direction:column;margin:0 auto;position:absolute}
+
+.posticons{background:rgba(0,0,0,.7);border-radius:12px;top:0;color:#ccc;
+  display:flex;
+  font-weight:700;
+  height:auto;
+  width:100%; 
+  max-width: 300px;
+  padding:1vh 2vw;
+  text-align: center;
+  margin:0 auto;
+}
+
+
+.spotlight{flex-direction:column;margin:0 auto; position:absolute}
 .searchform ::placeholder{color:#fff}
 .signbox{align-items:center;align-self:center;display:flex;flex-direction:column;gap:10px;justify-content:center;overflow:hidden;padding:0 10px;width:100%}
 .spacer33{height:8vh}
 .spacer66{height:33vh}
 .spacer99{height:99vh}
-.spotlight{bottom:0;color:#fff;cursor:pointer;display:inherit;display:block;left:0;padding:0;pointer-events:pointer;right:0;top:0;z-index:1;}
+.spotlight{bottom:0;color:#fff;cursor:pointer;display:inherit;display:block;left:0;padding:0;pointer-events:pointer;right:0;top:0;z-index:1; margin:0 auto;}
 .spotlight:hover{-webkit-backdrop-filter:none;backdrop-filter:none;color:#fff!important;fill:#fff!important}
 .spotlight:hover .posticons{animation:move 1s forwards;animation-delay:.2s}
 a.call{text-decoration:none}
