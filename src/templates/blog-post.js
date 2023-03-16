@@ -13,10 +13,11 @@ import { MdVolumeOff } from "react-icons/md"
 import { MdVolumeUp } from "react-icons/md"
 // import { StaticImage } from "gatsby-plugin-image"
 
+import { BiLeftArrow } from "react-icons/bi"
 
 import { IoArrowRedoSharp, IoArrowUndoSharp } from "react-icons/io5"
 import { jsx } from "theme-ui"
-import { Link, graphql } from "gatsby"
+import { Link, graphql, navigate } from "gatsby"
 import { Helmet } from "react-helmet"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { getSrc } from "gatsby-plugin-image"
@@ -1214,9 +1215,12 @@ zindex:'1'
             ""
           )}
 {/* ((((((((((body content)))))))))) */}
+
+
 {frontmatter.scrollable ? (
 
 <div>
+
 {ShareThis ? (
 <header style={{ height:'', display:'grid', placeContent:'center'}}>
 
@@ -1225,6 +1229,7 @@ zindex:'1'
   </div>
 
   <div className="article-header" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'12px'}}>
+    
             <h1 className="headline panel" style={{color:'#ddd', borderRadius:''}}>{frontmatter.title}</h1>
             {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
            {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
@@ -1232,10 +1237,6 @@ zindex:'1'
            {/* <Link to={`/category/${frontmatter.category}`}>Category:{frontmatter.category}</Link>
 
            <p>Tags: {frontmatter.tags.join(", ")}</p> */}
-
-
-
-      {/* Render categories if they exist */}
       {categories && categories.length > 0 && (
         <div>
           <h4>Categories:</h4>
@@ -1246,31 +1247,22 @@ zindex:'1'
           ))}
         </div>
       )}
-
-      
-      {/* Render tags if they exist */}
       {tags && tags.length > 0 && (
-        <div style={{position:'absolute', zindex:'2'}}>
+        <div style={{position:'relative', zindex:'2', margin:'1vh auto', width:'100%'}}>
           <h4>Tags:</h4>
           {tags.map((tag) => (
             <Link to={`/tag/${tag}`} key={tag}>
-              {tag},&nbsp;
+              {tag} &nbsp;
             </Link>
           ))}
         </div>
       )}
+  </div>
 
 
 
 
-           <div>
-
-
-
-    </div>
-
-          </div>
-  </header>
+</header>
             ) : (
               <header style={{ height:'', display:'grid', placeContent:'center'}}>
                 <div className="article-header panel" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'', marginTop:'10vh'}}>
@@ -1282,13 +1274,14 @@ zindex:'1'
             )}
 
 
+<br /><br /><br />
+
   <div className="panel" style={{padding:'0 0', borderTop:'0px solid', margin:'0 0', textAlign:'center', fontSize:'1.5rem', minWidth:'50%', width:'100%', maxWidth:'', border:'0px solid yellow', borderRadius:''}}>
       <div
         className="blog-post-content bodycontent" style={{ fontSize:'clamp(1.2rem, 2.8vw, 1.8rem)', textAlign:'center', width:'100%', maxWidth:'', padding:'2vh 6% 10vh 6%', margin:'0 auto', color:'inherit !important'}}
         dangerouslySetInnerHTML={{ __html: html }}
       />    
 </div>
-<GoBack />
 </div>
 
 
@@ -1313,7 +1306,7 @@ zindex:'1'
                 {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
                {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
               </div>
-              <GoBack />
+              
       </header>
               )}
 </div>
@@ -1465,7 +1458,7 @@ Click to play original video
 
 
 
-<GoBack />
+
 
       
 
