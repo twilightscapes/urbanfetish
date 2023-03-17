@@ -43,7 +43,7 @@ const BlogList = ({ data, pageContext }) => {
 
         <div className="contentpanel horizontal-scroll panels" style={{padding:''}}>
 
-<div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
+<div className="sliderSpacer" style={{height:'', paddingTop:'0', display:'none'}}></div>
 
 
         {posts.map(({ node }) => {
@@ -109,7 +109,7 @@ Play Multimedia
 
 
 
-<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
+<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'0 auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
 
 <h2 className="title1" style={{ }}>
     {node.frontmatter.title}
@@ -135,7 +135,7 @@ Play Multimedia
       </div>
 
       {/* Render pagination links */}
-<div style={{position:'fixed', bottom:'20px', width:'100vw',  background:'rgba(0, 0, 0, 0.7)', padding:'2vh 2vw', textAlign:'center', color:'#fff'}}>
+<div style={{position:'fixed', bottom:'0', width:'100vw',  background:'rgba(0, 0, 0, 0.7)', padding:'2vh 2vw', textAlign:'center', color:'#fff'}}>
   <button onClick={() => navigate(pageContext.currentPage > 2 ? `/archive/${pageContext.currentPage - 1}` : '/archive')} disabled={pageContext.currentPage === 1}>
     Previous
   </button>
