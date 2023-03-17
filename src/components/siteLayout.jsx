@@ -19,7 +19,7 @@ import SearchIcon from "../../static/assets/search"
 // import SearchForm from "./searchbox"
 import useSiteMetadata from "../hooks/SiteMetadata"
 
-// import GoBack from "../components/goBack"
+import GoBack from "../components/goBack"
 
 import { BiGridHorizontal } from "react-icons/bi"
 import { MdOutlineRectangle } from "react-icons/md"
@@ -56,11 +56,6 @@ const Layout = ({ children }) => {
 
 
   
-
-
-
-
-
 
     const [archiveView, setArchiveView] = useState('');
 
@@ -213,12 +208,12 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {showNav ? (
-<div id="menu" className="menu print panel1 header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', maxHeight:'', overFlow:'', boxShadow:'0 0 2px rgba(0,0,0,.7)', padding:'0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff',  borderBottom:'1px solid #222', background:'#ff0000'  }}>
+<div id="menu" className="menu print panel header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', boxShadow:'0 0 24px rgba(0,0,0,.9)', padding:'4px 2% 0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff', background:'#ff0000'  }}>
 
 
 {prefersReducedMotion ? (
     
-            <button className="cornerlogo" style={{position:'absolute', top:'', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
+            <button className="cornerlogo" style={{position:'absolute', top:'5px', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="120" height="60" />
                 ) : (
@@ -228,9 +223,9 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
           
           ) : (
           
-                        <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'', height:'auto', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
+                        <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'150px', height:'60px', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
-      <img className="cornerlogo" style={{position:'absolute', top:'', left:'4%', border:'0px solid white', padding:'0 1%'}} src={iconimage} alt={companyname} width="120" height="60" />
+      <img className="cornerlogo" style={{position:'absolute', top:'.5vh', left:'4%', border:'0px solid white'}} src={iconimage} alt={companyname} width="120" height="60" />
                 ) : (
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
@@ -245,7 +240,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 
-<ul className="topmenu" sx={navStyle} style={{ fontSize:'clamp(.6rem, 2vw, 2rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.2vh 2% 0 2%', border:'0px solid white'}}>
+<ul className="topmenu" sx={navStyle} style={{ fontSize:'clamp(.6rem, 2vw, 2rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.5vh 2% 0 2%', border:'0px solid white'}}>
       
 
 
@@ -392,7 +387,7 @@ Magazine
   </li> */}
 </ul>
 
-<div id="missioncontrol" className="sitecontrols" style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'', alignItems:'center', padding:'.5% .5% 0 0'}}>
+<div id="missioncontrol" className="sitecontrols" style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'70px', alignItems:'center', padding:'.5% .5% 0 0'}}>
 
 <div>
    <Link aria-label="Search UrbanFetish" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
@@ -681,9 +676,6 @@ Magazine
 </div>
       
 {/* <img className="backimage" src={image} alt="Default Background" style={{height:'100vh', width:'100vw', position:'fixed', zIndex:'-2', top:'0', objectFit:'cover',}} width="10" height="10" /> */}
-
-
-
       
       {/* <Consent /> */}
      {/* <Install /> */}
