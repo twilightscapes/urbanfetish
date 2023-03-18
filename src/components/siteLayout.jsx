@@ -34,7 +34,8 @@ import SignUp from "../components/newssign"
 // import Install from './install-discount'
 // import { navigate } from "gatsby";
 const Layout = ({ children }) => {
-    // useEffect(() => {
+
+     // useEffect(() => {
     //   sessionStorage.setItem("scrollPos", window.pageYOffset)
     // }, [])
   
@@ -46,92 +47,75 @@ const Layout = ({ children }) => {
     //     window.history.scrollRestoration = "auto"
     //   }
     // }, [])
-  useEffect(() => {
-    let prevScrollpos = window.pageYOffset;
-  
-    window.onscroll = function() {
-      const currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 45) {
-        document.querySelector('.header').style.transform = 'translateY(0)';
-        if (showNav2) {
-          document.querySelector('#menuicon').style.transform = 'translateX(0)';
-        }
-        // document.body.classList.remove('scroll');
-        // document.body.classList.add('scroll');
-      } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 45) {
-        document.querySelector('.header').style.transform = 'translateY(-100%)';
-        
-        if (showNav2) {
-          document.querySelector('#menuicon').style.transform = 'translateX(110%)';
-        }
-        
-        document.body.classList.add('scroll');
-      }
-      prevScrollpos = currentScrollPos;
-    };
-  }, []);
 
 
-  
-
-
-
-
-
-
-    const [archiveView, setArchiveView] = useState('');
-
-
-
+    useEffect(() => {
+      let prevScrollpos = window.pageYOffset;
     
-    useEffect(() => {
-      // Retrieve the selected option from local storage or default to 'grid'
-      const storedArchiveView = localStorage.getItem('archiveView');
-      setArchiveView(storedArchiveView || 'swipe');
-    }, []);
-  
-    useEffect(() => {
-      // Apply the selected option on page load
-      applyArchiveView();
-    }, [archiveView]);
-  
-    const applyArchiveView = () => {
-      const elements = document.querySelectorAll('.contentpanel');
-      elements.forEach((el) => {
-        if (archiveView === 'grid') {
-          el.classList.remove('horizontal-scroll', 'panels');
-          el.classList.add('grid-container');
-          document.body.classList.add('scroll');
-        } else if (archiveView === 'swipe') {
-          el.classList.remove('grid-container');
-          el.classList.add('horizontal-scroll', 'panels');
-          document.body.classList.remove('scroll');
-
+      window.onscroll = function() {
+        const currentScrollPos = window.pageYOffset;
+        if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 45) {
+          document.querySelector('.header').style.transform = 'translateY(0)';
+          if (showNav2) {
+            document.querySelector('#menuicon').style.transform = 'translateX(0)';
+          }
+          // document.body.classList.remove('scroll');
+          // document.body.classList.add('scroll');
+        } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 45) {
+          document.querySelector('.header').style.transform = 'translateY(-100%)';
           if (showNav2) {
             document.querySelector('#menuicon').style.transform = 'translateX(110%)';
           }
-
-
+          document.body.classList.add('scroll');
         }
-      });
-      window.scrollTo(0, 0);
-      localStorage.setItem('archiveView', archiveView);
-    };
+        prevScrollpos = currentScrollPos;
+      };
+    }, []);
   
-    const toggleArchiveView = () => {
-      const newArchiveView = archiveView === 'grid' ? 'swipe' : 'grid';
-      setArchiveView(newArchiveView);
-      applyArchiveView();
-    };
+      const [archiveView, setArchiveView] = useState('');
   
+      useEffect(() => {
+        // Retrieve the selected option from local storage or default to 'grid'
+        const storedArchiveView = localStorage.getItem('archiveView');
+        setArchiveView(storedArchiveView || 'swipe');
+      }, []);
+    
+      useEffect(() => {
+        // Apply the selected option on page load
+        applyArchiveView();
+      }, [archiveView]);
+    
+      const applyArchiveView = () => {
+        const elements = document.querySelectorAll('.contentpanel');
+        elements.forEach((el) => {
+          if (archiveView === 'grid') {
+            el.classList.remove('horizontal-scroll', 'panels');
+            el.classList.add('grid-container');
+            document.body.classList.add('scroll');
+          } else if (archiveView === 'swipe') {
+            el.classList.remove('grid-container');
+            el.classList.add('horizontal-scroll', 'panels');
+            document.body.classList.remove('scroll');
+            if (showNav2) {
+              document.querySelector('#menuicon').style.transform = 'translateX(110%)';
+            }
+          }
+        });
+        window.scrollTo(0, 0);
+        localStorage.setItem('archiveView', archiveView);
+      };
+    
+      const toggleArchiveView = () => {
+        const newArchiveView = archiveView === 'grid' ? 'swipe' : 'grid';
+        setArchiveView(newArchiveView);
+        applyArchiveView();
+      };
 
 
 
 
 
-<div style={{width:'100vw', height:'10vh', position:'fixed', zIndex:'2', top:'82vh', border:'0px solid yellow', textAlign:'center', animation:'poof 1.4s forwards', animationDelay:'4s'}}>
-  <div style={{marginTop:'', background:'rgba(9, 9, 10, 0.866)', width:'20vw', padding:'1vh 2vw', margin:'0 auto', borderRadius:'10px', color:'#fff',}}>SCROLL DOWN</div>
-</div>
+
 
 
 
@@ -226,12 +210,12 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 {showNav ? (
-<div id="menu" className="menu print panel1 header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', maxHeight:'', overFlow:'', boxShadow:'0 0 2px rgba(0,0,0,.7)', padding:'0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff',  borderBottom:'1px solid #222', background:'#ff0000'  }}>
+<div id="menu" className="menu print panel1 header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', maxHeight:'', overFlow:'', boxShadow:'0 0 2px rgba(0,0,0,.7)', padding:'0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff',  borderBottom:'1px solid #222', background:'#222'  }}>
 
 
 {prefersReducedMotion ? (
     
-            <button className="cornerlogo" style={{position:'absolute', top:'', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
+            <button className="cornerlogo" style={{position:'relative', top:'', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="120" height="60" />
                 ) : (
@@ -243,7 +227,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
           
                         <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'', height:'auto', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
-      <img className="cornerlogo" style={{position:'absolute', top:'', left:'4%', border:'0px solid white', padding:'0 1%'}} src={iconimage} alt={companyname} width="120" height="60" />
+      <img className="cornerlogo" style={{position:'relative', top:'.5vh', left:'4%', border:'0px solid white', padding:'0 1%', maxHeight:''}} src={iconimage} alt={companyname} width="107" height="60" />
                 ) : (
                   <div style={{fontWeight:'bold',}}>{companyname}</div>
                 )}
@@ -258,7 +242,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 
-<ul className="topmenu" sx={navStyle} style={{ fontSize:'clamp(.6rem, 2vw, 2rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.2vh 2% 0 2%', border:'0px solid white'}}>
+<ul className="topmenu" sx={navStyle} style={{ fontSize:'clamp(.6rem, 1.6vw, 1.8rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.5vh 2% 0 2%', border:'0px solid white', textTransform:'uppercase'}}>
       
 
 
@@ -342,7 +326,13 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 
-{showInfo ? (
+
+
+
+
+
+
+{/* {showInfo ? (
 <li style={{position:'relative',}}>
       {prefersReducedMotion ? (
        <Link aria-label="Menu 1" className="navbar-item" to="/#info" style={{paddingRight:'',}}>{menu1}</Link>    
@@ -350,15 +340,32 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
       <AnchorLink aria-label="Menu 1" className="navbar-item" to="/#info" style={{paddingRight:'',}}>
       {menu1}</AnchorLink>         
     )}
+<AnchorLink aria-label="Menu 1" className="navbar-item" to="/about" style={{paddingRight:'',}}>
+      About</AnchorLink>   
+
 </li>
       ) : (
   ""
-)}
+)} */}
 
-<li>
-<Link aria-label="About" className="navbar-item" to="/about" style={{paddingRight:'',}}>
-Magazine
-</Link> 
+
+<li style={{position:'relative',}}>
+
+      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/about" style={{paddingRight:'',}}>
+      Magazine</AnchorLink>         
+
+</li>
+
+
+
+
+
+
+<li style={{position:'relative',}}>
+
+      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/contact" style={{paddingRight:'',}}>
+      Submissions</AnchorLink>         
+
 </li>
 
 
@@ -393,9 +400,9 @@ Magazine
   ""
 )}
 
-<li>
+{/* <li>
 <Link aria-label="Contact" className="navbar-item" to="/contact" style={{paddingRight:'',}}>Submissions</Link> 
-</li>
+</li> */}
 
 
 {/* <li className="carto crypto" style={{border:'none', display:'flex', justifyContent:'space-around', verticalAlign:'center', padding:'5px 0 0 0' , background:'rgba(0,0,0,0)' }}>
@@ -445,6 +452,13 @@ Magazine
   </span>
 </button>
 
+
+
+  {/* <button onClick={toggleArchiveView}>Toggle Archive View</button> */}
+    {/* <button aria-label="Dark/Light Mode" onClick={toggleArchiveView} style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
+      {archiveView === 'grid' ? <MdOutlineRectangle  style={{width:'3vh', height:'3vw'}} /> : <BiGridHorizontal  style={{width:'4vh', height:'3vw'}} /> }
+      <span className="themetext">{archiveView === 'grid' ? 'swipe' : ' scroll '}</span>
+    </button> */}
 </div>
 
  
