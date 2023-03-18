@@ -20,7 +20,7 @@ bumpertext: ""
 liarliar: false
 youtubecontrols: false
 clicktoplay: false
-customcontrols: false
+customcontrols: true
 youtubeautostart: false
 youtubeloop: true
 isnftforsale: false

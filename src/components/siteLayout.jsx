@@ -40,12 +40,12 @@ const Layout = ({ children }) => {
   
     window.onscroll = function() {
       const currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 75) {
+      if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 45) {
         document.querySelector('.header').style.transform = 'translateY(0)';
         document.querySelector('#menuicon').style.transform = 'translateX(0)';
         // document.body.classList.remove('scroll');
         // document.body.classList.add('scroll');
-      } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 75) {
+      } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 45) {
         document.querySelector('.header').style.transform = 'translateY(-100%)';
         document.querySelector('#menuicon').style.transform = 'translateX(110%)';
         document.body.classList.add('scroll');
@@ -68,14 +68,14 @@ const Layout = ({ children }) => {
     //   sessionStorage.setItem("scrollPos", window.pageYOffset)
     // }, [])
   
-    useEffect(() => {
-      if (window.history.scrollRestoration) {
-        const scrollPos = sessionStorage.getItem("scrollPos")
-        window.history.scrollRestoration = "manual"
-        window.scrollTo(0, scrollPos)
-        window.history.scrollRestoration = "auto"
-      }
-    }, [])
+    // useEffect(() => {
+    //   if (window.history.scrollRestoration) {
+    //     const scrollPos = sessionStorage.getItem("scrollPos")
+    //     window.history.scrollRestoration = "manual"
+    //     window.scrollTo(0, scrollPos)
+    //     window.history.scrollRestoration = "auto"
+    //   }
+    // }, [])
 
     
     useEffect(() => {

@@ -1,6 +1,6 @@
 ---
 slug: /
-tagline:  Memes are life
+tagline:  Decay is life
 featuredImage: /assets/trump-epstein-promo.webp
 youtuber: 
 youtuber2: 
@@ -48,7 +48,7 @@ cta:
   ctaLink: ""
 svgImage: /assets/null.svg
 secondaryImage: /assets/default-user.webp
-title: Do these memes make my butt look fat?
+title: Decay is Life
 youtubeend: "60"
 sharethis: false
 youtubeloop: true

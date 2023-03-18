@@ -12,7 +12,7 @@ const PostCard = ({ data }) => {
 
   
   return (
-    <ScrollAnimation className="animate" animateIn="fadeIn" animateOut="" initiallyVisible={true} animateOnce={false} animatePreScroll={true} > 
+    <ScrollAnimation className="animate" animateIn="animate__bounceInUp" animateOut="" initiallyVisible={false} animateOnce={true} animatePreScroll={true} > 
     <div className="post-card1">
       {data.frontmatter.featuredImage ? (
         <Link to={data.frontmatter.slug}>
