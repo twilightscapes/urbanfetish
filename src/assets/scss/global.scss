@@ -24,7 +24,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 .bglogo{
   max-width:50vw;
-
+  opacity:.5;
   position:fixed;
   top:1vh;
   left:10%;
@@ -34,21 +34,13 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   display:none;
   place-content: center;
   place-self:center;
-  z-index: -1;
-  opacity: 1;
-  // animation: poof 2s ease-out;
-  // animation-delay: 3s;
+  z-index: 1;
 }
 .bglogo.darkened{
   filter:brightness(0.8)contrast(1.4)saturate(.9); 
 }
 
-// .logo-background {
-//   background: url('../../../static/assets/logo.svg') no-repeat center center fixed;
-//   background-size: cover;
-//   opacity: 1;
-//   transition: opacity 4s ease-out;
-// }
+
 
 
 
@@ -369,7 +361,7 @@ body.homepage .pleaseshare{display:none}
 #secondMenu,#sidebarMenu{position:fixed;top:0;transition:transform .25s ease-in-out}
 #sidebarMenu{display:flex;flex-direction:column;height:80vh;justify-content:flex-end;padding:75vh 0 0;right:0;transform:translateX(100vw);z-index:10}
 #sidebarMenu input[type=checkbox]:checked~.sidebarIconToggle{display:none!important}
-.header{background:transparent!important;width:auto}
+// .header{background:transparent!important;width:auto}
 .homepage .sidebarIconToggle div span{animation-delay:4s;border-radius:20px;color:var(--primary-color)}
 .horizontal-scroll:after{background:rgba(0,0,0,.7);bottom:50vh;color:#fff;content:"❮❮scroll";font-size:clamp(2rem,3vw,3rem);left:30vw;opacity:.9;position:relative;right:12vh;top:375px;transform:rotate(90deg)}
 .horizontal-scroll:after{border-radius:12px;display:inline-block;display:flex;flex-direction:column;justify-content:center;margin:auto;padding:10px;text-shadow:2px 2px 2px #333;z-index:3}
@@ -457,16 +449,7 @@ to{opacity:0;z-index:-3}
 .panel{-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--theme-ui-colors-text);margin-top:0;overflow:hidden;text-shadow:0 2px 1px var(--theme-ui-colors-textShadow)!important}
 .panel.legal{border:0 solid red!important;margin:10vh auto 1rem}
 
-.panel:before{
-  // background:linear-gradient(hsla(0,6%,7%,0) 50%,rgba(0,0,0,.4) 0),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06));
-  background-color:rgba(0, 0, 0, 0.3);
-background-size:100% 2px,3px 100%;
-bottom:0;
-content:" ";
-display:block;
-left:0;opacity:.8;
-// pointer-events:none;
-position:absolute;right:0;top:0;z-index:-1}
+.panel:before{background:linear-gradient(hsla(0,6%,7%,0) 50%,rgba(0,0,0,.4) 0),linear-gradient(90deg,rgba(255,0,0,.06),rgba(0,255,0,.02),rgba(0,0,255,.06));background-size:100% 2px,3px 100%;bottom:0;content:" ";display:block;left:0;opacity:.8;pointer-events:none;position:absolute;right:0;top:0;z-index:-1}
 
 .themer{display:flex; flex-direction: column; justify-content: center;}
 .themetext{
@@ -479,10 +462,6 @@ position:absolute;right:0;top:0;z-index:-1}
 }
 .wrap-element iframe{border:0;height:100%;left:0;position:absolute;top:0;width:100vw!important}
 body.blogpost #menu li .fullscreenButt{display:flex}
-
-
-
-
 
 .avatar-frame{filter:drop-shadow(5px 3px 4px #999)}
 .avatar-frame img{background:transparent!important;background-position:top;background-size:contain;border-radius:38%;margin:0 auto;max-height:40vh;max-width:300px;opacity:0;transition:opacity 1.2s ease-in-out;width:100%}
@@ -587,8 +566,6 @@ position:absolute !important; top:72vh ;
   
   }
 
-
-
 @media(display-mode:standalone) {
 #installer{border:10px solid #ff0!important}
 #installer,.no-app{display:none!important}
@@ -676,7 +653,9 @@ body.homepage:before{display:none}
 .pagination.-post ul{display:grid}
 .pagination.-post ul a{border:1px solid #3c3539;border-radius:8px;display:inline-block;margin-bottom:10px;padding:20px}
 }
-
+@media (max-width:48rem) {
+.button{font-size:92%!important}
+}
 @media(max-width:48rem) {
 .modeText{display:none!important}
 
