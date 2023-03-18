@@ -34,7 +34,18 @@ import SignUp from "../components/newssign"
 // import Install from './install-discount'
 // import { navigate } from "gatsby";
 const Layout = ({ children }) => {
-
+    // useEffect(() => {
+    //   sessionStorage.setItem("scrollPos", window.pageYOffset)
+    // }, [])
+  
+    // useEffect(() => {
+    //   if (window.history.scrollRestoration) {
+    //     const scrollPos = sessionStorage.getItem("scrollPos")
+    //     window.history.scrollRestoration = "manual"
+    //     window.scrollTo(0, scrollPos)
+    //     window.history.scrollRestoration = "auto"
+    //   }
+    // }, [])
   useEffect(() => {
     let prevScrollpos = window.pageYOffset;
   
@@ -42,12 +53,18 @@ const Layout = ({ children }) => {
       const currentScrollPos = window.pageYOffset;
       if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 45) {
         document.querySelector('.header').style.transform = 'translateY(0)';
-        document.querySelector('#menuicon').style.transform = 'translateX(0)';
+        if (showNav2) {
+          document.querySelector('#menuicon').style.transform = 'translateX(0)';
+        }
         // document.body.classList.remove('scroll');
         // document.body.classList.add('scroll');
       } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 45) {
         document.querySelector('.header').style.transform = 'translateY(-100%)';
-        document.querySelector('#menuicon').style.transform = 'translateX(110%)';
+        
+        if (showNav2) {
+          document.querySelector('#menuicon').style.transform = 'translateX(110%)';
+        }
+        
         document.body.classList.add('scroll');
       }
       prevScrollpos = currentScrollPos;
@@ -64,18 +81,7 @@ const Layout = ({ children }) => {
 
     const [archiveView, setArchiveView] = useState('');
 
-    // useEffect(() => {
-    //   sessionStorage.setItem("scrollPos", window.pageYOffset)
-    // }, [])
-  
-    // useEffect(() => {
-    //   if (window.history.scrollRestoration) {
-    //     const scrollPos = sessionStorage.getItem("scrollPos")
-    //     window.history.scrollRestoration = "manual"
-    //     window.scrollTo(0, scrollPos)
-    //     window.history.scrollRestoration = "auto"
-    //   }
-    // }, [])
+
 
     
     useEffect(() => {
@@ -100,7 +106,12 @@ const Layout = ({ children }) => {
           el.classList.remove('grid-container');
           el.classList.add('horizontal-scroll', 'panels');
           document.body.classList.remove('scroll');
-          document.querySelector('#menuicon').style.transform = 'translateY(110%)';
+
+          if (showNav2) {
+            document.querySelector('#menuicon').style.transform = 'translateX(110%)';
+          }
+
+
         }
       });
       window.scrollTo(0, 0);
@@ -118,7 +129,9 @@ const Layout = ({ children }) => {
 
 
 
-
+<div style={{width:'100vw', height:'10vh', position:'fixed', zIndex:'2', top:'82vh', border:'0px solid yellow', textAlign:'center', animation:'poof 1.4s forwards', animationDelay:'4s'}}>
+  <div style={{marginTop:'', background:'rgba(9, 9, 10, 0.866)', width:'20vw', padding:'1vh 2vw', margin:'0 auto', borderRadius:'10px', color:'#fff',}}>SCROLL DOWN</div>
+</div>
 
 
 
