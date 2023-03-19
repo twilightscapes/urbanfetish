@@ -37,7 +37,7 @@ nftdrop: 2023-02-11T10:00:00
 audiostart: "20"
 comments: false
 liarliar: false
-tags: List []
+tags: [boom]
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned28.jpg
 underlayImage: null
 svgImage: null

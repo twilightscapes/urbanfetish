@@ -42,5 +42,5 @@ maratingtx2: Spontaneous & Sporadic
 maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
 category: decay
-tags: [abandoned, building]
+tags: []
 ---
