@@ -643,9 +643,9 @@ body.homepage:before{display:none}
 .clickplays{color:default; height:100%; max-height: 280px;}
 .bumper{display:none;}
 
-.pane1{top:60px !important;}
+.pane1{top:50px !important; height:100%; display: block;}
 .pane2{top:70px !important;}
-.pane3{top:150px !important;}
+.pane3{top:150px !important; min-height:280px; display: block;}
 
 }
 @media(min-width:1300px) {
