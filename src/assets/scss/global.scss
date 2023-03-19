@@ -201,7 +201,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 .grid-container article{ flex-wrap: none; display: grid;}
 
-.spacer{display:block; height:70px !important;}
+.spacer{display:block; height:80px !important;}
 
 .sliderSpacer{display:none;}
 .horizontal-scroll .sliderSpacer{display:block !important; height:50%; padding-top:0%; }
@@ -585,7 +585,7 @@ position:absolute !important; top:72vh ;
 #resume span{display:flex;flex-direction:column;gap:20px;position:-webkit-sticky;position:sticky;top:0}
 #resume span div{display:block!important;width:100%!important}
 .nameblock{background:transparent!important;color:inherit!important;text-shadow:none!important}
-#gobacker{position:fixed; top:105px !important; right:1vw; z-index:5;}
+#gobacker{position:fixed; top:118px !important; right:1vw; z-index:5;}
 }
 @media(hover:none) {
 .horizontal-scroll{scroll-snap-type:y mandatory}
@@ -645,7 +645,7 @@ body.homepage:before{display:none}
 
 .pane1{top:60px !important;}
 .pane2{top:70px !important;}
-.pane3{top:120px !important;}
+.pane3{top:150px !important;}
 
 }
 @media(min-width:1300px) {
@@ -660,7 +660,7 @@ body.homepage:before{display:none}
 .pagination li{width:100%!important}
 .panelspacer{height:0!important;padding-top:0!important}
 .react-player iframe{position:relative;top:0!important}
-.vidcontrols{display:flex;gap:2vw;position:fixed;right:3vw;top:380px}
+.vidcontrols{display:flex;gap:2vw;position:fixed;right:3vw;top:425px}
 }
 @media(max-width:768px) {
 .pagination{padding:10px 0}
