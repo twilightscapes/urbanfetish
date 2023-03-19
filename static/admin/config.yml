@@ -23,7 +23,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
-      - {label: "Team Member Name", name: "teamname", widget: "string"}
+      - {label: "Team Member Name", name: "name", widget: "string"}
       - {label: "Job Title", name: "jobTitle", widget: "string"}
       - {label: "Credentials", name: "credentials", widget: "string"}
       - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
