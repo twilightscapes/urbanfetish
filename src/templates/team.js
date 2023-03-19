@@ -6,10 +6,9 @@ export default function Team({ data }) {
   const { frontmatter, html } = markdownRemark
   return (
     <div>
-      <h1>{frontmatter.teamname}</h1>
+      <h1>{frontmatter.name} {frontmatter.credentials}</h1>
       <p>Job Title: {frontmatter.jobTitle}</p>
-      <p>Credentials: {frontmatter.credentials}</p>
-      <img src={frontmatter.profilePicture.publicURL} alt={frontmatter.teamname} />
+      <img src={frontmatter.profilePicture.publicURL} alt={frontmatter.name} />
       <div dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   )
@@ -20,14 +19,16 @@ export const pageQuery = graphql`
     markdownRemark(id: { eq: $id }) {
       html
       frontmatter {
-        title
-        teamname
+        name
         list
         credentials
         jobTitle
         order
         profilePicture {
           publicURL
+          childImageSharp {
+            gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
+          }
         }
       }
     }

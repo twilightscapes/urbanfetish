@@ -100,17 +100,21 @@ const TeamPage = ({ data }) => {
 
 export const query = graphql`
   query {
-    allMarkdownRemark(filter: { fileAbsolutePath: { regex: "/team/" } }) {
+    allMarkdownRemark(
+      filter: { fileAbsolutePath: { regex: "/team/" } }
+      sort: { fields: frontmatter___order, order: ASC }
+    ) {
       edges {
         node {
           id
           frontmatter {
             title
-            teamname
+            name
             list
             credentials
             jobTitle
             order
+            slug
             profilePicture {
               childImageSharp {
                 gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
@@ -122,6 +126,7 @@ export const query = graphql`
     }
   }
 `;
+
 
 
 
