@@ -18,13 +18,18 @@ public_folder: "/assets"
 collections:
   - name: "list"
     label: "List"
-    folder: "src/content/lists"
+    folder: "src/content/list"
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "list-page"}
+      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "list"}
       - {label: "Title", name: "title", widget: "string"}
       - {label: "Description", name: "description", widget: "text"}
+      - {label: "Team Image", name: "featuredImage", widget: "image", required: false,}
+   
+
+
+
       - {label: "Body", name: "body", widget: "markdown"}
 
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
