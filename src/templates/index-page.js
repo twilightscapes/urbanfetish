@@ -40,7 +40,6 @@ import Layout from "../components/siteLayout"
 
 export const pageQuery = graphql`
 query HomeQuery($id: String!) {
-
   site {
     siteMetadata {
       title
@@ -64,8 +63,6 @@ query HomeQuery($id: String!) {
       showSkills
     }
   }
-
-
   markdownRemark(id: {eq: $id}) {
     id
     html
@@ -146,12 +143,9 @@ query HomeQuery($id: String!) {
       }
     }
   }
-
-
-
   posts: allMarkdownRemark(
     sort: {frontmatter: {date: DESC}}
-    filter: {frontmatter: {template: {eq: "blog-post"}}}
+    filter: {frontmatter: {template: {eq: "blog-post"}, category: {eq: "news"}}}
     limit: 30
   ) {
     edges {
@@ -181,7 +175,7 @@ query HomeQuery($id: String!) {
     }
   }
 }
-`
+`;
 
 
 

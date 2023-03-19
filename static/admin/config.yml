@@ -48,6 +48,25 @@ collections:
           format: "YYYY-MM-DD HH:mm",
         }
       - { label: "SEO Description", name: "description", widget: "text" }
+      - {
+          label: "Category",
+          name: "category",
+          widget: "select",
+          options: [
+            {
+              label: "News",
+              value: "news",
+            },
+            {
+              label: "Opinion",
+              value: "opinion",
+            },
+            {
+              label: "Feature",
+              value: "feature",
+            },
+          ],
+        }
       - { label: "YouTube Url", name: "youtuber", widget: "string", required: false }
       - { label: "Second YouTube Url", name: "youtuber2", widget: "string", required: false, hint: "You can use this to rebute things or show alternate content" }
       - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
