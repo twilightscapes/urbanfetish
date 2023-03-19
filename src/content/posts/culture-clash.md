@@ -5,6 +5,10 @@ slug: /culture-clash
 date: 2023-02-11 03:00
 description: Contrasting culture captivates curious creatives
 category: decay
+tags:
+  - boom
+  - blam
+  - nature
 youtuber: https://youtu.be/k8TjgvwoVgE
 youtuber2: null
 youtubeautostart: false
@@ -28,7 +32,6 @@ marating3: LH
 maratingtx3: It's Humor - laugh
 marating4: AL
 maratingtx4: Adult Language
-shareable: true
 scrollable: true
 contentinvideo: false
 audiotitle: null
@@ -36,8 +39,8 @@ audioend: "5000"
 nftdrop: 2023-02-11T10:00:00
 audiostart: "20"
 comments: false
+shareable: true
 liarliar: false
-tags: [ boom, blam ]
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned28.jpg
 underlayImage: null
 svgImage: null
