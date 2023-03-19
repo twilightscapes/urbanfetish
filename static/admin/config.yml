@@ -67,6 +67,7 @@ collections:
             },
           ],
         }
+      - { label: "Page Tags", name: "tags", widget: "string", default: "", required: false }
       - { label: "YouTube Url", name: "youtuber", widget: "string", required: false }
       - { label: "Second YouTube Url", name: "youtuber2", widget: "string", required: false, hint: "You can use this to rebute things or show alternate content" }
       - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
@@ -99,7 +100,7 @@ collections:
       - { label: "Fact Checked NO Mark", name: "liarliar", widget: "boolean", default: "false", hint: "Shows Red X mark next to 2nd Video", required: false }
       - { label: "Secondary Video Title", name: "audiotitle", widget: "string", hint: "The button title for the secondary video", required: false }
       - { label: "For NFT DROP - enter drop time", name: "nftdrop", widget: "datetime", date_format: "YYYY-MM-DD", time_format: "HH:mm", format: "YYYY-MM-DDTHH:mm:ss", required: false }
-      - { label: "Page Tags", name: "tags", widget: "string", default: "" }
+
 
 
 
