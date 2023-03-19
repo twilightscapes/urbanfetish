@@ -4,47 +4,47 @@ title: 3am in the 9th Ward
 slug: /9th-ward
 date: 2023-02-10 10:43
 description: Quiet and eerie calm over 9th Ward in New Orleans
-youtuber: 
+category: decay
+youtuber: null
 youtuber2: ""
-youtubeshoworiginal: false
-youtubersuggestion1:
-youtubersuggestion2:
-youtubersuggestion3:
-youtubestart: "0"
-youtubeend: 
+youtubeautostart: true
 youtubemute: true
-audiostart: "20"
-audioend: "5000"
-audiotitle: "Liar Liar!"
-liarliar: false
 youtubecontrols: true
 clicktoplay: false
 customcontrols: false
-youtubeautostart: true
+youtubestart: "0"
+youtubeend: null
 youtubeloop: true
-isnftforsale: false
-svgzindex: "0"
-comments: false
-shareable: true
-underlayImage: 
-featuredImage: /assets/urbanfetish/favorites/favorites-abandoned4.jpg
-svgImage: 
-scrollable: true
-nftdrop: ""
-contentinvideo: false
+youtubeshoworiginal: false
+youtubersuggestion1: null
+youtubersuggestion2: null
+youtubersuggestion3: null
 bumpertext: ""
 marating1: YB
-marating2: SS
-marating3: LH
-marating4: AL
 maratingtx1: Use your brain please
+marating2: SS
 maratingtx2: Spontaneous & Sporadic
+marating3: LH
 maratingtx3: It's Humor - laugh
+marating4: AL
 maratingtx4: Adult Language
-category: decay
-tags: []
+shareable: true
+scrollable: true
+contentinvideo: false
+liarliar: false
+audiotitle: Liar Liar!
+audioend: "5000"
+nftdrop: ""
+audiostart: "20"
+comments: false
+tags: List [street]
+featuredImage: /assets/urbanfetish/favorites/favorites-abandoned4.jpg
+underlayImage: null
+svgImage: null
 fields:
   random: Math.random()
+svgzindex: "0"
+isnftforsale: false
 ---
 <div class="contentinside" style="position:relative; aspect-ratio:16/9;  width:100%; border:0px solid white; display:flex; flex-direction:column; justify-content:center;">
 
