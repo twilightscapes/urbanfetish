@@ -85,15 +85,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 // .contentpanel .gatsby-image-wrapper{overflow: hidden !important; flex-wrap: nowrap; flex-flow: nowrap;}
 
 
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 3vw;
-  padding:0 3%;
-  // background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.1) 50%);
-  // background-repeat: repeat;
-  // background-size: 100px 100vh;
-}
+
 
 .post-card1 {
   display: flex;
@@ -108,15 +100,16 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 .grid-container {
+  display: grid;
   list-style: none;
   column-gap: 3vw;
   padding: 2vh 3%;
   column-count: 1;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3vw;
 }
 
-// .grid-container .featured-image1 img {
-//   max-height: 40vh !important;
-// }
+
 
 .grid-container .featured-image1{
   max-height: 30vh !important;
@@ -167,6 +160,9 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 .grid-container .gatsby-image-wrapper img{max-height: 30vh !important; margin:0 auto !important;}
+
+
+
 
 
 
