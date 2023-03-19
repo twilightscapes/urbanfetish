@@ -16,21 +16,18 @@ media_folder: "static/assets"
 public_folder: "/assets"
 
 collections:
-  - name: "list"
-    label: "List"
-    folder: "src/content/list"
+  - name: "team"
+    label: "Team"
+    folder: "src/content/team"
     create: true
     slug: "{{slug}}"
     fields:
-      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "list"}
-      - {label: "Title", name: "title", widget: "string"}
-      - {label: "Description", name: "description", widget: "text"}
-      - {label: "Team Image", name: "featuredImage", widget: "image", required: false,}
+      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
+      - {label: "Team Member Name", name: "teamname", widget: "string"}
+      - {label: "Job Title", name: "jobTitle", widget: "string"}
+      - {label: "Credentials", name: "credentials", widget: "string"}
+      - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
    
-
-
-
-      - {label: "Body", name: "body", widget: "markdown"}
 
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
     label: "Posts" # Used in the UI

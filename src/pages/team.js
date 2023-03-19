@@ -82,13 +82,13 @@ const TeamPage = ({ data }) => {
           {posts.map(({ node }) => (
             <li key={node.id} className="grid-item">
               <a href={node.frontmatter.slug}>
-                {node.frontmatter.featuredImage && (
+                {node.frontmatter.profilePicture && (
                   <GatsbyImage
-                    image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
+                    image={node.frontmatter.profilePicture.childImageSharp.gatsbyImageData}
                     alt={node.frontmatter.title}
                   />
                 )}
-                <h2>{node.frontmatter.title}</h2>
+                <h2>{node.frontmatter.teamname}</h2>
               </a>
             </li>
           ))}
@@ -105,10 +105,13 @@ export const query = graphql`
         node {
           id
           frontmatter {
-            slug
             title
-            category
-            featuredImage {
+            teamname
+            list
+            credentials
+            jobTitle
+            order
+            profilePicture {
               childImageSharp {
                 gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
               }
