@@ -4,45 +4,45 @@ title: Culture Clash
 slug: /culture-clash
 date: 2023-02-11 03:00
 description: Contrasting culture captivates curious creatives
-youtuber: "https://youtu.be/k8TjgvwoVgE"
-youtuber2: 
+category: decay
+youtuber: https://youtu.be/k8TjgvwoVgE
+youtuber2: null
+youtubeautostart: false
+youtubemute: false
+youtubecontrols: false
+clicktoplay: false
+customcontrols: true
+youtubestart: "0"
+youtubeend: "10"
+youtubeloop: true
 youtubeshoworiginal: false
 youtubersuggestion1: ""
 youtubersuggestion2: ""
 youtubersuggestion3: ""
-youtubestart: "0"
-youtubeend: "10"
-youtubemute: false
-audiostart: "20"
-audioend: "5000"
-audiotitle: 
 bumpertext: ""
-liarliar: false
-youtubecontrols: false
-clicktoplay: false
-customcontrols: true
-youtubeautostart: false
-youtubeloop: true
-isnftforsale: false
-svgzindex: "0"
-comments: false
-shareable: true
-underlayImage: 
-featuredImage: /assets/urbanfetish/favorites/favorites-abandoned28.jpg
-svgImage: 
-scrollable: true
-nftdrop: "2023-02-11T10:00:00"
-contentinvideo: false
 marating1: YB
-marating2: SS
-marating3: LH
-marating4: AL
 maratingtx1: Use your brain please
+marating2: SS
 maratingtx2: Spontaneous & Sporadic
+marating3: LH
 maratingtx3: It's Humor - laugh
+marating4: AL
 maratingtx4: Adult Language
-category: decay
-tags: []
+shareable: true
+scrollable: true
+contentinvideo: false
+audiotitle: null
+audioend: "5000"
+nftdrop: 2023-02-11T10:00:00
+audiostart: "20"
+comments: false
+liarliar: false
+tags: List [Nature, Metal]
+featuredImage: /assets/urbanfetish/favorites/favorites-abandoned28.jpg
+underlayImage: null
+svgImage: null
+svgzindex: "0"
+isnftforsale: false
 ---
 <!-- <div class="contentinside lake1" style=""> -->
 <!-- <img class="" src="/assets/lakemouth.webp" width="100%" style=" z-index:-1; opacity:0;
