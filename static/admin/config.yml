@@ -67,6 +67,7 @@ collections:
             },
           ],
         }
+        
       - { label: "Page Tags", name: "tags", widget: "list", default: "", required: false, field: {label: Name, name: name, widget: string}}
 
       - { label: "YouTube Url", name: "youtuber", widget: "string", required: false }
