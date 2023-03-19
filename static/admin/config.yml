@@ -83,7 +83,7 @@ collections:
       - { label: "YouTube - Suggestion 3", name: "youtubersuggestion3", widget: "string", required: false }
       - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "", required: false  }
       - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "", required: false  }
-      - { label: "Content Rating", name: "marate", widget: "string", default: "PG", required: false, required: false  }
+      - { label: "Content Rating", name: "marate", widget: "string", default: "PG", required: false }
       - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC", required: false  }
       - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description", required: false  }
       - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC", required: false  }
