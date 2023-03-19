@@ -26,6 +26,7 @@ collections:
       - {label: "Team Member Name", name: "name", widget: "string"}
       - {label: "Job Title", name: "jobTitle", widget: "string"}
       - {label: "Credentials", name: "credentials", widget: "string"}
+      - {label: "Page Order", name: "order", widget: "string"}
       - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
       - {label: "Body", name: "body", widget: "markdown"}
    
