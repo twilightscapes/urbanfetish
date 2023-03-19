@@ -17,7 +17,9 @@ public_folder: "/assets"
 
 collections:
   - name: "team"
-    label: "Team"
+    label: "Team Member"
+    description: >
+      Team Member Pages
     folder: "src/content/team"
     create: true
     slug: "{{slug}}"
