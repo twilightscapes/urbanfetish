@@ -67,7 +67,10 @@ collections:
             },
           ],
         }
-      - { label: "Page Tags", name: "tags", widget: "string", default: "", required: false }
+      - { label: "Page Tags", name: "tags", widget: "string", default: "", required: false, field: {label: Name, name: name, widget: string}}
+
+
+
       - { label: "YouTube Url", name: "youtuber", widget: "string", required: false }
       - { label: "Second YouTube Url", name: "youtuber2", widget: "string", required: false, hint: "You can use this to rebute things or show alternate content" }
       - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
