@@ -1,36 +1,42 @@
-import React from 'react'
-import { Link } from 'gatsby'
-import { GatsbyImage } from 'gatsby-plugin-image'
+import React from "react"
+import { graphql } from "gatsby"
+import List from "../components/list"
 
-const List = ({ posts }) => {
+const ListPage = ({ data }) => {
+  const posts = data.allMarkdownRemark.edges
+
   return (
-    <div className="list">
-      {posts.map(({ node }) => {
-        const title = node.frontmatter.title || node.fields.slug
-        const tags = node.frontmatter.tags || []
-        const featuredImg = node.frontmatter.featuredImg
-
-        return (
-          <Link key={node.id} to={node.fields.slug}>
-            {featuredImg && (
-              <GatsbyImage
-                image={featuredImg.childImageSharp.gatsbyImageData}
-                alt={title + ' - Featured image'}
-              />
-            )}
-
-            <h2>{title}</h2>
-
-            <div className="tags">
-              {tags.map(tag => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-          </Link>
-        )
-      })}
-    </div>
+ 
+      <List posts={posts} />
+  
   )
 }
 
-export default List
+export default ListPage
+
+export const query = graphql`
+  query ListQuery {
+    allMarkdownRemark(sort: {fields: [frontmatter___date], order: DESC}) {
+      edges {
+        node {
+          fields {
+            slug
+          }
+          frontmatter {
+            title
+            date(formatString: "MMMM DD, YYYY")
+            description
+            tags
+            featuredImg {
+              relativePath
+              publicURL
+              childImageSharp {
+                gatsbyImageData(layout: FULL_WIDTH)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
