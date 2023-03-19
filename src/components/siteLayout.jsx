@@ -127,7 +127,7 @@ const Layout = ({ children }) => {
 const { companyname } = useSiteMetadata()
 const { iconimage } = useSiteMetadata()
 
-const { image } = useSiteMetadata()
+// const { image } = useSiteMetadata()
 
 const { showNav } = useSiteMetadata()
 const { showNav2 } = useSiteMetadata()

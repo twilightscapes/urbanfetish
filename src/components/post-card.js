@@ -1,4 +1,4 @@
-import { jsx } from "theme-ui"
+// import { jsx } from "theme-ui"
 import React from "react"
 import { Link } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"

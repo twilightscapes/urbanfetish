@@ -18,11 +18,11 @@ import { MdVolumeOff } from "react-icons/md"
 import { MdVolumeUp } from "react-icons/md"
 // import { StaticImage } from "gatsby-plugin-image"
 
-import { BiLeftArrow } from "react-icons/bi"
+
 
 import { IoArrowRedoSharp, IoArrowUndoSharp } from "react-icons/io5"
 import { jsx } from "theme-ui"
-import { Link, graphql, navigate } from "gatsby"
+import { Link, graphql } from "gatsby"
 import { Helmet } from "react-helmet"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { getSrc } from "gatsby-plugin-image"
