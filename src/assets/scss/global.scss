@@ -426,7 +426,7 @@ to{opacity:0;z-index:-3}
 
 .controls{animation:fade1;animation-delay:5s;animation-duration:1s;animation-fill-mode:forwards;background:rgba(0,0,0,.9);border:1px solid #666;border-radius:12px;color:#999;cursor:pointer;display:grid;font-size:1rem;font-weight:700;height:60px;opacity:1;padding:2px;place-content:center;position:relative;width:60px}
 
-.controlsbox{display:flex;gap:20px;justify-content:center;position:absolute;top:0!important;z-index:3}
+.controlsbox{display:flex;gap:20px;justify-content:center;position:absolute;top:0!important;z-index:3;}
 
 .hudicon{font-size:60px;position:absolute}
 
@@ -585,7 +585,7 @@ position:absolute !important; top:72vh ;
 #resume span{display:flex;flex-direction:column;gap:20px;position:-webkit-sticky;position:sticky;top:0}
 #resume span div{display:block!important;width:100%!important}
 .nameblock{background:transparent!important;color:inherit!important;text-shadow:none!important}
-#gobacker{position:fixed; top:105px !important; right:1vw; z-index:2;}
+#gobacker{position:fixed; top:105px !important; right:1vw; z-index:5;}
 }
 @media(hover:none) {
 .horizontal-scroll{scroll-snap-type:y mandatory}
@@ -642,6 +642,11 @@ body.homepage:before{display:none}
 // .themetext{display:none;}
 .clickplays{color:default; height:100%; max-height: 280px;}
 .bumper{display:none;}
+
+.pane1{top:60px !important;}
+.pane2{top:70px !important;}
+.pane3{top:120px !important;}
+
 }
 @media(min-width:1300px) {
 .pagination{bottom:120px!important}
