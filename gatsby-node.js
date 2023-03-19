@@ -8,7 +8,9 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
 
   const result = await graphql(`
   {
-    allMarkdownRemark(sort: {frontmatter: {date: DESC}}) {
+    allMarkdownRemark(
+      sort: { fields: [frontmatter___date], order: DESC },
+    ) {
       edges {
         node {
           id
@@ -23,13 +25,28 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
       }
     }
   }
-  `)
+`)
+
 
   // Handle errors
   if (result.errors) {
     reporter.panicOnBuild(`Error while running GraphQL query.`)
     return
   }
+
+
+      // Create lists pages
+const lists = result.data.allMarkdownRemark.edges
+lists.forEach((list) => {
+  createPage({
+    path: list.node.frontmatter.slug,
+    component: path.resolve(`src/templates/list.js`),
+    context: {
+      id: list.node.id,
+    },
+  })
+})
+
 
   // Create markdown pages
   const posts = result.data.allMarkdownRemark.edges
@@ -54,6 +71,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
         next,
       },
     })
+
 
     // Count blog posts.
     if (post.node.frontmatter.template === "blog-post") {
@@ -121,5 +139,13 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
       name: `slug`,
       value: slugWithoutPrefix,
     })
+
+    // Add document type field
+    createNodeField({
+      node,
+      name: `type`,
+      value: getNode(node.parent).sourceInstanceName,
+    })
   }
 }
+
