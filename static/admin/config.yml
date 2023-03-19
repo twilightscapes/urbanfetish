@@ -81,20 +81,20 @@ collections:
       - { label: "YouTube - Suggestion 1", name: "youtubersuggestion1", widget: "string", required: false }
       - { label: "YouTube - Suggestion 2", name: "youtubersuggestion2", widget: "string", required: false }
       - { label: "YouTube - Suggestion 3", name: "youtubersuggestion3", widget: "string", required: false }
-      - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "" }
-      - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "" }
-      - { label: "Content Rating", name: "marate", widget: "string", default: "PG" }
-      - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC" }
-      - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description" }
-      - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC" }
-      - { label: "Content Sub Rating Desc", name: "maratingtx2", widget: "string", default: "Sub Rating description" }
-      - { label: "Content Sub Rating", name: "marating3", widget: "string", default: "NC" }
-      - { label: "Content Sub Rating Desc", name: "maratingtx3", widget: "string", default: "Sub Rating description" }
-      - { label: "Content Sub Rating", name: "marating4", widget: "string", default: "NC" }
-      - { label: "Content Sub Rating Desc", name: "maratingtx4", widget: "string", default: "Sub Rating description" }
+      - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "", required: false  }
+      - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "", required: false  }
+      - { label: "Content Rating", name: "marate", widget: "string", default: "PG", required: false, required: false  }
+      - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC", required: false  }
+      - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description", required: false  }
+      - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC", required: false  }
+      - { label: "Content Sub Rating Desc", name: "maratingtx2", widget: "string", default: "Sub Rating description", required: false  }
+      - { label: "Content Sub Rating", name: "marating3", widget: "string", default: "NC", required: false  }
+      - { label: "Content Sub Rating Desc", name: "maratingtx3", widget: "string", default: "Sub Rating description", required: false  }
+      - { label: "Content Sub Rating", name: "marating4", widget: "string", default: "NC", required: false  }
+      - { label: "Content Sub Rating Desc", name: "maratingtx4", widget: "string", default: "Sub Rating description", required: false  }
       - { label: "Make Comments Available?", name: "comments", widget: "boolean", default: "true", required: false }
       - { label: "Make Post Shareable?", name: "shareable", widget: "boolean", default: "true", required: false }
-      - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "false", hint: "Allows post to be scrolled vertically", required: false }
+      - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "false", hint: "Allows post to be scrolled vertically", required: false, required: false  }
       - { label: "Place content inside Video Frame", name: "contentinvideo", widget: "boolean", default: "false", hint: "For Devs to inject the content of the post directly into video frame area, allowing for custom layout and features - By doing so, this replaces the normally visible content on your page - BEWARE", required: false }
       - { label: "Fact Checked NO Mark", name: "liarliar", widget: "boolean", default: "false", hint: "Shows Red X mark next to 2nd Video", required: false }
       - { label: "Secondary Video Title", name: "audiotitle", widget: "string", hint: "The button title for the secondary video", required: false }
