@@ -90,14 +90,18 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 3vw;
   padding:0 3%;
+  // background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.1) 50%);
+  // background-repeat: repeat;
+  // background-size: 100px 100vh;
 }
 
 .post-card1 {
   display: flex;
   flex-direction: column;
   height: auto;
-  // max-height: 75vh;
+  max-height: 60vh;
   justify-content: center;
+
 }
 
 

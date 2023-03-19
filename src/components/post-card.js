@@ -6,13 +6,13 @@ import { ImPlay } from "react-icons/im"
 import { FaImage } from "react-icons/fa"
 import { AiOutlinePicLeft } from "react-icons/ai"
 import { StaticImage } from "gatsby-plugin-image"
-import ScrollAnimation from 'react-animate-on-scroll'
+
 
 const PostCard = ({ data }) => {
 
   
   return (
-    <ScrollAnimation className="animate" animateIn="animate__bounceInUp" animateOut="" initiallyVisible={true} animateOnce={true} animatePreScroll={false} > 
+
     <div className="post-card1">
       {data.frontmatter.featuredImage ? (
         <Link to={data.frontmatter.slug}>
@@ -65,7 +65,7 @@ const PostCard = ({ data }) => {
         </div>
       </div>
     </div>
-    </ScrollAnimation>
+
   )
 }
 
