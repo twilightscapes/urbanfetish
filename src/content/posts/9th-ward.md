@@ -37,7 +37,7 @@ audioend: "5000"
 nftdrop: ""
 audiostart: "20"
 comments: false
-tags:
+tags: street
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned4.jpg
 underlayImage: null
 svgImage: null
