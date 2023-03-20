@@ -79,8 +79,10 @@ const TeamPage = ({ data }) => {
         <div className="contentpanel grid-container" style={{padding:''}}>
           
         <div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
+        
           {posts.map(({ node }) => (
-            <li key={node.id} className="grid-item">
+            <div className="post-card1 grid-item"
+            style={{  alignItems:'center'}} key={node.id}>
               <a href={node.frontmatter.slug}>
                 {node.frontmatter.profilePicture && (
                   <GatsbyImage
@@ -90,7 +92,7 @@ const TeamPage = ({ data }) => {
                 )}
                 <h2>{node.frontmatter.teamname}</h2>
               </a>
-            </li>
+            </div>
           ))}
         </div>
       </div>
