@@ -49,7 +49,8 @@ const Category = ({ data, pageContext }) => {
          
 
 
-<div key={node.id}>
+<div className="post-card1"
+            style={{ justifyContent:'center', alignItems:'center'}}  key={node.id}>
               {/* Render featured image thumbnail if it exists */}
               {featuredImg && (
                 <Link key={node.id} to={node.frontmatter.slug}>

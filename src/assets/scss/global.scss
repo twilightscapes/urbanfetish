@@ -82,14 +82,34 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 
-.post-card1 {
+// .post-card1 {
+//   display: flex;
+//   flex-direction: column;
+//   height: auto;
+//   max-height: 60vh;
+//   justify-content: center;
+
+// }
+
+.post-card1{
   display: flex;
   flex-direction: column;
   height: auto;
   max-height: 60vh;
-  justify-content: center;
-
+  justify-content: start;
 }
+
+.grid-container .post-card1{
+  background:linear-gradient(180deg,#333 1%,#111 80%);background-color:#111;border:1px solid rgba(0,0,0,.08);border-radius:12px;box-shadow:0 5px 10px #000;color:#ccc;padding:0;
+}
+
+.grid-container .panel, .grid-container .title1{
+  font-family: sans-serif !important;
+  background: none !important;
+  color:#aaa;
+}
+
+.post-card img{border-radius:12px!important}
 
 
 
@@ -110,11 +130,11 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   max-height: 30vh !important;
 }
 
-.grid-container .title1{
-  font-family: sans-serif !important;
-  background: none ;
-  color:#aaa;
-}
+// .grid-container .title1{
+//   font-family: sans-serif !important;
+//   background: none ;
+//   color:#aaa;
+// }
 
 .grid-container .title1:hover, .horizontal-scroll .title1:hover{color:#fff !important;}
 
@@ -471,8 +491,7 @@ body.blogpost #menu li .fullscreenButt{display:flex}
 .pagination.-post li:nth-child(2){text-align:right}
 .pagination.-post p{color:#3c3539;font-size:14px;margin:0 0 5px}
 .pagination.-post ul{display:flex;justify-content:space-between}
-.post-card{background:linear-gradient(180deg,#333 1%,#111 80%);background-color:#111;border:1px solid rgba(0,0,0,.08);border-radius:12px;box-shadow:0 5px 10px #000;color:#ccc;padding:0}
-.post-card img{border-radius:12px!important}
+
 
 
 // @media(min-width:58rem) {
