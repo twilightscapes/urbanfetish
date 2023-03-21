@@ -103,8 +103,8 @@ const TeamPage = ({ data }) => {
 export const query = graphql`
   query {
     allMarkdownRemark(
-      filter: { fileAbsolutePath: { regex: "/team/" } }
-      sort: { fields: frontmatter___order, order: ASC }
+      filter: {fileAbsolutePath: {regex: "/team/"}}
+      sort: {frontmatter: {order: ASC}}
     ) {
       edges {
         node {

@@ -145,7 +145,7 @@ query HomeQuery($id: String!) {
   }
   posts: allMarkdownRemark(
     sort: {frontmatter: {date: DESC}}
-    filter: {frontmatter: {template: {eq: "blog-post"}, category: {eq: "decay"}}}
+    filter: {frontmatter: {template: {eq: "blog-post"}, category: {eq: "news"}}}
     limit: 30
   ) {
     edges {

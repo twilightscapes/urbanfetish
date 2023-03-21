@@ -1,5 +1,5 @@
 import React from 'react';
-import { graphql, Link } from "gatsby"
+import { graphql, Link, navigate } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
 import Layout from "../components/siteLayout"
 import useSiteMetadata from "../hooks/SiteMetadata"
@@ -12,72 +12,70 @@ import { Helmet } from "react-helmet"
 
 const Category = ({ data, pageContext }) => {
   const { category } = pageContext
-  const posts = data.allMarkdownRemark.edges
+  const posts = data.posts.edges
+  const categories = data.allMarkdownRemark.group.map((group) => group.fieldValue)
 
   const { showNav } = useSiteMetadata()
 
   return (
-<Layout>
+    <Layout>
       <Helmet>
-  <body id="body" className="tag scroll" style={{}} />
-</Helmet>
-
+        <body id="body" className="tag scroll" style={{}} />
+      </Helmet>
 
       {showNav ? (
-  <div className="spacer" style={{height:'70px', border:'0px solid yellow'}}></div>
+        <div className="spacer" style={{ height: "70px", border: "0px solid yellow" }}></div>
       ) : (
         ""
       )}
 
       <div>
-      <h1 style={{textAlign:'center'}}>{category}</h1>
-      <div className="contentpanel horizontal-scroll panels" style={{padding:''}}>
+<div  style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
+        {/* <h1 style={{ textAlign: "center" }}>{category}</h1> */}
+        <select
+  style={{
+    maxWidth: "80vw",
+    margin: "0 auto",
+    color: "inherit",
+    background: "inherit",
+    outline: "1px solid",
+    borderRadius: "3px",
+    padding: "1vh 4vw",
+  }}
+  onChange={(e) => {
+    const selectedCategory = e.target.value;
+    navigate(`/category/${selectedCategory}`);
+  }}
+  value={category}
+>
+  {categories.map((category) => (
+    <option key={category} value={category} selected={category === pageContext.category}>
+      {category}
+    </option>
+  ))}
+</select>
+ </div>       
+        
 
-<div className="sliderSpacer" style={{height:'', paddingTop:'0', display:'none'}}></div>
+        <div className="contentpanel horizontal-scroll panels" style={{ padding: "" }}>
+          <div className="sliderSpacer" style={{ height: "", paddingTop: "0", display: "none" }}></div>
 
-{posts.map(({ node }) => {
-          // const title = node.frontmatter.title || node.fields.slug
-          // const tags = node.frontmatter.tags || []
-          // const excerpt = node.frontmatter.excerpt || node.excerpt
-          const featuredImg = node.frontmatter.featuredImage
+          {posts.map(({ node }) => {
+            const featuredImg = node.frontmatter.featuredImage;
 
-          return (
+            return (
+              <div className="post-card1" style={{ justifyContent: "center", alignItems: "center" }} key={node.id}>
+                {featuredImg && (
+                  <Link key={node.id} to={node.frontmatter.slug}>
+                    <GatsbyImage
+                      image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
+                      alt={node.frontmatter.title + " - Featured image"}
+                      className="featured-image1"
+                      placeholder="blurred"
+                      style={{ position: "relative", zIndex: "1", maxHeight: "", margin: "0 auto" }}
+                    />
 
-
-
-   
-         
-
-
-<div className="post-card1"
-            style={{ justifyContent:'center', alignItems:'center'}}  key={node.id}>
-              {/* Render featured image thumbnail if it exists */}
-              {featuredImg && (
-                <Link key={node.id} to={node.frontmatter.slug}>
-
-
-<GatsbyImage
-          image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
-          alt={node.frontmatter.title + " - Featured image"}
-          className="featured-image1"
-          placeholder="blurred"
-              // loading="eager"
-    
-              style={{position:'relative', zIndex:'1', maxHeight:'', margin:'0 auto'}}
-        />
-
-      
-
-
-
-
-       
-
-                  
-                  
-
-
-                  <div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
+<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
 
 {node.frontmatter.youtuber ? (
 <Link to={node.frontmatter.slug} style={{}}>
@@ -102,60 +100,63 @@ Play Multimedia
   ""
 )}
 
-
-
-
-
 <div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'0 auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
 
 <h2 className="title1" style={{ }}>
     {node.frontmatter.title}
 </h2>
-
-
             </div>
 
             </div>
 
 
-            
-          </Link>
-              )}
-
-
-            </div>
-          )
-        })}
+                  </Link>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
-
-
     </Layout>
-  )
-}
+  );
+};
+
 
 export const query = graphql`
-  query($category: String!) {
-    allMarkdownRemark(filter: { frontmatter: { category: { in: [$category] } } }) {
-      edges {
-        node {
-          id
-          frontmatter {
-            slug
-            title
-            date(formatString: "MMMM DD, YYYY")
-            category
-            youtuber
-            featuredImage {
-              childImageSharp {
-                gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
-              }
+query($category: String!) {
+  allMarkdownRemark {
+    edges {
+      node {
+        frontmatter {
+          category
+        }
+      }
+    }
+    group(field: {frontmatter: {category: SELECT}}) {
+      fieldValue
+    }
+  }
+  posts: allMarkdownRemark(filter: {frontmatter: {category: {eq: $category}}}) {
+    edges {
+      node {
+        id
+        frontmatter {
+          slug
+          title
+          date(formatString: "MMMM DD, YYYY")
+          category
+          youtuber
+          featuredImage {
+            childImageSharp {
+              gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
             }
           }
         }
       }
     }
   }
+}
+
 `
 
 export default Category
