@@ -1390,7 +1390,7 @@ textShadow:'2px 2px 0 #222', filter:'drop-shadow(0px 0px 5px rgba(155,155,155,1)
 <div style={{maxWidth:'90vw', width:'100%', height:'', maxHeight:'', padding:'0', position:'relative', bottom:'0', textAlign:'center', border:'0px solid blue', margin:'0 auto', borderRadius:'12px'}}>
 
                     {/* <Iframer2 /> */}
-<a href={OriginalUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration:'none', color:'inherit'}}>
+<a href={OriginalUrl} rel="noopener noreferrer" style={{textDecoration:'none', color:'inherit'}}>
  <div style={{display:'grid', placeContent:'center', fontWeight:'bold', padding:'1rem', fontSize:'2rem', width:'100%', height:'', border:'0px solid', borderRadius:'12px'}}>Support Our Video Sponsors
 
 <ImPlay style={{margin:'0 auto', width:'50%', fontSize:'60px'}} />
@@ -1421,7 +1421,7 @@ Click to play original video
         <br /><br /> No Celebrities or Politicians were harmed.
 
         <br /><br />
-        Video footage public youtube.com | Some imagery provided from <a rel="noopener noreferrer" href="https://www.flickr.com/photos/donkeyhotey/" target="_blank" >DonkeyHotey</a>, Wikipedia and other public sourced materials.
+        Video footage public youtube.com | Some imagery provided from <a rel="noopener noreferrer" href="https://www.flickr.com/photos/donkeyhotey/" >DonkeyHotey</a>, Wikipedia and other public sourced materials.
         </p>
     </div>
 </div>
