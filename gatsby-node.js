@@ -164,7 +164,7 @@ category.forEach((category) => {
 
 
   // Create tag pages
-  const tagTemplate = path.resolve(`./src/templates/tag.js`)
+  const tagTemplate = path.resolve(`./src/templates/tag-template.js`)
   tags.forEach((tag) => {
     createPage({
       path: `/tag/${tag}`,

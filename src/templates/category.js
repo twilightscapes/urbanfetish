@@ -30,18 +30,12 @@ const Category = ({ data, pageContext }) => {
       )}
 
       <div>
-<div  style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
+<div style={{display:'flex', flexDirection:'column', justifyContent:'center', marginTop:''}}>
         {/* <h1 style={{ textAlign: "center" }}>{category}</h1> */}
         <select
   style={{
-    maxWidth: "80vw",
-    margin: "0 auto",
-    color: "inherit",
-    background: "inherit",
-    outline: "1px solid",
     borderRadius: "3px",
-    padding: "1vh 4vw",
-  }}
+    position:'fixed', left:'1%', right:'1%', maxWidth:'380px', margin:'1vh auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center', outline:'1px solid #999', borderRadius:'3px', padding:'1vh 4vw', background:'rgba(0, 0, 0, 0.6)', color:'#ddd'}}
   onChange={(e) => {
     const selectedCategory = e.target.value;
     navigate(`/category/${selectedCategory}`);
@@ -57,7 +51,7 @@ const Category = ({ data, pageContext }) => {
  </div>       
         
 
-        <div className="contentpanel horizontal-scroll panels" style={{ padding: "" }}>
+        <div className="contentpanel horizontal-scroll panels" style={{ marginTop: "3vh" }}>
           <div className="sliderSpacer" style={{ height: "", paddingTop: "0", display: "none" }}></div>
 
           {posts.map(({ node }) => {

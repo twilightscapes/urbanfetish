@@ -37,7 +37,10 @@ const Tag = ({ data, pageContext }) => {
       {/* <h1 style={{ textAlign: 'center' }}>{tag}</h1> */}
 
       <div  style={{display:'flex', flexDirection:'column', justifyContent:'center'}}>
-      <select style={{maxWidth:'80vw', margin:'0 auto', color:'inherit', background:'inherit', outline:'1px solid', borderRadius:'3px', padding:'1vh 4vw'}} value={selectedTag} onChange={e => setSelectedTag(e.target.value)}>
+
+      <select style={{
+    borderRadius: "3px",
+    position:'fixed', left:'1%', right:'1%', maxWidth:'380px', margin:'1vh auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center', outline:'1px solid #999', borderRadius:'3px', padding:'1vh 4vw', background:'rgba(0, 0, 0, 0.6)', color:'#ddd'}} value={selectedTag} onChange={e => setSelectedTag(e.target.value)}>
         <option value=''>All tags</option>
         {allTags.map(tag => (
           <option key={tag} value={tag}>
@@ -47,7 +50,7 @@ const Tag = ({ data, pageContext }) => {
       </select>
       </div> 
 
-      <div className='contentpanel horizontal-scroll panels' style={{ padding: '' }}>
+      <div className='contentpanel horizontal-scroll panels' style={{ marginTop: '1.5rem' }}>
         <div className='sliderSpacer' style={{ height: '', paddingTop: '0', display: 'none' }}></div>
 
         {filteredPosts.map(({ node }) => {
@@ -114,7 +117,10 @@ Play Multimedia
 
 export const query = graphql`
   query($tag: String!) {
-    allMarkdownRemark(filter: { frontmatter: { tags: { in: [$tag] } } }, sort: { fields: frontmatter___date, order: DESC }) {
+    allMarkdownRemark(
+      filter: {frontmatter: {tags: {in: [$tag]}}}
+      sort: {frontmatter: {date: DESC}}
+    ) {
       edges {
         node {
           id
@@ -133,7 +139,7 @@ export const query = graphql`
           }
         }
       }
-      group(field: frontmatter___tags) {
+      group(field: {frontmatter: {tags: SELECT}}) {
         fieldValue
         totalCount
       }

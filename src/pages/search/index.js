@@ -49,13 +49,15 @@ const SearchPage = ({ data }) => {
 
 <div id="top" className="spacer" style={{height:'80px', border:'0px solid yellow'}}></div>
 
-      <div className="searchform" style={{position:'fixed', left:'1%', right:'1%', width:'380px', margin:'0 auto 0 auto', padding:'2vh 1vw', zIndex:'3', display:'grid', placeSelf:'center'}}>
+      <div className="searchform" style={{
 
-      <label style={{border:'1px solid #fff', outline:'#fff', display:'block', borderRadius:'10px'}}>
-        <input id="clearme" type="text" placeholder="filter by keyword" onChange={handleSearch} style={{maxWidth:'80vw'}} /> 
-<button type="reset" value="reset" onClick={() => clearfield()} style={{position:'absolute', right:'2.5vw', top:'3vh', color:'#fff'}}>clear</button>
+    position:'fixed', left:'1%', right:'1%', maxWidth:'380px', margin:'1vh auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center', outline:'1px solid #999', borderRadius:'3px', padding:'', background:'rgba(0, 0, 0, 0.6)', color:'#ddd'}}>
 
-              <div style={{position:'absolute', right:'6vw', top:'2.8vh', textAlign:'center', fontSize:'10px', color:'#fff'}}>{filteredPosts.length} <br />result{filteredPosts.length !== 1 && 's'}</div>
+      <label style={{}}>
+        <input id="clearme" type="text" placeholder="filter by keyword" onChange={handleSearch} style={{maxWidth:'80vw', background:'transparent'}} /> 
+<button type="reset" value="reset" onClick={() => clearfield()} style={{position:'absolute', right:'20px', top:'10px', color:'#fff'}}>clear</button>
+
+              <div style={{position:'absolute', right:'100px', top:'10px', textAlign:'center', fontSize:'10px', color:'#fff'}}>{filteredPosts.length} <br />result{filteredPosts.length !== 1 && 's'}</div>
       </label>
               
 
