@@ -9,8 +9,10 @@ audioend: "5000"
 audiotitle: "Lamb - Gorecki"
 underlayImage: /assets/transparent.png
 profText: 
- <div class="" style="text-align:left;">Memes are a way of life for many and this site is meant to be an outlet for that. This site was created to make it easy to post new memes and have somewhere to archive all of them.</div><br />
-  <p>Please enjoy(and share) the memes! <br /><br />Stay tuned for really big news about the platform that we're building and that we'll soon be offering to everyone. </p>
+ <div class="" style="text-align:left;">Take a walk on the wild side and follow along as Todd Lambert goes in search of the creepiest, freakiest, spookiest abandoned and desolate locations.
+ <br /> <br />
+  As a location scout and avid urban explorer, Todd learned to photograph what he sees and to bring the unique subject matter he finds to light.</div>
+
 addressText: ""
 portfolio:
   openText: "Thank you for visiting, please swipe to view my portfolio"
@@ -44,7 +46,7 @@ skillsText:
   <dd class="percentage percentage-99"><span class="text">Hacking</span> <span class="percent">99%</span></dd>
   </dl>
 cta:
-  ctaText: Contact Gene
+  ctaText: Contact
   ctaLink: ""
 svgImage: /assets/null.svg
 secondaryImage: /assets/default-user.webp
@@ -73,7 +75,7 @@ description: A rogue one, out there to change the world, one meme at a time.
 svgzindex: ""
 profTitle: MG Reports
 coverletter:
-  coverText: About Meme Genes
+  coverText: About Urban Fetish
   coverLink: /about
 youtubestart: "18"
 scrollable: true
