@@ -35,7 +35,7 @@ const Category = ({ data, pageContext }) => {
         <select
   style={{
     borderRadius: "3px",
-    position:'fixed', left:'1%', right:'1%', maxWidth:'380px', margin:'1vh auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center', outline:'1px solid #999', borderRadius:'3px', padding:'1vh 4vw', background:'rgba(0, 0, 0, 0.6)', color:'#ddd'}}
+    position:'fixed', left:'1%', right:'1%', maxWidth:'380px', margin:'1vh auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center', outline:'1px solid #999', borderRadius:'3px', padding:'1vh 4vw', background:'rgba(0, 0, 0, 0.6)', color:'#ddd', textTransform:'capitalize'}}
   onChange={(e) => {
     const selectedCategory = e.target.value;
     navigate(`/category/${selectedCategory}`);

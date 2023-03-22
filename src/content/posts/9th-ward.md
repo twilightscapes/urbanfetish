@@ -4,7 +4,7 @@ title: 3am in the 9th Ward
 slug: /9th-ward
 date: 2023-02-10 10:43
 description: Quiet and eerie calm over 9th Ward in New Orleans
-category: decay
+category: popular
 youtuber: null
 youtuber2: ""
 youtubeautostart: true

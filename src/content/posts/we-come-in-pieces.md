@@ -43,9 +43,6 @@ maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
 category: news
 tags:
-  - abandoned
-  - house
-  - aliens
 ---
 <div class="contentinside" style="position:relative; aspect-ratio:16/9;  width:100%; border:0px solid white; display:flex; flex-direction:column; justify-content:center;">
 

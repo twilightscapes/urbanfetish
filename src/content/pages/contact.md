@@ -1,7 +1,7 @@
 ---
 template: contact-page
 slug: /contact
-title: Contact
+title: Submissions
 scrollable: true
 ---
 
