@@ -22,6 +22,8 @@ body.blogpost .wrap-element iframe,body.homepage .wrap-element iframe{border:0;l
 body.homepage section{border:0 solid #ff0!important;margin-bottom:0!important;margin-top:0!important;min-height:100vh!important}
 body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
+body.blogpost .upbar{display: none !important;}
+
 .bglogo{
   max-width:50vw;
   opacity:.5;
