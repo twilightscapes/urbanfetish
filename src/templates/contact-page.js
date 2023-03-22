@@ -87,7 +87,7 @@ const Contact = ({ data }) => {
           </p> */}
           <p>
             <label>
-              <input type="email" name="email" placeholder="your@email.com" required />
+              <input type="email" name="email" placeholder="your@email.com (will not be published)" required />
             </label>
           </p>
           {/* <p>
@@ -97,9 +97,22 @@ const Contact = ({ data }) => {
           </p> */}
           <p>
             <label>
-              <textarea name="message" placeholder="Your Message" required></textarea>
+              <textarea name="message" placeholder="Tell us a story about your image - this will be included with your photo along with any other details you provide here" required></textarea>
             </label>
           </p>
+
+          <label htmlFor="attachment1" style={{padding: '0', color: 'inherit', textShadow:'1px 1px 0 #555', display:'flex', width:'100%', fontSize:'90%', gap:'15px', justifyContent:'center', alignItems:'center'}}>
+                  
+                  <input
+                      className="file-input hidden"
+                      type="file"
+                      id="attachment1"
+                      name="attachment1"
+                      // onChange={this.handleAttachment}
+                    />
+                    JPG preferred - (1600px wide)
+                    </label>
+
           <p className="text-align-right1" style={{margin:'0 auto', color:'#fff'}}>
             <button
               className="button"
