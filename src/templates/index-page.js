@@ -951,6 +951,7 @@ Click to play
             placeholder="blurred" loading="eager"
               style={{height:'auto', width:'100vw', maxHeight:'125vh',  objectFit:'cover', overflow:'visible', border:'0px solid red !important'}}
           />
+          
        
           
           ) : (
@@ -1019,12 +1020,23 @@ Click to play
 
 
 
-           {SecondaryImage ? (
+           {/* {SecondaryImage ? (
             <GatsbyImage
               image={SecondaryImage}
               alt={frontmatter.title + " - Featured image"}
               className="drop-shadow avatar-frame"
               style={{ maxWidth:'', height:'25vh', maxHeight:'25vh', position:'relative',  top:'', objectFit:'contain', backgroundSize:'contain', marginBottom:'10px'}}
+            />
+          ) : (
+            ""
+          )} */}
+
+{SecondaryImage ? (
+            <GatsbyImage
+              image={SecondaryImage}
+              alt={frontmatter.title + " - Featured image"}
+              className="drop-shadow avatar-frame"
+              style={{ maxWidth:'', height:'45vh', maxHeight:'45vh', position:'relative',  top:'', objectFit:'contain', backgroundSize:'contain', marginBottom:'0', border:'2rem'}}
             />
           ) : (
             ""
@@ -1253,7 +1265,8 @@ Click to play
 
  {/* <GoogleMap /> */}
 <div id="bottom" className="usability" style={{position:'relative', zIndex:'', bottom:'0', display:'flex', placeSelf:'center', placeContent:'center', width:'100%', margin:'2vh auto', alignContent:'center', alignItems:'center', justifyContent:'center', border:'0px solid blue', textAlign:'center'}}>
-<div id="branding" style={{position:'relative', left:'0', bottom:'5px', fontSize:'90%'}}><a href="https://urbanfetish.com">UrbanFetish.com</a></div>
+  
+{/* <div id="branding" style={{position:'relative', left:'0', bottom:'5px', fontSize:'90%'}}><a href="https://urbanfetish.com">UrbanFetish.com</a></div> */}
 </div>
 <br/><br/><br/>
 
