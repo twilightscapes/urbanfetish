@@ -134,6 +134,7 @@ const { showNav2 } = useSiteMetadata()
 const { showInfo } = useSiteMetadata()
 const { showFeature } = useSiteMetadata()
 const { showPosts } = useSiteMetadata()
+const { showSearch } = useSiteMetadata()
 const { showResume } = useSiteMetadata()
 // const { showSocial } = useSiteMetadata()
 const { showSkills } = useSiteMetadata()
@@ -414,13 +415,16 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 <div id="missioncontrol" className="sitecontrols" style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'', alignItems:'center', padding:'.5% .5% 0 0'}}>
 
+{showSearch ? (
 <div>
    <Link aria-label="Search UrbanFetish" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
     <SearchIcon style={{}} />
     <span className="themetext">search</span>
    </Link>
         </div>
-
+      ) : (
+        ""
+      )}
 
 
   <div>

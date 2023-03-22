@@ -383,7 +383,10 @@ collections:
                 label: Show Social Links
                 required: false
 
-
+              - widget: boolean
+                name: showSearch
+                label: Show Search Icon 
+                required: false
 
               - widget: boolean
                 name: showCover

@@ -14,7 +14,7 @@
 
 body{font-family:var(--font-body);scroll-behavior:smooth;width:100vw}
 
-body,body.homepage{overflow-x:hidden!important;overflow-y:hidden!important}
+body,body.homepage{overflow-x:hidden!important;overflow-y:auto!important}
 body.blogpost .backimage{z-index:-5!important}
 
 
