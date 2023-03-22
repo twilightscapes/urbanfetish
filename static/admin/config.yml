@@ -317,7 +317,7 @@ collections:
                 name: image
                 label: Default OG Image
                 required: true
-                default: "/assets/default-og-image.jpg"
+                default: "/assets/default-og-image.webp"
               - widget: image
                 name: iconimage
                 label: Site Logo (should be SVG if at all possible)

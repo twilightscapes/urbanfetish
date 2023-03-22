@@ -1,6 +1,6 @@
 ---
 slug: /
-tagline:  Decay is life
+tagline:  Take only memories, leave nothing but footprints
 featuredImage: /assets/trump-epstein-promo.webp
 youtuber: 
 youtuber2: 
@@ -9,9 +9,9 @@ audioend: "5000"
 audiotitle: "Lamb - Gorecki"
 underlayImage: /assets/transparent.png
 profText: 
- <div class="" style="text-align:left;">Take a walk on the wild side and follow along as Todd Lambert goes in search of the creepiest, freakiest, spookiest abandoned and desolate locations.
+ <div class="" style="text-align:left;">Take a walk on the wild side and follow along as Todd Lambert goes in search of the creepiest, freakiest, spookiest abandoned and desolate locations and the people who dare to go there.
  <br /> <br />
-  As a location scout and avid urban explorer, Todd learned to photograph what he sees and to bring the unique subject matter he finds to light.</div>
+  As a location scout and avid urban explorer himself, Todd learned to photograph what he sees and now he tries to bring this unique subject matter to light.</div>
 
 addressText: ""
 portfolio:
@@ -73,7 +73,7 @@ template: index-page
 youtubemute: true
 description: A rogue one, out there to change the world, one meme at a time. 
 svgzindex: ""
-profTitle: MG Reports
+profTitle: Urban Decay Photography
 coverletter:
   coverText: About Urban Fetish
   coverLink: /about

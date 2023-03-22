@@ -830,7 +830,7 @@ Click to play
               image={FrontImage}
               alt={frontmatter.title + " - Featured image"}
               className="featured-image12 layer1"
-              style={{height:'100vh', maxHeight:'100vh', width:'', position:'absolute', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'contain', paddingTop:'0', overflow:'hidden',}}
+              style={{height:'100vh', maxHeight:'100vh', width:'', position:'absolute', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'cover', paddingTop:'0', overflow:'hidden',}}
             />
 
 
@@ -839,7 +839,7 @@ Click to play
 
           ) : (
 
-            <StaticImage src="../../static/assets/default-og-image.jpg" alt="Default Image" style={{height:'auto', maxHeight:'100vh', position:'absolute', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'contain',}} />
+            <StaticImage src="../../static/assets/default-og-image.webp" alt="Default Image" style={{height:'auto', maxHeight:'100vh', position:'absolute', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'contain',}} />
   
           )}
 
@@ -979,9 +979,9 @@ Click to play
   borderRadius:'10px'}}>
   <ScrollAnimation animateIn="bounceInLeft" animateOut="bounceOutLeft" initiallyVisible={true} animateOnce={false} animatePreScroll={false} style={{}}> 
   <h1 className="title1" style={{fontSize:'clamp(2.5rem, 3.5vw, 3.2rem)'}}>{frontmatter.profTitle}</h1>
-            {/* <h2 className="tagline1">
+            <h2 className="tagline1">
               {frontmatter.tagline}
-            </h2> */}
+            </h2>
             <div
             style={{paddingBottom:'2rem'}}
               className="description"
@@ -995,9 +995,9 @@ Click to play
             <div className="flexcheek mob print" style={{padding:'0', maxHeight:'', fontSize:'clamp(1rem, 1.5vw, 3.2rem)',}}>
   
               <h1 className="title1" style={{fontSize:'clamp(2rem, 4.5vw, 3.2rem)'}}>{frontmatter.profTitle}</h1>
-            {/* <h2 className="tagline1">
+            <h2 className="tagline1">
               {frontmatter.tagline}
-            </h2> */}
+            </h2>
   
             <div
             style={{}}

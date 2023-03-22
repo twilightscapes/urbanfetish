@@ -11,7 +11,7 @@
     "twitterUsername": "urbanfetish",
     "titleDefault": "Abandoned Photography",
     "showSocial": true,
-    "showResume": true,
+    "showResume": false,
     "showInfo": true,
     "showNav2": false,
     "postcount": "1",
@@ -32,7 +32,7 @@
     "image": "/assets/sitebg.webp",
     "description": "Photographing decay in an increasingly abandoned world, Urban Fetish magazine brings a light",
     "icon512": "/assets/icon.svg",
-    "showSkills": true
+    "showSkills": false
   },
   "ga": "UA-89654528-2",
   "comments": "5639031584980992-proj"

@@ -329,9 +329,9 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 {showFeature ? (
 <li style={{position:'relative',}}>
       {prefersReducedMotion ? (
-       <Link aria-label="Featured" className="navbar-item" to="/#feature" style={{paddingRight:'',}}>{menu2}</Link>    
+       <Link aria-label="Featured" className="navbar-item" to="/#showPosts" style={{paddingRight:'',}}>{menu2}</Link>    
    ) : (
-      <AnchorLink aria-label="Featured" className="navbar-item" to="/#feature" style={{paddingRight:'',}}>
+      <AnchorLink aria-label="Featured" className="navbar-item" to="/#showPosts" style={{paddingRight:'',}}>
       {menu2}</AnchorLink>         
     )}
 </li>
@@ -366,7 +366,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 <li style={{position:'relative',}}>
 
-      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/about" style={{paddingRight:'',}}>
+      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/category/" style={{paddingRight:'',}}>
       Magazine</AnchorLink>         
 
 </li>

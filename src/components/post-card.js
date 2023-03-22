@@ -28,7 +28,7 @@ const PostCard = ({ data }) => {
         <Link to={data.frontmatter.slug}>
           <StaticImage
             className="featured-image1"
-            src="../../static/assets/default-og-image.jpg"
+            src="../../static/assets/default-og-image.webp"
             alt="Default Image"
             style={{position:'relative', zIndex:''}}
           />
