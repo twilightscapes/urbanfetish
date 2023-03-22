@@ -2,7 +2,7 @@ import * as React from "react"
 import useSiteMetadata from "../hooks/SiteMetadata"
 // import GoBack from "../components/goBack"
 // import Theme from "../components/theme"
-// import Consent from "./Consent"
+import Consent from "./Consent"
 // import Install from "./install-footer"
 import Icons from "../util/socialmedia.json"
 import {
@@ -198,7 +198,7 @@ export default function Footer() {
 
       <footer className="" style={{display:'flex', flexDirection:'column', padding:'1rem 0', marginTop:'0', position:'relative'}}>
 
-    {/* <Consent /> */}
+    <Consent />
 <br />
 
     {/* <Install /> */}
