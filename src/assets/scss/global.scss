@@ -392,7 +392,8 @@ a [aria-current]:hover, a[aria-current]{cursor:default!important;filter:none!imp
 
 a[aria-current]{box-shadow:none;text-decoration:none}
 
-a.cornerlogo {border-bottom: 1px solid transparent !important;}
+a.cornerlogo, .footerlinks a {border-bottom: 0px solid transparent !important;}
+
 
 
 
