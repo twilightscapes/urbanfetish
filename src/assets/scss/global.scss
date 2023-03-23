@@ -615,6 +615,9 @@ position:absolute !important; top:72vh ;
   
   }
 
+
+  #gobacker{position:fixed; top:178px !important; right:1vw; z-index:5;}
+  
 @media(display-mode:standalone) {
 #installer{border:10px solid #ff0!important}
 #installer,.no-app{display:none!important}
