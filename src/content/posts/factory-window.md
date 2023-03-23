@@ -41,7 +41,7 @@ audiostart: "20"
 comments: false
 shareable: true
 liarliar: false
-featuredImage: /assets/denny-muller-WQdLaOZtCLQ-unsplash.jpg
+featuredImage: /assets/denny-muller-WQdLaOZtCLQ-unsplash.webp
 underlayImage: null
 svgImage: null
 svgzindex: "0"
