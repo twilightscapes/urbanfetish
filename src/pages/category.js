@@ -1,6 +1,7 @@
 import React from "react"
 import { graphql, Link } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
+import { StaticImage } from "gatsby-plugin-image"
 import Layout from "../components/siteLayout"
 const CategoryIndex = ({ data }) => {
   const categories = data.allMarkdownRemark.group.map(group => group.fieldValue);
@@ -8,12 +9,12 @@ const CategoryIndex = ({ data }) => {
   return (
     <Layout>
       <div className="spacer" style={{ height: '70px', border: '0px solid yellow' }}></div>
-      <div style={{textAlign:'center', paddingTop:'2rem'}}>
+      <div style={{textAlign:'center', paddingTop:'1rem'}}>
       <h1>Urban Fetish Magazine</h1>
 
 
 
-      <ul style={{display:'flex', justifyItems:'center', justifyContent:'center', gap:'3vw', textTransform:'capitalize', margin:'20vh'}}>
+      <ul style={{display:'flex', justifyItems:'center', justifyContent:'center', gap:'3vw', textTransform:'capitalize', margin:'3vh'}}>
         {categories.map(category => (
           <li key={category}>
             <Link to={`/category/${category}`}>{category}</Link>
@@ -21,6 +22,7 @@ const CategoryIndex = ({ data }) => {
         ))}
       </ul>
       <strong>Edition 1 coming soon!</strong>
+      <StaticImage className="featured-image1 layer1" src="../../static/assets/edition1-promo.webp" alt="Default Image" style={{position:'relative', zIndex:'',}} />
     </div>
     </Layout>
   );
