@@ -551,12 +551,12 @@ const YouTube = frontmatter.youtuber
    
 
 
-<div className="videohide1 pane1" style={{position:'absolute', height:'', aspectRatio:'16/9', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'', justifyContent:'', color:'var(--theme-ui-colors-text)', fontFamily:'Verdana, Sans-Serif, System' }}>
+<div className="videohide1 554 pane1" style={{position:'absolute', height:'', aspectRatio:'16/9', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'', justifyContent:'', color:'var(--theme-ui-colors-text)', fontFamily:'Verdana, Sans-Serif, System' }}>
 
 
 
 
-<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'100px', border:'0px  solid red', width:'100vw', height:'', aspectRatio:'16/9', maxHeight:'', backgroundColor:'var(--theme-ui-colors-bodyBg)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
+<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'100px', border:'0px  solid red', width:'100vw', height:'', aspectRatio:'16/9', maxHeight:'', background:'rgba(0, 0, 0, .99)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
 
 
 
@@ -840,7 +840,7 @@ Click to play
 <div id="gobacker" style={{position:'absolute', top:'12vh', right:'1vw', zIndex:'5'}}><GoBack /></div>
 
 
-<div className="pagemenu panel" style={{position:'fixed', bottom:'20px', zIndex:'4', left:'1vw', right:'', display:'flex', justifyContent:'center', width:'auto', maxWidth:'80vw', margin:'0 auto', gap:'5vw',	background:'rgba(0, 0, 0, .5)', padding:'', border:'1px solid #666', borderRadius:'', textShadow:'0 1px 1px rgba(0, 0, 0, .7)', fontSize:'clamp(2rem, 3vw, 3rem)', verticalAlign:'center' }}>
+{/* <div className="pagemenu panel" style={{position:'fixed', bottom:'20px', zIndex:'4', left:'1vw', right:'', display:'flex', justifyContent:'center', width:'auto', maxWidth:'80vw', margin:'0 auto', gap:'5vw',	background:'rgba(0, 0, 0, .5)', padding:'', border:'1px solid #666', borderRadius:'', textShadow:'0 1px 1px rgba(0, 0, 0, .7)', fontSize:'clamp(2rem, 3vw, 3rem)', verticalAlign:'center' }}>
 
 <div className="menusnapp" style={{display:'flex', gap:'10px', padding:'1vh 1vw', alignItems:'center'}}>
 {frontmatter.scrollable ? (
@@ -871,7 +871,7 @@ Click to play
         </button>
         </div>
     }
-</div>
+</div> */}
 
 
 
@@ -904,7 +904,7 @@ Click to play
 
 
 
-<div className="wrap-element effects" style={{aspectRatio:'16/9', minHeight:'', maxHeight:'', overFlow:'', marginTop:'10px'}}>
+<div className="wrap-element effects" style={{aspectRatio:'16/9', minHeight:'', maxHeight:'', overFlow:'', marginTop:''}}>
 
 
 {/* <GatsbyImage
@@ -1039,7 +1039,7 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
 
 
 
-<button aria-label="Click To Play" className="clickplays videohide dd" style={{position:'relative', zIndex:'', top:'50px', border:'1px  solid red', width:'100vw', background:'transparent', color:'', fontSize:'18px', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', aspectRatio:'16/9'}}>
+<button aria-label="Click To Play" className="clickplays videohide 1042" style={{position:'relative', zIndex:'', top:'50px', border:'1px  solid red', width:'100vw', background:'transparent', color:'', fontSize:'18px', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', aspectRatio:'16/9'}}>
                 {/* // <div style={{position:'absolute', background:'#111', height:'100vh', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'start', justifyContent:'center', color:'#fff', fontFamily:'Verdana, Sans-Serif, System' }}> */}
    
                 {/* <img className="homepage-bg" src={iconimage} width="250px" height="150px" alt="UrbanFetish" style={{ width:'', margin:'120px auto 0 auto', filter:'drop-shadow(2px 2px 2px #000)', background:'transparent !important', position:'relative', top:''}} /> */}
