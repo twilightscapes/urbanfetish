@@ -141,7 +141,10 @@ body.blogpost .upbar{display: none !important;}
 
 .post-card img{border-radius:5px!important}
 
-.grid-container .gatsby-image-wrapper img{max-height: 30vh !important; margin:0 auto !important;}
+.grid-container .gatsby-image-wrapper img{
+  // max-height: 30vh !important; 
+  margin:0 auto !important;
+}
 
 .grid-container .post-card1 {
   width: 100%;
@@ -177,7 +180,15 @@ body.blogpost .upbar{display: none !important;}
 
 
 
-
+.iiz__img {
+  max-width: 100%;
+  max-height: 85vh !important;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  visibility: visible;
+  opacity: 1;
+}
 
 
 
