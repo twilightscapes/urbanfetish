@@ -19,7 +19,7 @@ body.blogpost .backimage{z-index:-5!important}
 
 
 body.blogpost .wrap-element iframe,body.homepage .wrap-element iframe{border:0;left:0;position:absolute;top:0;width:100vw!important}
-body.homepage section{border:1 solid #ff0 !important;margin-bottom:0!important;margin-top:0!important;}
+body.homepage section{border:1 solid #ff0 !important;margin-bottom:0!important;margin-top:0!important; height:auto;}
 body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 // body.blogpost .upbar{display: none !important;}
@@ -663,6 +663,9 @@ body{background:#fff;color:#000}
 }
 @media(min-width:49em) {
 .intropanel{height:800px}
+#feature .stack-layout{
+  min-height: 70vh !important;
+}
 }
 @media(max-width:48rem) {
 .introspacer{height:1px!important;width:100%}

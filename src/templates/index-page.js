@@ -821,10 +821,10 @@ Click to play
 
 <ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={true} > 
 
-<section id="feature" order="1" name="feature" className="print" style={{ display:'', height:'auto', maxHeight:'100vh', margin:'0 0 0 0', padding:'0', position:'relative'}}>
+<section id="feature" order="1" name="feature" className="print" style={{ display:'', height:'auto', maxHeight:'', margin:'0 0 0 0', padding:'0 0 20px 0', position:'relative'}}>
   <article>
 
-  <div className='stack-layout' style={{ display:'flex',justifyContent:'center', position:'relative', top:'0', zIndex:'0', height:'85vh', overflow:'hidden', filter: 'drop-shadow(0 0 20px #000)' }}>
+  <div className='stack-layout' style={{ display:'flex',justifyContent:'center', position:'relative', top:'0', zIndex:'0', minHeight:'250px', height:'', overflow:'hidden', filter: 'drop-shadow(0 0 20px #000)' }}>
 {FrontImage ? (
             <GatsbyImage
               image={FrontImage}
