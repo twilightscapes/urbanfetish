@@ -56,7 +56,7 @@ const Layout = ({ children }) => {
     
       window.onscroll = function() {
         const currentScrollPos = window.pageYOffset;
-        if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 5) {
+        if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 75) {
           document.querySelector('.header').style.transform = 'translateY(0)';
           if (showNav2) {
             document.querySelector('#menuicon').style.transform = 'translateX(0)';
@@ -64,7 +64,7 @@ const Layout = ({ children }) => {
           document.querySelector('.pagemenu').style.transform = 'translateY(220%)';
           // document.body.classList.remove('scroll');
           // document.body.classList.add('scroll');
-        } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 5) {
+        } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 75) {
           document.querySelector('.header').style.transform = 'translateY(-100%)';
           if (showNav2) {
             document.querySelector('#menuicon').style.transform = 'translateX(110%)';
@@ -324,6 +324,13 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 )} */}
 
 
+<li style={{position:'relative',}}>
+
+      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/category/" style={{paddingRight:'',}}>
+      Magazine</AnchorLink>         
+
+</li>
+
 
 
 {showFeature ? (
@@ -364,12 +371,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 )} */}
 
 
-<li style={{position:'relative',}}>
 
-      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/category/" style={{paddingRight:'',}}>
-      Magazine</AnchorLink>         
-
-</li>
 
 
 
