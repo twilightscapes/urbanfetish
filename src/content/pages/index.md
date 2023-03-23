@@ -75,7 +75,7 @@ description: A rogue one, out there to change the world, one meme at a time.
 svgzindex: ""
 profTitle: Urban Decay Photography
 coverletter:
-  coverText: About Urban Fetish
+  coverText: About UrbanFetish
   coverLink: /about
 youtubestart: "18"
 scrollable: true
