@@ -2,10 +2,14 @@
 // import * as React from "react"
 
 import { useState, useRef,forwardRef } from "react";
-import Zoom from 'react-medium-image-zoom'
-import 'react-medium-image-zoom/dist/styles.css'
 
-// import ReactImageZoom from 'react-image-zoom';
+// import Zoom from 'react-medium-image-zoom'
+// import 'react-medium-image-zoom/dist/styles.css'
+
+
+import InnerImageZoom from 'react-inner-image-zoom'
+import 'react-inner-image-zoom/lib/InnerImageZoom/styles.min.css'
+
 
 
 // import Controls from "../components/Controls";
@@ -939,7 +943,8 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
     ) : (
 
 <div className="imageonly">
-<Zoom>
+<InnerImageZoom src={getSrc(FrontImage)} />
+{/* <Zoom>
 {FrontImage ? (
 
 
@@ -957,7 +962,7 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
     ) : (
       ""
     )}
-    </Zoom>
+    </Zoom> */}
 </div>
 
     )}

@@ -13451,6 +13451,11 @@ react-images@^1.2.0-beta.7:
     react-transition-group "^4.4.1"
     react-view-pager "^0.6.0"
 
+react-inner-image-zoom@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-inner-image-zoom/-/react-inner-image-zoom-3.0.2.tgz#4511fd80005f3dc4b73653ac4a9c67947ecac130"
+  integrity sha512-ICjyz0wdKmLufuQkUyg4iyP0yIF2elDeHjY1+S1pOKPggrW0g9V2SCmOSA39405ZX8GVVaxadmUYWwz3OF4V5A==
+
 react-is@18.2.0, "react-is@^17.0.1 || ^18.0.0", react-is@^18.0.0, react-is@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
