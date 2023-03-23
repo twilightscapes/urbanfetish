@@ -556,7 +556,7 @@ const YouTube = frontmatter.youtuber
 
 
 
-<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'70px', border:'0px  solid red', width:'100vw', height:'102%', aspectRatio:'16/9', maxHeight:'', background:'rgba(0, 0, 0, .99)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
+<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'70px', border:'0px  solid red', width:'100vw', height:'105%', minHeight:'300px', aspectRatio:'16/9', maxHeight:'', background:'rgba(0, 0, 0, .99)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
 
 
 
@@ -932,7 +932,7 @@ className="featured-image1 layer1"
 placeholder="blurred"
 loading="eager"
 // layout="constrained"
-style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300px'}}
+style={{display:'none', position:'absolute', top:'0', zIndex:'0', width:'100vw', maxHeight:'300px'}}
 />
 
     ) : (
