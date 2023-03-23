@@ -64,7 +64,7 @@ const SearchPage = ({ data }) => {
       </div>
 
       <TwilightLogo className="bglogo darkened" />
-      <div className="contentpanel horizontal-scroll panels" style={{justifyContent:'center', alignItems:'center',}}>
+      <div className="contentpanel horizontal-scroll panels" style={{justifyContent:'center', alignItems:'center', marginTop:'70px'}}>
 
 <div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
 

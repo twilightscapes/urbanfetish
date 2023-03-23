@@ -38,9 +38,7 @@ const Tag = ({ data, pageContext }) => {
 
       <div style={{display:'flex', flexDirection:'column', justifyContent:'center', marginTop:''}}>
         
-      <select className="cattags" style={{
-    borderRadius: "3px",
-    position:'fixed', left:'1%', right:'1%', maxWidth:'380px', top:'75px', margin:'0 auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center', outline:'1px solid #999', borderRadius:'3px', padding:'1vh 4vw', background:'rgba(0, 0, 0, 0.6)', color:'#ddd'}} value={selectedTag} onChange={e => setSelectedTag(e.target.value)}>
+      <select className="cattags" style={{}} value={selectedTag} onChange={e => setSelectedTag(e.target.value)}>
         <option value=''>All tags</option>
         {allTags.map(tag => (
           <option key={tag} value={tag}>
