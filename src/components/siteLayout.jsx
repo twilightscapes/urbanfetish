@@ -230,7 +230,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 {prefersReducedMotion ? (
     
-            <button className="cornerlogo" style={{position:'relative', top:'', left:'4%', border:'0px solid white'}} aria-label="Return to Home">
+            <button className="cornerlogo" style={{position:'relative', top:'', left:'4%', border:'0px solid white', borderBottom:'0px solid transparent'}} aria-label="Return to Home">
             {iconimage ? (
       <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="120" height="60" />
                 ) : (
@@ -240,7 +240,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
           
           ) : (
           
-                        <AnchorLink to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'', height:'auto', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
+                        <AnchorLink to="/" className="cornerlogo" name="homereturn" style={{position:'', display:'block', maxWidth:'', height:'auto', border:'0px solid transparent'}}  aria-label="Link to Top" title="Back to Top">
             {iconimage ? (
       <img className="cornerlogo" style={{position:'relative', top:'.5vh', left:'4%', border:'0px solid white', padding:'0 1%', maxHeight:''}} src={iconimage} alt={companyname} width="107" height="60" />
                 ) : (

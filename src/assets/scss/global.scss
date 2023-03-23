@@ -385,12 +385,18 @@ textarea{min-height:200px}
 .seotext{padding-top:5vh!important}
 ::-webkit-scrollbar,::-webkit-scrollbar-button{height:1px!important;width:1px!important}
 
-a {border-bottom: 1px solid transparent;}
+
 a [aria-current]:hover{box-shadow:none!important;}
 
 a [aria-current]:hover, a[aria-current]{cursor:default!important;filter:none!important;pointer-events:none!important; border-bottom:1px solid rgb(255, 0, 212) !important; display:block;}
 
 a[aria-current]{box-shadow:none;text-decoration:none}
+
+a.cornerlogo {border-bottom: 1px solid transparent !important;}
+
+
+
+
 body.homepage .pleaseshare{display:none}
 body.homepage .pleaseshare{display:none}
 
@@ -619,7 +625,7 @@ position:absolute !important; top:72vh ;
 #resume span{display:flex;flex-direction:column;gap:20px;position:-webkit-sticky;position:sticky;top:0}
 #resume span div{display:block!important;width:100%!important}
 .nameblock{background:transparent!important;color:inherit!important;text-shadow:none!important}
-#gobacker{position:fixed; top:118px !important; right:1vw; z-index:5;}
+#gobacker{position:fixed; top:178px !important; right:1vw; z-index:5;}
 }
 @media(hover:none) {
 .horizontal-scroll{scroll-snap-type:y mandatory}
