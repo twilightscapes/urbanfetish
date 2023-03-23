@@ -904,7 +904,7 @@ Click to play
 
 
 
-<div className="wrap-element effects" style={{aspectRatio:'16/9', minHeight:'280px', maxHeight:'', overFlow:'hidden', marginTop:'10px'}}>
+<div className="wrap-element effects" style={{aspectRatio:'16/9', minHeight:'', maxHeight:'', overFlow:'hidden', marginTop:'10px'}}>
 
 
 {/* <GatsbyImage
@@ -942,8 +942,22 @@ style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300p
 </div>
     ) : (
 
-<div className="imageonly">
-<InnerImageZoom src={getSrc(FrontImage)} />
+<div className="imageonly" style={{ display:'flex', justifyContent:'center', maxHeight:'90vh',}}>
+{/* <InnerImageZoom src={getSrc(FrontImage)}  className="featured-imager"
+        placeholder="blurred"
+        loading="eager" layout="constrained" /> */}
+
+<InnerImageZoom
+            src={getSrc(FrontImage)}
+            zoomSrc={getSrc(FrontImage)}
+            fullscreenOnMobile={true}
+            // moveType="drag"
+            // zoomScale={0.9}
+            zoomPreload={true}
+
+            height={600}
+          />
+    
 {/* <Zoom>
 {FrontImage ? (
 
