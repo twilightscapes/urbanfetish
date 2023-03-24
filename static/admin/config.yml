@@ -1,6 +1,6 @@
 backend:
-  # name: test-repo
-  name: git-gateway
+  name: test-repo
+  # name: git-gateway
   branch: main
   commit_messages:
     create: "Create {{collection}} “{{slug}}”"
@@ -16,21 +16,7 @@ media_folder: "static/assets"
 public_folder: "/assets"
 
 collections:
-  - name: "team"
-    label: "Team Member"
-    description: >
-      Team Member Pages
-    folder: "src/content/team"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
-      - {label: "Team Member Name", name: "name", widget: "string"}
-      - {label: "Job Title", name: "jobTitle", widget: "string"}
-      - {label: "Credentials", name: "credentials", widget: "string"}
-      - {label: "Page Order", name: "order", widget: "string"}
-      - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
-      - {label: "Body", name: "body", widget: "markdown"}
+
    
 
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
@@ -160,6 +146,7 @@ collections:
         }
     preview_template: "preview-templates/posts.js"
 
+
   - label: "Pages"
     name: "pages"
     files:
@@ -205,20 +192,7 @@ collections:
           }
 
 
-          - { label: "YouTube Url", name: "youtuber", widget: "string",required: false }
-          - { label: "YouTube Start", name: "youtubestart", widget: "string", required: false } 
-          - { label: "YouTube End", name: "youtubeend", widget: "string", required: false } 
-          - { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false }
-          - { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false } 
-          - { label: "YouTube Audio End", name: "audioend", widget: "string", required: false }
-          - { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false } 
 
-          - { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: "false", required: false }
-          - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
-          - { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: "true", required: false }
-          - { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: "false", required: false }
-          - { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: "true", required: false }
-          - { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: "false", required: false }
 
 
           
@@ -310,6 +284,23 @@ collections:
             }
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: "team"
+    label: "Team Member"
+    description: >
+      Team Member Pages
+    folder: "src/content/team"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
+      - {label: "Team Member Name", name: "name", widget: "string"}
+      - {label: "Job Title", name: "jobTitle", widget: "string"}
+      - {label: "Credentials", name: "credentials", widget: "string"}
+      - {label: "Page Order", name: "order", widget: "string"}
+      - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
+      - {label: "Body", name: "body", widget: "markdown"} 
+
   - name: settings
     label: Settings
     files:
