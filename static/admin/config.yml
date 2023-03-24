@@ -161,48 +161,46 @@ collections:
     preview_template: "preview-templates/posts.js"
 
   - label: "Pages"
-    name: "pages"
-    files:
-      - label: "Home"
-        name: "home"
-        file: "src/content/pages/index.md"
-        fields:
-          - {
-              label: "Template",
-              name: "template",
-              widget: "hidden",
-              default: "index-page",
-            }
-          - { label: "Slug", name: "slug", widget: "hidden", default: "/" }
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Tagline", name: "tagline", widget: "string" }
-          - { label: "Featured Image", name: "featuredImage", widget: "image", required: false }
-          - { label: "Secondary Image", name: "secondaryImage", widget: "image", hint: "this image is used for the background on the homepage", required: false }
-          - { label: "Underlay Image", name: "underlayImage", widget: "image", required: false }
-          - { label: "SVG Image", name: "svgImage", widget: "image", required: false}
-          - { label: "SVG Z-Index", name: "svgzindex", widget: "string", required: false }
+  name: "pages"
+  files:
+    - label: "Home"
+      name: "home"
+      file: "src/content/pages/index.md"
+      fields:
+        # Existing fields
+        - { label: "Template", name: "template", widget: "hidden", default: "index-page" }
+        - { label: "Slug", name: "slug", widget: "hidden", default: "/" }
+        - { label: "Title", name: "title", widget: "string" }
+        - { label: "Tagline", name: "tagline", widget: "string" }
+        - { label: "Featured Image", name: "featuredImage", widget: "image", required: false }
+        - { label: "Secondary Image", name: "secondaryImage", widget: "image", hint: "this image is used for the background on the homepage", required: false }
+        - { label: "Underlay Image", name: "underlayImage", widget: "image", required: false }
+        - { label: "SVG Image", name: "svgImage", widget: "image", required: false}
+        - { label: "SVG Z-Index", name: "svgzindex", widget: "string", required: false }
 
-      - label: YouTube Settings
-        name: youtubeSettings
-        widget: list
-        collapsed: true
-        hint: "Change youtube settins'"
-        fields:
+        # Collapsible panel for YouTube-related fields
+        - {
+            label: "YouTube",
+            name: "youtube",
+            widget: "object",
+            collapsed: true, # Set to true to collapse panel by default
+            fields: [
+              { label: "YouTube Url", name: "youtuber", widget: "string",required: false },
+              { label: "YouTube Start", name: "youtubestart", widget: "string", required: false },
+              { label: "YouTube End", name: "youtubeend", widget: "string", required: false },
+              { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false },
+              { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false },
+              { label: "YouTube Audio End", name: "audioend", widget: "string", required: false },
+              { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false },
+              { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: false, required: false },
+              { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: false, required: false },
+              { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: true, required: false },
+              { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: false, required: false },
+              { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: true, required: false },
+              { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: false, required: false }
+            ]
+          }
 
-          - { label: "YouTube Url", name: "youtuber", widget: "string",required: false }
-          - { label: "YouTube Start", name: "youtubestart", widget: "string", required: false } 
-          - { label: "YouTube End", name: "youtubeend", widget: "string", required: false } 
-          - { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false }
-          - { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false } 
-          - { label: "YouTube Audio End", name: "audioend", widget: "string", required: false }
-          - { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false } 
-
-          - { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: "false", required: false }
-          - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
-          - { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: "true", required: false }
-          - { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: "false", required: false }
-          - { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: "true", required: false }
-          - { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: "false", required: false }
           - { label: "Embed Content inside Video (BEWARE)", 
             hint: "Do not use this unless you understand how to put custom html and css into your content panel. Please ask     before using and breaking your website", name: "contentinvideo", widget: "boolean", default: "false", required: false }
           - { label: "Turn Fact Check On", name: "liarliar", widget: "boolean", default: "false", required: false }
