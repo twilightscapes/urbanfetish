@@ -73,20 +73,29 @@ collections:
 
       - { label: "Page Tags", name: "tags", widget: "list", collapsed: true, default: "", required: false, add_to_top: true, field: {label: Tag, name: name, widget: string, add_to_top: true, collapsed: true,}}
 
-      - { label: "YouTube Url", name: "youtuber", widget: "string", required: false }
-      - { label: "Second YouTube Url", name: "youtuber2", widget: "string", required: false, hint: "You can use this to rebute things or show alternate content" }
-      - { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: "false", required: false }
-      - { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: "false", required: false }
-      - { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: "false", required: false }
-      - { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: "false", required: false }
-      - { label: "Show Custom Player Controls", name: "customcontrols", widget: "boolean", default: "false", required: false }
-      - { label: "YouTube Start", name: "youtubestart", widget: "string", hint: "This is measured in seconds - 32 would start the video at the 32-second mark", required: false }
-      - { label: "YouTube End", name: "youtubeend", widget: "string", hint: "This is measured in seconds - 102 would end the video at the 1-min  and 42-second mark", required: false }
-      - { label: "YouTube - Loop Video", name: "youtubeloop", widget: "boolean", hint: "Set video to loop", default: "true", required: false }
-      - { label: "YouTube - Show Original?", name: "youtubeshoworiginal", widget: "boolean", hint: "It's nice manners when using a video, you should link to the original", default: "true", required: false }
-      - { label: "YouTube - Suggestion 1", name: "youtubersuggestion1", widget: "string", required: false }
-      - { label: "YouTube - Suggestion 2", name: "youtubersuggestion2", widget: "string", required: false }
-      - { label: "YouTube - Suggestion 3", name: "youtubersuggestion3", widget: "string", required: false }
+      - {
+              label: "YouTube",
+              name: "youtube",
+              widget: "object",
+              collapsed: true, # Set to true to collapse panel by default
+            fields: [
+              { label: "YouTube Url", name: "youtuber", widget: "string",required: false },
+              { label: "YouTube Start", name: "youtubestart", widget: "string", required: false },
+              { label: "YouTube End", name: "youtubeend", widget: "string", required: false },
+              { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false },
+              { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false },
+              { label: "YouTube Audio End", name: "audioend", widget: "string", required: false },
+              { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false },
+              { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: false, required: false },
+              { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: false, required: false },
+              { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: true, required: false },
+              { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: false, required: false },
+              { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: true, required: false },
+              { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: false, required: false }
+            ]
+          }
+
+
       - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "", required: false  }
       - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "", required: false  }
       - { label: "Content Rating", name: "marate", widget: "string", default: "PG", required: false }
