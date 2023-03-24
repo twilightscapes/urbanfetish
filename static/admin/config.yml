@@ -470,6 +470,9 @@ collections:
             name: ga
             widget: string
             hint: "Add your tracking ID, should look like UA-XXXXXXXXX-X or G-XXXXXXXXXX"
+
+
+
       - label: Social Icons
         name: socialIcons
         file: "src/util/socialmedia.json"
@@ -508,6 +511,27 @@ collections:
                 label: url
                 required: true
                 hint: "Paste the 'URL' of your Social media"
+
+      - label: Menu Navigation
+        name: menuNavigation
+        file: "src/util/menu.json"
+        fields:
+          - label: Menu Items
+            name: menuItems
+            widget: list
+            collapsed: true
+            hint: "Here you can add menu items, Click on 'Add menu item'"
+            fields:
+              - widget: string
+                name: menutitle
+                label: Menu Title
+                required: true
+                hint: "The title that appears in the menu"
+              - widget: string
+                name: url
+                label: url
+                required: true
+                hint: "add the url of the menu item"
 
   - label: "Appearance"
     name: "appearance"
