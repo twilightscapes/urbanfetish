@@ -1,6 +1,6 @@
 backend:
-  name: test-repo
-  # name: git-gateway
+  # name: test-repo
+  name: git-gateway
   branch: main
   commit_messages:
     create: "Create {{collection}} “{{slug}}”"
