@@ -193,30 +193,30 @@ const resizeDesk = () => {
 
 
 // const IsNft = frontmatter.isnftforsale
-const ShowOriginal = frontmatter.youtubeshoworiginal
+const ShowOriginal = frontmatter.youtube.youtubeshoworiginal
 const ShareThis = frontmatter.shareable
 const Comments = frontmatter.comments
 
-const YouTubeStart = frontmatter.youtubestart
-const YouTubeEnd = frontmatter.youtubeend
-const YouTubeMute = frontmatter.youtubemute
-const YouTubeControls = frontmatter.youtubecontrols
-const YouTubeAutostart = frontmatter.youtubeautostart
-const CustomControls = frontmatter.customcontrols
-const Suggestion1 = frontmatter.youtubersuggestion1
-const Suggestion2 = frontmatter.youtubersuggestion2
-const Suggestion3 = frontmatter.youtubersuggestion3
+const YouTubeStart = frontmatter.youtube.youtubestart
+const YouTubeEnd = frontmatter.youtube.youtubeend
+const YouTubeMute = frontmatter.youtube.youtubemute
+const YouTubeControls = frontmatter.youtube.youtubecontrols
+const YouTubeAutostart = frontmatter.youtube.youtubeautostart
+const CustomControls = frontmatter.youtube.customcontrols
+const Suggestion1 = frontmatter.youtube.youtubersuggestion1
+const Suggestion2 = frontmatter.youtube.youtubersuggestion2
+const Suggestion3 = frontmatter.youtube.youtubersuggestion3
 
-const YoutubeLoop = frontmatter.youtubeloop
+const YoutubeLoop = frontmatter.youtube.youtubeloop
 
-const ClickToPlay = frontmatter.clicktoplay
+const ClickToPlay = frontmatter.youtube.clicktoplay
 
 
 
 
 
 // const CustomControlBinary = frontmatter.customcontrols
-// const iframeUrl = frontmatter.youtuber
+// const iframeUrl = frontmatter.youtube.youtuber
 
 
 
@@ -224,13 +224,13 @@ const ClickToPlay = frontmatter.clicktoplay
 let iframeFiltered;
 if (Suggestion1) {
   iframeFiltered = [
-    frontmatter.youtuber,
-    frontmatter.youtubersuggestion1,
-    frontmatter.youtubersuggestion2,
-    frontmatter.youtubersuggestion3,
+    frontmatter.youtube.youtuber,
+    frontmatter.youtube.youtubersuggestion1,
+    frontmatter.youtube.youtubersuggestion2,
+    frontmatter.youtube.youtubersuggestion3,
   ];
 } else {
-  iframeFiltered = frontmatter.youtuber;
+  iframeFiltered = frontmatter.youtube.youtuber;
 }
 
 
@@ -289,13 +289,13 @@ Add your own in the comments below!
   )
 }
 
-const YoutuberSuggestion1 = frontmatter.youtubersuggestion1
-// const YoutuberSuggestion2 = frontmatter.youtubersuggestion2
-// const YoutuberSuggestion3 = frontmatter.youtubersuggestion3
+const YoutuberSuggestion1 = frontmatter.youtube.youtubersuggestion1
+// const YoutuberSuggestion2 = frontmatter.youtube.youtubersuggestion2
+// const YoutuberSuggestion3 = frontmatter.youtube.youtubersuggestion3
 
-  // const YouTube = frontmatter.youtuber
+  // const YouTube = frontmatter.youtube.youtuber
 
-const OriginalUrl = frontmatter.youtuber 
+const OriginalUrl = frontmatter.youtube.youtuber 
 
   if (!YoutuberSuggestion1) {
     <IframeSuggestions />
@@ -357,7 +357,7 @@ const OriginalUrl = frontmatter.youtuber
 
 
   function Iframer3() {
-    const iframeUrl3 = "https://www.youtube.com/embed/" + frontmatter.youtuber2
+    const iframeUrl3 = "https://www.youtube.com/embed/" + frontmatter.youtube.youtuber2
     return (
 
 
@@ -428,8 +428,8 @@ const OriginalUrl = frontmatter.youtuber
 // const svgUrl = "../assets/" + frontmatter.svgImage.publicURL + ""
 // const svgUrl = "../assets/" + frontmatter.svgImage.relativePath + ""
 
-const YouTube = frontmatter.youtuber
-  const YouTube2 = frontmatter.youtuber2
+const YouTube = frontmatter.youtube.youtuber
+  const YouTube2 = frontmatter.youtube.youtuber2
   const AudioStart = frontmatter.audiostart
   const AudioEnd = frontmatter.audioend
   
@@ -556,7 +556,7 @@ const YouTube = frontmatter.youtuber
 
 
 
-<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'70px', border:'0px  solid red', width:'100vw', height:'105%', minHeight:'300px', aspectRatio:'16/9', maxHeight:'', background:'rgba(0, 0, 0, .99)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
+<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'70px', border:'0px  solid red', width:'100vw', height:'100%', minHeight:'300px', aspectRatio:'16/9', maxHeight:'', background:'rgba(0, 0, 0, .99)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
 
 
 
@@ -1429,11 +1429,11 @@ Click to play original video
           )}
 
 
-{/* <div className="panel legal" style={{textAlign: 'center', padding:'1rem',  justifyContent: 'center', fontSize: '.95rem', textDecoration:'none', maxWidth:'90vw'}}>
+<div className="panel legal" style={{textAlign: 'center', padding:'1rem',  justifyContent: 'center', fontSize: '.95rem', textDecoration:'none', maxWidth:'90vw'}}>
             Legal:<br />
             <Link to="/disclaimer/">Disclaimer</Link>  |  <Link to="/privacy/">Privacy Policy</Link>  |  <Link to="/terms/">Terms of Service</Link>
       <br /> <br />
-    <div style={{display:'none', placeContent:'center'}}>
+    <div style={{display:'grid', placeContent:'center'}}>
       <p style={{textAlign:'left'}}>
         <strong>*This is a parody website meant for education and entertainment purposes.</strong> <br /><br />
         All characters, and events portrayed in this production are fictitious or are being portrayed in a satirical manner.<br /><br />There is no identification with actual persons (living or deceased), <br />places, buildings, and/or products. There is no harm/insult intended and/or none should be inferred. 
@@ -1443,7 +1443,7 @@ Click to play original video
         Video footage public youtube.com | Some imagery provided from <a rel="noopener noreferrer" href="https://www.flickr.com/photos/donkeyhotey/" >DonkeyHotey</a>, Wikipedia and other public sourced materials.
         </p>
     </div>
-</div> */}
+</div>
 
 
 
@@ -1545,24 +1545,26 @@ export const pageQuery = graphql`
         tags
         category
         description
-        youtuber
-        youtuber2
-        youtubeshoworiginal
-        youtubersuggestion1
-        youtubersuggestion2
-        youtubersuggestion3
-        youtubestart
-        youtubeend
+        youtube {
+          youtuber
+          youtuber2
+          youtubeshoworiginal
+          youtubersuggestion1
+          youtubersuggestion2
+          youtubersuggestion3
+          youtubestart
+          youtubeend
+          youtubemute
+          youtubeloop
+          youtubecontrols
+          customcontrols
+          clicktoplay
+          youtubeautostart
+        }
         audiostart
         audioend
         audiotitle
         liarliar
-        youtubemute
-        youtubeloop
-        youtubecontrols
-        customcontrols
-        clicktoplay
-        youtubeautostart
         contentinvideo
         comments
         shareable

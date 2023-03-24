@@ -4,24 +4,21 @@ title: This haunted hotel keeps killing people
 slug: /haunted-hotel
 date: 2023-02-10 10:43
 description: Over the years this abandoned hotel has claimed many lives
-youtuber: 
-youtuber2: ""
-youtubeshoworiginal: false
-youtubersuggestion1:
-youtubersuggestion2:
-youtubersuggestion3:
-youtubestart: "0"
-youtubeend: 
-youtubemute: true
-audiostart: "20"
-audioend: "5000"
-audiotitle: "Liar Liar!"
-liarliar: false
-youtubecontrols: true
-clicktoplay: false
-customcontrols: false
-youtubeautostart: true
-youtubeloop: true
+youtube:
+  youtuber: null
+  youtuber2: null
+  youtubeautostart: false
+  youtubemute: false
+  youtubecontrols: false
+  clicktoplay: false
+  customcontrols: false
+  youtubestart: "0"
+  youtubeend: "10"
+  youtubeloop: true
+  youtubeshoworiginal: false
+  youtubersuggestion1: ""
+  youtubersuggestion2: ""
+  youtubersuggestion3: ""
 isnftforsale: false
 svgzindex: "0"
 comments: false

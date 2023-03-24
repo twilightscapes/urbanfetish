@@ -4,24 +4,21 @@ title: I don't know who this was in my shot
 slug: /house-on-the-hill
 date: 2023-02-10 10:43
 description: I was behind the tripod so I have no idea who this person is
-youtuber: 
-youtuber2: ""
-youtubeshoworiginal: false
-youtubersuggestion1:
-youtubersuggestion2:
-youtubersuggestion3:
-youtubestart: "0"
-youtubeend: 
-youtubemute: true
-audiostart: "20"
-audioend: "5000"
-audiotitle: "Liar Liar!"
-liarliar: false
-youtubecontrols: true
-clicktoplay: false
-customcontrols: false
-youtubeautostart: true
-youtubeloop: true
+youtube:
+  youtuber: null
+  youtuber2: null
+  youtubeautostart: false
+  youtubemute: false
+  youtubecontrols: false
+  clicktoplay: false
+  customcontrols: false
+  youtubestart: "0"
+  youtubeend: "10"
+  youtubeloop: true
+  youtubeshoworiginal: false
+  youtubersuggestion1: ""
+  youtubersuggestion2: ""
+  youtubersuggestion3: ""
 isnftforsale: false
 svgzindex: "0"
 comments: false

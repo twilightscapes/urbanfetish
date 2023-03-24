@@ -72,23 +72,26 @@ query HomeQuery($id: String!) {
       slug
       title
       description
-      youtuber
-      youtuber2
-      youtubestart
-      youtubeend
       audiostart
       audiotitle
       audioend
-      youtubemute
-      youtubecontrols
-      customcontrols
-      youtubeautostart
       contentinvideo
-      youtubeshoworiginal
-      youtubersuggestion1
-      youtubersuggestion2
-      youtubersuggestion3
-      clicktoplay
+      youtube {
+        youtuber
+        youtuber2
+        youtubeshoworiginal
+        youtubersuggestion1
+        youtubersuggestion2
+        youtubersuggestion3
+        youtubestart
+        youtubeend
+        youtubemute
+        youtubeloop
+        youtubecontrols
+        customcontrols
+        clicktoplay
+        youtubeautostart
+      }
       bumpertext
       viewerwarning
       marate
@@ -158,11 +161,13 @@ query HomeQuery($id: String!) {
           title
           tags
           category
-          youtubemute
-          youtubeloop
-          youtubecontrols
-          customcontrols
-          youtuber
+          youtube{
+            youtuber
+            youtubemute
+            youtubeloop
+            youtubecontrols
+            customcontrols
+          }
           featuredImage {
             relativePath
             publicURL
@@ -201,11 +206,11 @@ const HomePage = ({ data }) => {
     const { siteUrl } = useSiteMetadata()
 		
 
-    const YouTubeStart = frontmatter.youtubestart
-    const YouTubeEnd = frontmatter.youtubeend
-    const YouTubeMute = frontmatter.youtubemute
-    const YouTubeControls = frontmatter.youtubecontrols
-    const YouTubeAutostart = frontmatter.youtubeautostart
+    const YouTubeStart = frontmatter.youtube.youtubestart
+    const YouTubeEnd = frontmatter.youtube.youtubeend
+    const YouTubeMute = frontmatter.youtube.youtubemute
+    const YouTubeControls = frontmatter.youtube.youtubecontrols
+    const YouTubeAutostart = frontmatter.youtube.youtubeautostart
     const SkillsText = frontmatter.skillsText
     const coverText = frontmatter.coverletter.coverText
     const { showNav } = useSiteMetadata()
@@ -219,11 +224,11 @@ const HomePage = ({ data }) => {
     const { showfooter } = useSiteMetadata()
 
 const CustomControls = frontmatter.customcontrols
-const Suggestion1 = frontmatter.youtubersuggestion1
-// const Suggestion2 = frontmatter.youtubersuggestion2
-// const Suggestion3 = frontmatter.youtubersuggestion3
+const Suggestion1 = frontmatter.youtube.youtubersuggestion1
+// const Suggestion2 = frontmatter.youtube.youtubersuggestion2
+// const Suggestion3 = frontmatter.youtube.youtubersuggestion3
 
-const YoutubeLoop = frontmatter.youtubeloop
+const YoutubeLoop = frontmatter.youtube.youtubeloop
 
 const ClickToPlay = frontmatter.clicktoplay
 
@@ -235,7 +240,7 @@ const ClickToPlay = frontmatter.clicktoplay
 
 
 
-// const iframeUrl = "https://www.youtube-nocookie.com/embed/" + frontmatter.youtuber + "?controls=" + frontmatter.youtubecontrols + "&amp;showinfo=0&amp;rel=0&amp;autoplay=" + frontmatter.youtubeautostart + "&amp;start=" + frontmatter.youtubestart + "&amp;end=" + frontmatter.youtubeend + "&amp;loop=" + frontmatter.youtubeloop + "&amp;mute=" + frontmatter.youtubemute + "&amp;playsinline=1&amp;playlist=" + frontmatter.youtuber + ""
+// const iframeUrl = "https://www.youtube-nocookie.com/embed/" + frontmatter.youtube.youtube.youtuber + "?controls=" + frontmatter.youtube.youtubecontrols + "&amp;showinfo=0&amp;rel=0&amp;autoplay=" + frontmatter.youtube.youtubeautostart + "&amp;start=" + frontmatter.youtube.youtubestart + "&amp;end=" + frontmatter.youtube.youtubeend + "&amp;loop=" + frontmatter.youtube.youtubeloop + "&amp;mute=" + frontmatter.youtube.youtubemute + "&amp;playsinline=1&amp;playlist=" + frontmatter.youtube.youtube.youtuber + ""
 
 
 const ContentinVideo = frontmatter.contentinvideo
@@ -251,13 +256,13 @@ const ContentinVideo = frontmatter.contentinvideo
   let iframeFiltered;
 if (Suggestion1) {
   iframeFiltered = [
-    frontmatter.youtuber,
-    frontmatter.youtubersuggestion1,
-    frontmatter.youtubersuggestion2,
-    frontmatter.youtubersuggestion3,
+    frontmatter.youtube.youtuber,
+    frontmatter.youtube.youtubersuggestion1,
+    frontmatter.youtube.youtubersuggestion2,
+    frontmatter.youtube.youtubersuggestion3,
   ];
 } else {
-  iframeFiltered = frontmatter.youtuber;
+  iframeFiltered = frontmatter.youtube.youtuber;
 }
 
 
@@ -284,7 +289,7 @@ if (Suggestion1) {
 
 
 
-const YouTube = frontmatter.youtuber
+const YouTube = frontmatter.youtube.youtuber
 
   if (!YouTube) {
 
@@ -480,13 +485,13 @@ zindex:'1'
   
 
 
-  const YouTube2 = frontmatter.youtuber2
+  const YouTube2 = frontmatter.youtube.youtuber2
   const AudioStart = frontmatter.audiostart
   const AudioEnd = frontmatter.audioend
   const AudioTitle = frontmatter.audiotitle
 
   function Iframer3() {
-    const iframeUrl3 = "https://www.youtube.com/embed/" + frontmatter.youtuber2
+    const iframeUrl3 = "https://www.youtube.com/embed/" + frontmatter.youtube.youtuber2
     return (
       
 <div style={{marginTop:'10px', position:'relative', zIndex:'1',

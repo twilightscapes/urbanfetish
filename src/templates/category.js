@@ -69,7 +69,7 @@ const Category = ({ data, pageContext }) => {
 
 <div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
 
-{node.frontmatter.youtuber ? (
+{node.frontmatter.youtube.youtuber ? (
 <Link to={node.frontmatter.slug} style={{}}>
 
   <div className="spotlight" style={{marginLeft:'10%', marginTop:'-28%', margin:'-24% 10% 0 10%'}}>
@@ -137,7 +137,9 @@ query($category: String!) {
           title
           date(formatString: "MMMM DD, YYYY")
           category
-          youtuber
+          youtube{
+            youtuber
+          }
           featuredImage {
             childImageSharp {
               gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)

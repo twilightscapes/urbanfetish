@@ -4,25 +4,26 @@ title: When you awaken to a sound
 slug: /night-light
 date: 2023-02-11 03:00
 description: Then you remember that you're at an abandoned civil war fort and cemetery
-youtuber: ""
-youtuber2: 
-youtubeshoworiginal: false
-youtubersuggestion1: 
-youtubersuggestion2: 
-youtubersuggestion3: 
-youtubestart: "0"
-youtubeend: "10"
-youtubemute: false
+youtube:
+  youtuber: null
+  youtuber2: null
+  youtubeautostart: false
+  youtubemute: false
+  youtubecontrols: false
+  clicktoplay: false
+  customcontrols: false
+  youtubestart: "0"
+  youtubeend: "10"
+  youtubeloop: true
+  youtubeshoworiginal: false
+  youtubersuggestion1: ""
+  youtubersuggestion2: ""
+  youtubersuggestion3: ""
 audiostart: "20"
 audioend: "5000"
 audiotitle: 
 bumpertext: ""
 liarliar: false
-youtubecontrols: false
-clicktoplay: false
-customcontrols: false
-youtubeautostart: false
-youtubeloop: true
 isnftforsale: false
 svgzindex: "0"
 comments: false

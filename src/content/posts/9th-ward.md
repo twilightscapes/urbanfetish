@@ -5,20 +5,21 @@ slug: /9th-ward
 date: 2023-02-10 10:43
 description: Quiet and eerie calm over 9th Ward in New Orleans
 category: popular
-youtuber: null
-youtuber2: ""
-youtubeautostart: true
-youtubemute: true
-youtubecontrols: true
-clicktoplay: false
-customcontrols: false
-youtubestart: "0"
-youtubeend: null
-youtubeloop: true
-youtubeshoworiginal: false
-youtubersuggestion1: null
-youtubersuggestion2: null
-youtubersuggestion3: null
+youtube:
+  youtuber: null
+  youtuber2: null
+  youtubeautostart: false
+  youtubemute: false
+  youtubecontrols: false
+  clicktoplay: false
+  customcontrols: false
+  youtubestart: "0"
+  youtubeend: "10"
+  youtubeloop: true
+  youtubeshoworiginal: false
+  youtubersuggestion1: ""
+  youtubersuggestion2: ""
+  youtubersuggestion3: ""
 bumpertext: ""
 marating1: YB
 maratingtx1: Use your brain please

@@ -9,20 +9,21 @@ tags:
   - boom
   - blam
   - nature
-youtuber: https://youtu.be/8TiN8xOMAfM
-youtuber2: null
-youtubeautostart: false
-youtubemute: false
-youtubecontrols: false
-clicktoplay: false
-customcontrols: true
-youtubestart: "15"
-youtubeend: "50"
-youtubeloop: true
-youtubeshoworiginal: true
-youtubersuggestion1: ""
-youtubersuggestion2: ""
-youtubersuggestion3: ""
+youtube:
+  youtuber: https://youtu.be/8TiN8xOMAfM
+  youtuber2: null
+  youtubeautostart: false
+  youtubemute: false
+  youtubecontrols: false
+  clicktoplay: false
+  customcontrols: true
+  youtubestart: "15"
+  youtubeend: "50"
+  youtubeloop: true
+  youtubeshoworiginal: true
+  youtubersuggestion1: ""
+  youtubersuggestion2: ""
+  youtubersuggestion3: ""
 bumpertext: ""
 marating1: YB
 maratingtx1: Use your brain please
