@@ -161,13 +161,13 @@ collections:
     preview_template: "preview-templates/posts.js"
 
   - label: "Pages"
-  name: "pages"
-  files:
-    - label: "Home"
-      name: "home"
-      file: "src/content/pages/index.md"
-      fields:
-        # Existing fields
+    name: "pages"
+    files:
+      - label: "Home"
+        name: "home"
+        file: "src/content/pages/index.md"
+        fields:
+          # Existing fields
         - { label: "Template", name: "template", widget: "hidden", default: "index-page" }
         - { label: "Slug", name: "slug", widget: "hidden", default: "/" }
         - { label: "Title", name: "title", widget: "string" }
@@ -200,7 +200,6 @@ collections:
               { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: false, required: false }
             ]
           }
-
           - { label: "Embed Content inside Video (BEWARE)", 
             hint: "Do not use this unless you understand how to put custom html and css into your content panel. Please ask     before using and breaking your website", name: "contentinvideo", widget: "boolean", default: "false", required: false }
           - { label: "Turn Fact Check On", name: "liarliar", widget: "boolean", default: "false", required: false }
