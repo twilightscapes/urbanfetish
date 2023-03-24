@@ -19,6 +19,8 @@ import SearchIcon from "../../static/assets/search"
 // import SearchForm from "./searchbox"
 import useSiteMetadata from "../hooks/SiteMetadata"
 
+import Menu from "../components/menu"
+
 import { RiCloseCircleFill, RiMenuUnfoldFill, RiArrowUpFill } from "react-icons/ri"
 
 // import GoBack from "../components/goBack"
@@ -263,7 +265,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 
-
+<Menu />
       
       
 {/* <li>
@@ -324,16 +326,11 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 )} */}
 
 
-<li style={{position:'relative',}}>
-
-      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/category/" style={{paddingRight:'',}}>
-      Magazine</AnchorLink>         
-
-</li>
 
 
 
-{showFeature ? (
+
+{/* {showFeature ? (
 <li style={{position:'relative',}}>
       {prefersReducedMotion ? (
        <Link aria-label="Featured" className="navbar-item" to="/#showPosts" style={{paddingRight:'',}}>{menu2}</Link>    
@@ -344,7 +341,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 </li>
       ) : (
   ""
-)}
+)} */}
 
 
 
@@ -378,12 +375,7 @@ const fontUrl = "https://fonts.googleapis.com/css?family=" + font1 + "&display=s
 
 
 
-<li style={{position:'relative',}}>
 
-      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/contact" style={{paddingRight:'',}}>
-      Submissions</AnchorLink>         
-
-</li>
 
 
 

@@ -27,6 +27,7 @@ import TwilightLogo from "../../static/assets/logo.svg"
 
 // import styled from "styled-components"
 import Social from "../components/social"
+
 import BlogListHome from "../components/blog-list-home"
 import Seo from "../components/seo"
 import Layout from "../components/siteLayout"
