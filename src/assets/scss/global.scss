@@ -191,7 +191,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 }
 
 .iiz__btn {
-  background: rgba(6, 6, 6, 0.2);
+  background: rgba(6, 6, 6, 0.4);
   color: #fff !important;
   fill: #fff !important;
   stroke: #fff !important;
@@ -212,7 +212,7 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
 
 
 .iiz__hint {
-  top: 10px;
+  bottom: 10px;
   right: 10px;
   pointer-events: none;
 }
@@ -224,6 +224,27 @@ body.scroll{overflow-x:hidden!important;overflow-y:scroll!important}
   height: 3vh;
  
 }
+
+.iiz__close--visible {
+  visibility: visible;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.iiz__close::before {
+  content: " ";
+  width: 3vh;
+  height: 3vh;
+  background-image:
+    -webkit-gradient(linear, left top, left bottom, from(#222), to(#222)),
+    -webkit-gradient(linear, left top, left bottom, from(#222), to(#222));
+  background-image: linear-gradient(#222, #222), linear-gradient(#222, #222);
+  background-size: 100% 1px, 1px 100%;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+
 
 // .iiz__hint:before svg{color:red !important; border: 2px solid red;}
 
@@ -284,7 +305,7 @@ to{transform:translateX(0)}
 }
 .actionJackson{align-items:center;align-self:center;border:1px solid rgba(34,32,34,.5);border-radius:var(--radius-md);color:#f0e9e9;display:flex;flex-direction:row;font-size:140%;font-weight:var(--bold);height:var(--size-input);justify-content:center;padding:var(--space-sm) var(--space-xl);text-decoration:none;text-shadow:0 0 0 #333!important;transition:var(--transition)}
 .actionJackson:hover{box-shadow:0 0 42px #f7f2f1;outline:1px #000}
-.button{background:linear-gradient(180deg,#221a20 1%,#111 99%);border:1px solid #685766;color:#ccc!important;height:auto;padding:2vh 5vw}
+.button{background:linear-gradient(180deg,#221a20 1%,#111 99%);border:1px solid #685766;color:#ccc!important;height:auto;padding:1vh 3vw}
 .txtshadow{text-shadow:2px 2px 2px #000}
 p{margin-bottom:2rem}
 
@@ -566,7 +587,7 @@ body.blogpost #menu li .fullscreenButt{display:flex}
 // .site-footer a:hover{color:#fff}
 // .site-footer p{color:#fff;margin:0}
 
-.button{align-items:center;align-self:center;background:linear-gradient(180deg,#1a1a22 1%,#111 99%);border:1px solid #585768;border-radius:8px;color:#ccc;display:inline-flex;font-size:120%;font-weight:700;height:auto!important;justify-content:center;margin:2vh 1vw;padding:1vh 3vw;text-shadow:2px 2px 2px #000}
+.button{align-items:center;align-self:center;background:linear-gradient(180deg,#1a1a22 1%,#111 99%); border:1px solid #585768;border-radius:6px;color:#ccc;display:inline-flex;font-weight:700;height:auto!important;justify-content:center;margin:2vh 1vw;padding:1vh 3vw;text-shadow:2px 2px 2px #000; opacity:.6;}
 ul{list-style:none;margin:0;padding:0}
 ul li{display:inline-block}
 
@@ -593,6 +614,10 @@ position:absolute !important; top:72vh ;
 }
 }
 
+
+.cornerlogo{ left:18%; top:0; width:117; height:60px; }
+
+
 @media(max-width:48rem) {
   .button{background:linear-gradient(180deg,rgba(23,23,24,.5) 1%,rgba(0,0,0,.7) 99%);font-size:92%!important}
   .mobilehide{display:none!important}
@@ -601,7 +626,7 @@ position:absolute !important; top:72vh ;
   #menu {flex-direction: column !important; min-height: 70px;}
   
   #missioncontrol {position:absolute; right:4vw; top:10px; gap:5vw !important;}
-  .cornerlogo{ left:18%; top:2px; width:134px; height:75px;}
+  .cornerlogo{ left:18%; top:2px; width:117; height:60px; }
   
   .spacer{display:block; height:130px !important;}
   
@@ -616,6 +641,7 @@ position:absolute !important; top:72vh ;
   
   }
 
+  #missioncontrol{background:rgba(0, 0, 0, 0.2); padding:0 20px;}
 
   .cattags{
     border-radius: 3px;
@@ -636,7 +662,7 @@ position:absolute !important; top:72vh ;
   }
 
 
-  #gobacker{position:fixed; top:178px !important; right:1vw; z-index:5;}
+  #gobacker{position:fixed; top:58px !important; right:1vw; z-index:5;}
 
 @media(display-mode:standalone) {
 #installer{border:10px solid #ff0!important}
@@ -648,7 +674,7 @@ position:absolute !important; top:72vh ;
 #resume span{display:flex;flex-direction:column;gap:20px;position:-webkit-sticky;position:sticky;top:0}
 #resume span div{display:block!important;width:100%!important}
 .nameblock{background:transparent!important;color:inherit!important;text-shadow:none!important}
-#gobacker{position:fixed; top:178px !important; right:1vw; z-index:5;}
+#gobacker{position:fixed; top:58px !important; right:1vw; z-index:5;}
 }
 @media(hover:none) {
 .horizontal-scroll{scroll-snap-type:y mandatory}
