@@ -16,7 +16,21 @@ media_folder: "static/assets"
 public_folder: "/assets"
 
 collections:
-
+  - name: "team"
+    label: "Team Member"
+    description: >
+      Team Member Pages
+    folder: "src/content/team"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
+      - {label: "Team Member Name", name: "name", widget: "string"}
+      - {label: "Job Title", name: "jobTitle", widget: "string"}
+      - {label: "Credentials", name: "credentials", widget: "string"}
+      - {label: "Page Order", name: "order", widget: "string"}
+      - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
+      - {label: "Body", name: "body", widget: "markdown"}
    
 
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
@@ -145,7 +159,6 @@ collections:
           hint: "Main content goes here.",
         }
     preview_template: "preview-templates/posts.js"
-
 
   - label: "Pages"
     name: "pages"
@@ -284,23 +297,6 @@ collections:
             }
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Body", name: "body", widget: "markdown" }
-
-  - name: "team"
-    label: "Team Member"
-    description: >
-      Team Member Pages
-    folder: "src/content/team"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
-      - {label: "Team Member Name", name: "name", widget: "string"}
-      - {label: "Job Title", name: "jobTitle", widget: "string"}
-      - {label: "Credentials", name: "credentials", widget: "string"}
-      - {label: "Page Order", name: "order", widget: "string"}
-      - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
-      - {label: "Body", name: "body", widget: "markdown"} 
-
   - name: settings
     label: Settings
     files:
