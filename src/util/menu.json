@@ -1,12 +1,12 @@
 {
   "menuItems": [
     {
-      "menutitle": "Magazine",
-      "url": "/category"
-    },
-    {
       "menutitle": "Featured",
       "url": "/#showPosts"
+    },
+    {
+      "menutitle": "Magazine",
+      "url": "/category"
     },
     {
       "menutitle": "Submissions",
