@@ -159,6 +159,7 @@ collections:
 
   - label: "Pages"
     name: "pages"
+    create: true
     files:
       - label: "Home"
         name: "home"
