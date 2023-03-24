@@ -5,10 +5,6 @@
       "url": "/category"
     },
     {
-      "menutitle": "Featured",
-      "url": "/#showPosts"
-    },
-    {
       "menutitle": "Submissions",
       "url": "/contact"
     }
