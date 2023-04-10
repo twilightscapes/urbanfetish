@@ -16,15 +16,23 @@ const RssXml = ({ data }) => {
   });
 
   allMarkdownRemark.nodes.forEach(node => {
-    feed.addItem({
+    const item = {
       title: node.frontmatter.title,
       id: node.fields.slug,
       link: `${site.siteMetadata.siteUrl}${node.fields.slug}`,
       description: node.excerpt,
       content: node.html,
       date: node.frontmatter.date,
-    });
+    };
+  
+    // Add featureImage if available
+    if (node.frontmatter.featureImage) {
+      item.image = `${site.siteMetadata.siteUrl}${node.frontmatter.featureImage.publicURL}`;
+    }
+  
+    feed.addItem(item);
   });
+  
 
   return (
     <>
