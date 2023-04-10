@@ -430,6 +430,11 @@ collections:
                 label: Show Skills
                 required: false
 
+              - widget: boolean
+                name: showModals
+                label: Show Modals
+                required: false
+
               - widget: string
                 name: font1
                 label: Google Font
