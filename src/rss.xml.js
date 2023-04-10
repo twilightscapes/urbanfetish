@@ -5,6 +5,16 @@ import { Feed } from "gatsby-plugin-feed";
 const RssXml = ({ data }) => {
   const { site, allMarkdownRemark } = data;
 
+  if (!site) {
+    console.error("Site metadata is missing from RSS feed data:", data);
+    return null;
+  }
+
+  if (!allMarkdownRemark) {
+    console.error("Markdown content is missing from RSS feed data:", data);
+    return null;
+  }
+
   const feed = new Feed({
     title: site.siteMetadata.title,
     description: site.siteMetadata.description,
@@ -16,23 +26,15 @@ const RssXml = ({ data }) => {
   });
 
   allMarkdownRemark.nodes.forEach(node => {
-    const item = {
+    feed.addItem({
       title: node.frontmatter.title,
       id: node.fields.slug,
       link: `${site.siteMetadata.siteUrl}${node.fields.slug}`,
       description: node.excerpt,
       content: node.html,
       date: node.frontmatter.date,
-    };
-  
-    // Add featureImage if available
-    if (node.frontmatter.featureImage) {
-      item.image = `${site.siteMetadata.siteUrl}${node.frontmatter.featureImage.publicURL}`;
-    }
-  
-    feed.addItem(item);
+    });
   });
-  
 
   return (
     <>
@@ -42,28 +44,36 @@ const RssXml = ({ data }) => {
 };
 
 export const query = graphql`
-query RssQuery {
-  site {
-    siteMetadata {
-      title
-      description
-      siteUrl
-    }
-  }
-  allMarkdownRemark(sort: {frontmatter: {date: DESC}}) {
-    nodes {
-      excerpt
-      html
-      fields {
-        slug
-      }
-      frontmatter {
+  query RssQuery {
+    site {
+      siteMetadata {
         title
-        date
+        description
+        siteUrl
+      }
+    }
+    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+      nodes {
+        excerpt
+        html
+        fields {
+          slug
+        }
+        frontmatter {
+          title
+          date
+          featuredImage {
+            childImageSharp {
+              fixed(width: 800) {
+                src
+              }
+            }
+          }
+        }
       }
     }
   }
-}
 `;
+
 
 export default RssXml;
