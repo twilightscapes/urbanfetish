@@ -222,8 +222,18 @@ module.exports = {
 
 
           {
-            resolve: `gatsby-plugin-feed`,
+            resolve: 'gatsby-plugin-feed',
             options: {
+              custom_namespaces: {
+                media: "http://search.yahoo.com/mrss/",
+              },
+              custom_elements: [
+                {
+                  _attr: {
+                    "xmlns:media": "http://search.yahoo.com/mrss/",
+                  },
+                },
+              ],
               query: `
                 {
                   site {
@@ -240,43 +250,64 @@ module.exports = {
                 {
                   serialize: ({ query: { site, allMarkdownRemark } }) => {
                     return allMarkdownRemark.nodes.map(node => {
+                      const imageUrl = node.frontmatter.featuredImage
+                        ? site.siteMetadata.siteUrl + node.frontmatter.featuredImage.childImageSharp.fixed.src
+                        : null;
+          
+                      const mediaContent = imageUrl
+                        ? {
+                            "media:content": {
+                              _attr: {
+                                url: imageUrl,
+                                medium: "image",
+                              },
+                            },
+                          }
+                        : null;
+          
                       return Object.assign({}, node.frontmatter, {
                         description: node.excerpt,
                         date: node.frontmatter.date,
                         url: site.siteMetadata.siteUrl + node.fields.slug,
                         guid: site.siteMetadata.siteUrl + node.fields.slug,
-                        custom_elements: [{ "content:encoded": node.html }],
-                      })
-                    })
+                        custom_elements: [
+                          { "content:encoded": node.html },
+                          mediaContent,
+                        ].filter(Boolean),
+                      });
+                    });
                   },
-                  query: `{
-                    allMarkdownRemark(sort: {frontmatter: {date: DESC}}) {
-                      nodes {
-                        excerpt
-                        html
-                        fields {
-                          slug
-                        }
-                        frontmatter {
-                          title
-                          date
-                          featuredImage {
-                            relativePath
-                            childImageSharp {
-                              gatsbyImageData(layout: FULL_WIDTH)
+                  query: `
+                    {
+                      allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+                        nodes {
+                          excerpt
+                          html
+                          fields {
+                            slug
+                          }
+                          frontmatter {
+                            title
+                            date
+                            featuredImage {
+                              childImageSharp {
+                                fixed(width: 800) {
+                                  src
+                                }
+                              }
                             }
                           }
                         }
                       }
                     }
-                  }`,
-                  output: "/public/rss.xml",
-                  title: "Complete Web RSS Feed",
+                  `,
+                  output: '/rss.xml',
+                  title: 'Urban Fetish Feed Title',
                 },
               ],
             },
           },
-
+          
 
           
 
