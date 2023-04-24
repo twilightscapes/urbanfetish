@@ -11,12 +11,18 @@ import TimeAgo from 'react-timeago'
 import useSiteMetadata from "../hooks/SiteMetadata"
 const TagIndex = ({ data }) => {
   const { showDates } = useSiteMetadata()
+  const { postcount } = useSiteMetadata()
   const [selectedTag, setSelectedTag] = useState(''); // State to keep track of selected tag
-
+  const [visibleItems, setVisibleItems] = useState(postcount); 
+  console.log("Post count:", postcount);
   const handleTagChange = (event) => { // Handler for select change
     setSelectedTag(event.target.value);
   }
 
+  const showMoreItems = () => {
+    setVisibleItems(visibleItems + postcount);
+  };
+  
 
   
   const tags = data.allMarkdownRemark.group.filter(
@@ -57,6 +63,7 @@ const TagIndex = ({ data }) => {
             data.allMarkdownRemark.edges
               .filter(({ node }) => !selectedTag || (node.frontmatter.tags && node.frontmatter.tags.includes(selectedTag)))
               .reverse()
+              .slice(0, visibleItems)
               .map(({ node }) => {
                 // const { featuredImage } = node.frontmatter;
 
@@ -132,6 +139,11 @@ Play Multimedia
                 )
               })
           }
+          {visibleItems < data.allMarkdownRemark.edges.length && (
+  <button onClick={showMoreItems} style={{ margin: '1rem auto', display: 'block' }}>
+    Show more
+  </button>
+)}
         </div>
 
     </Layout>

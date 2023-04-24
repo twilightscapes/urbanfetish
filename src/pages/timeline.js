@@ -17,9 +17,9 @@ const TimeLine = () => {
 
   const { showNav } = useSiteMetadata()
   const { showDates } = useSiteMetadata()
-
+  const { postcount } = useSiteMetadata()
   const [feed, setFeed] = useState([]);
-  const [visibleItems, setVisibleItems] = useState(10); // Add a state variable to track visible items
+  const [visibleItems, setVisibleItems] = useState(postcount); // Add a state variable to track visible items
 
   useEffect(() => {
     fetch("https://urbanfetish.com/rss.xml")
@@ -43,7 +43,7 @@ const TimeLine = () => {
     }, []);
 
     const showMoreItems = () => {
-      setVisibleItems(visibleItems + 10);
+      setVisibleItems(visibleItems + postcount);
     };
 
   return (

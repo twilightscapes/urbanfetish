@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { graphql, Link, navigate } from "gatsby"
 import { GatsbyImage } from "gatsby-plugin-image"
 import Layout from "../components/siteLayout"
@@ -15,7 +15,11 @@ const BlogList = ({ data, pageContext }) => {
 
   const { showNav } = useSiteMetadata()
   const { showDates } = useSiteMetadata()
-
+  const { postcount } = useSiteMetadata()
+  const [visibleItems, setVisibleItems] = useState(postcount); 
+  const showMoreItems = () => {
+    setVisibleItems(visibleItems + postcount);
+  };
 
 
 
@@ -52,7 +56,7 @@ const BlogList = ({ data, pageContext }) => {
 <div className="sliderSpacer" style={{height:'', paddingTop:'', display:''}}></div>
 
 
-{posts.map(({ node }, index) => {
+{posts.slice(0, visibleItems).map(({ node }, index) => {
           // const title = node.frontmatter.title || node.fields.slug
           // const tags = node.frontmatter.tags || []
           // const excerpt = node.frontmatter.excerpt || node.excerpt
@@ -125,11 +129,18 @@ Play Multimedia
             ""
           )}
     </div>
+    
+
           )
         })}
 
-        
+{visibleItems < posts.length && (
+  <button onClick={showMoreItems} style={{ margin: '1rem auto', display: 'block' }}>
+    Show more
+  </button>
+)}
       </div>
+      
       </div>
 
 
