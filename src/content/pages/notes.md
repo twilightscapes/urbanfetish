@@ -2,6 +2,7 @@
 template: notes-page
 slug: /notes
 title: Interview Notes
+excludeFromRSS: true
 ---
 
 

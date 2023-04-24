@@ -15,17 +15,20 @@ const RSSFeedPage = () => {
   const [feed, setFeed] = useState([]);
 
   useEffect(() => {
-    fetch("/rss.xml")
-      .then((response) => response.text())
+    fetch("https://urbanfetish.com/rss.xml")
+    .then((response) => response.text())
       .then((str) => new DOMParser().parseFromString(str, "text/xml"))
       .then((data) => {
         const items = data.querySelectorAll("item");
         const feedItems = Array.from(items).map((item) => {
+          const mediaContent = item.getElementsByTagName("media:content")[0];
+          const imageUrl = mediaContent ? mediaContent.getAttribute("url") : null;
           return {
-            title: item.querySelector("title").textContent,
-            link: item.querySelector("link").textContent,
-            description: item.querySelector("description").textContent,
-            pubDate: item.querySelector("pubDate").textContent,
+            title: item.querySelector("title")?.textContent || "",
+            link: item.querySelector("link")?.textContent || "",
+            description: item.querySelector("description")?.textContent || "",
+            pubDate: item.querySelector("pubDate")?.textContent || "",
+            imageUrl: imageUrl,
           };
         });
         setFeed(feedItems);
@@ -55,6 +58,7 @@ const RSSFeedPage = () => {
                 {item.title}
               </a>
             </h2>
+            {item.imageUrl && <img src={item.imageUrl} alt={item.title} />}
             <p>{item.description}</p>
             <p>
               <small>

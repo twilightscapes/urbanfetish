@@ -2,6 +2,7 @@
 template: disclaimer-page
 slug: /disclaimer
 title: Disclaimer
+excludeFromRSS: true
 ---
 The materials on this website(s) also known as urbanfetish.com,  are provided “as is”. UrbanFetish makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, UrbanFetish does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on his Internet web site(s) or otherwise relating to such materials or on any sites linked to this site(s).
 

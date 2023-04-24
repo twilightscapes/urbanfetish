@@ -2,6 +2,7 @@
 template: terms-page
 slug: /terms
 title: Terms
+excludeFromRSS: true
 ---
 
 

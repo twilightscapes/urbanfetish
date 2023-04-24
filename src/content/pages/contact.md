@@ -8,6 +8,7 @@ contactname: true
 contactphone: true
 contactupload: true
 uploadtext: "JPG preferred - (1600px wide)"
+excludeFromRSS: true
 ---
 
 
