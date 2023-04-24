@@ -10,6 +10,7 @@ const Theme = () => {
       <button style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}
         onClick={e => {
           setColorMode(colorMode === "default" ? "dark" : "default")
+            // window.location.reload()
         }}
         aria-label="Theme Color"
       >
@@ -25,6 +26,7 @@ const Theme = () => {
     </div>
   )
 }
+
 export default Theme
 
 

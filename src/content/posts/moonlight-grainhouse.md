@@ -26,7 +26,7 @@ shareable: true
 underlayImage: 
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned13.jpg
 svgImage: 
-scrollable: true
+scrollable: false
 nftdrop: ""
 contentinvideo: false
 bumpertext: ""

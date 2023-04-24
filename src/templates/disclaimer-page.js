@@ -26,7 +26,7 @@ const Disclaimer = ({ data }) => {
   return (
     <Layout className="page">
   <Helmet>
-  <body id="body" className="utilitypage scroll" style={{}} />
+  <body id="body" className="utilitypage" style={{}} />
 </Helmet>
       <Seo title={frontmatter.title} description={excerpt} />
 

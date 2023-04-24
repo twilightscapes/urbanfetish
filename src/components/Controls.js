@@ -77,7 +77,7 @@ const Controls = forwardRef(
 
   <div style={{position:'absolute', background:'#111', height:'110vh', width:'100%', zIndex:'1', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'center' }}>
  
-  <img className="homepage-bg" src={iconimage} width="300px" height="150px" alt="UrbanFetish" style={{ width:'30vw', height:'', filter:'drop-shadow(2px 2px 2px #000)', background:'transparent !important', position:'relative', bottom:'20vh'}} />
+  <img className="homepage-bg" src={iconimage} width="300px" height="150px" alt="MemeGenes" style={{ width:'30vw', height:'', filter:'drop-shadow(2px 2px 2px #000)', background:'transparent !important', position:'relative', bottom:'20vh'}} />
 
   </div>
   </>

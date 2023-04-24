@@ -32,6 +32,8 @@
     "image": "/assets/sitebg.webp",
     "description": "Photographing decay in an increasingly abandoned world, UrbanFetish magazine brings a light",
     "icon512": "/assets/icon.svg",
+    "showSwipe": true,
+    "showModals": false,
     "showSkills": false
   },
   "ga": "UA-89654528-2",

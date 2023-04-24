@@ -26,7 +26,7 @@ const AboutPage = () => {
   return (
     <Layout className="page">
       <Helmet>
-        <body id="body" className="utilitypage scroll" style={{}} />
+        <body id="body" className="utilitypage" />
       </Helmet>
       <Seo title={frontmatter.title} description={excerpt} />
 
@@ -45,6 +45,7 @@ const AboutPage = () => {
         <article dangerouslySetInnerHTML={{ __html: html }} />
 
         <GoBack />
+        
       </div>
 
       <br />

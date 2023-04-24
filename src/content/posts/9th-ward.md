@@ -30,14 +30,17 @@ maratingtx3: It's Humor - laugh
 marating4: AL
 maratingtx4: Adult Language
 shareable: true
-scrollable: true
+scrollable: false
 contentinvideo: false
 liarliar: false
 audiotitle: Liar Liar!
 audioend: "5000"
 nftdrop: ""
 audiostart: "20"
+showZoom: true
 comments: false
+spotlight: true
+showPageNav: true
 tags:
   - abandoned
   - building

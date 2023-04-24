@@ -2,7 +2,7 @@
 template: privacy-page
 slug: /privacy
 title: Privacy
-scrollable: true
+scrollable: false
 ---
 
 

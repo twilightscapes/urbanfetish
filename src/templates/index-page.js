@@ -7,7 +7,7 @@ import { GatsbyImage } from "gatsby-plugin-image"
 import { getSrc } from "gatsby-plugin-image"
 import { AiOutlineAudioMuted } from "react-icons/ai"
 import Footer from "../components/footer"
-import ScrollAnimation from 'react-animate-on-scroll'
+// import ScrollAnimation from 'react-animate-on-scroll'
 import { IoShareOutline } from 'react-icons/io5'
 import { Helmet } from "react-helmet"
 import { StaticImage } from "gatsby-plugin-image"
@@ -20,179 +20,29 @@ import { MdVolumeOff } from "react-icons/md"
 // import { MdVolumeDown } from "react-icons/md"
 import { MdVolumeUp } from "react-icons/md"
 // import { RiArrowRightDownFill } from "react-icons/ri"
-import TwilightLogo from "../../static/assets/logo.svg"
+// import TwilightLogo from "../../static/assets/logo.svg"
 
 
 // import SearchSlider from "../components/search1"
 
 // import styled from "styled-components"
 import Social from "../components/social"
-
 import BlogListHome from "../components/blog-list-home"
 import Seo from "../components/seo"
 import Layout from "../components/siteLayout"
 
 
-
-
-
-
-
-
-export const pageQuery = graphql`
-query HomeQuery($id: String!) {
-  site {
-    siteMetadata {
-      title
-      titleDefault
-      siteUrl
-      description
-      image
-      twitterUsername
-      companyname
-      showfooter
-      showInfo
-      showCover
-      showFeature
-      showPosts
-      showSocial
-      showSkills
-      showNav
-      showPopup
-      showDates
-      showResume
-      showSkills
-    }
-  }
-  markdownRemark(id: {eq: $id}) {
-    id
-    html
-    excerpt(pruneLength: 148)
-    frontmatter {
-      date(formatString: "YYYY-MM-DD-HH-MM-SS")
-      slug
-      title
-      description
-      audiostart
-      audiotitle
-      audioend
-      contentinvideo
-      youtube {
-        youtuber
-        youtuber2
-        youtubeshoworiginal
-        youtubersuggestion1
-        youtubersuggestion2
-        youtubersuggestion3
-        youtubestart
-        youtubeend
-        youtubemute
-        youtubeloop
-        youtubecontrols
-        customcontrols
-        clicktoplay
-        youtubeautostart
-      }
-      bumpertext
-      viewerwarning
-      marate
-      marating1
-      marating2
-      marating3
-      marating4
-      maratingtx1
-      maratingtx2
-      maratingtx3
-      maratingtx4
-      profTitle
-      profText
-      addressText
-      addressText2
-      skillsTitle
-      skillsText
-      svgzindex
-      scrollable
-      tagline
-      featuredImage {
-        publicURL
-        relativePath
-        childImageSharp {
-          gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
-        }
-      }
-      secondaryImage {
-        childImageSharp {
-          gatsbyImageData(layout: FULL_WIDTH)
-        }
-      }
-      underlayImage {
-        childImageSharp {
-          gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
-        }
-      }
-      cta {
-        ctaText
-        ctaLink
-      }
-      coverletter {
-        coverText
-        coverLink
-      }
-      portfolio {
-        openText
-        closeText
-      }
-      svgImage {
-        relativePath
-      }
-    }
-  }
-  posts: allMarkdownRemark(
-    sort: {frontmatter: {date: DESC}}
-    filter: {frontmatter: {template: {eq: "blog-post"}, category: {eq: "news"}}}
-    limit: 30
-  ) {
-    edges {
-      node {
-        id
-        excerpt(pruneLength: 250)
-        frontmatter {
-          date(formatString: "YYYY-MM-DD-HH-MM-SS")
-          slug
-          title
-          tags
-          category
-          youtube{
-            youtuber
-            youtubemute
-            youtubeloop
-            youtubecontrols
-            customcontrols
-          }
-          featuredImage {
-            relativePath
-            publicURL
-            childImageSharp {
-              gatsbyImageData(placeholder: BLURRED, layout: FULL_WIDTH)
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`;
-
-
-
-
 const HomePage = ({ data }) => {
-  // const { postcount } = useSiteMetadata()
-  const { markdownRemark, posts } = data // data.markdownRemark holds your post data
+
+  const { markdownRemark, posts } = data 
   const { frontmatter, html, excerpt } = markdownRemark
   const FrontImage = frontmatter.featuredImage
     ? frontmatter.featuredImage.childImageSharp.gatsbyImageData
     : ""
+
+    // const { postcount } = useSiteMetadata()
+    // const Postcount = postcount
+
 
     const SecondaryImage = frontmatter.secondaryImage
     ? frontmatter.secondaryImage.childImageSharp.gatsbyImageData
@@ -224,29 +74,44 @@ const HomePage = ({ data }) => {
     const { showCover } = useSiteMetadata()
     const { showfooter } = useSiteMetadata()
 
-const CustomControls = frontmatter.customcontrols
+const CustomControls = frontmatter.youtube.customcontrols
 const Suggestion1 = frontmatter.youtube.youtubersuggestion1
-// const Suggestion2 = frontmatter.youtube.youtubersuggestion2
-// const Suggestion3 = frontmatter.youtube.youtubersuggestion3
+// const Suggestion2 = frontmatter.youtubersuggestion2
+// const Suggestion3 = frontmatter.youtubersuggestion3
 
 const YoutubeLoop = frontmatter.youtube.youtubeloop
 
-const ClickToPlay = frontmatter.clicktoplay
+const ClickToPlay = frontmatter.youtube.clicktoplay
 
 
 
 
+const seoProps = {
+  title: frontmatter.title,
+  description: frontmatter.description ? frontmatter.description : excerpt,
+  image: frontmatter.featuredImage ? siteUrl + getSrc(frontmatter.featuredImage) : undefined,
+};
 
 
 
+const CommonElements = ({ title, tagline, description }) => (
+  <div className=" mob print" style={{ position:'sticky', top:'0', fontSize: 'clamp(1rem, 1.5vw, 3.2rem)' }}>
+    <h1 className="title1" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.2rem)' }}>{title}</h1>
+    <h2 className="tagline1">
+      {tagline}
+    </h2>
+    <div style={{}} className="description" dangerouslySetInnerHTML={{ __html: description }} />
+  </div>
+);
 
 
-// const iframeUrl = "https://www.youtube-nocookie.com/embed/" + frontmatter.youtube.youtube.youtuber + "?controls=" + frontmatter.youtube.youtubecontrols + "&amp;showinfo=0&amp;rel=0&amp;autoplay=" + frontmatter.youtube.youtubeautostart + "&amp;start=" + frontmatter.youtube.youtubestart + "&amp;end=" + frontmatter.youtube.youtubeend + "&amp;loop=" + frontmatter.youtube.youtubeloop + "&amp;mute=" + frontmatter.youtube.youtubemute + "&amp;playsinline=1&amp;playlist=" + frontmatter.youtube.youtube.youtuber + ""
+// const iframeUrl = "https://www.youtube-nocookie.com/embed/" + frontmatter.youtuber + "?controls=" + frontmatter.youtubecontrols + "&amp;showinfo=0&amp;rel=0&amp;autoplay=" + frontmatter.youtubeautostart + "&amp;start=" + frontmatter.youtubestart + "&amp;end=" + frontmatter.youtubeend + "&amp;loop=" + frontmatter.youtubeloop + "&amp;mute=" + frontmatter.youtubemute + "&amp;playsinline=1&amp;playlist=" + frontmatter.youtuber + ""
 
 
 const ContentinVideo = frontmatter.contentinvideo
 // const LiarLiar = frontmatter.liarliar
 
+  /* eslint-disable-next-line no-unused-vars */
     const CtaLink = frontmatter.cta.ctaLink
 
     // const { iconimage } = useSiteMetadata()
@@ -303,7 +168,7 @@ const YouTube = frontmatter.youtube.youtuber
 function Iframer() {
   
     return (
-      <div className="wrap-element effects" style={{aspectRatio:'', minHeight:'300px', width:'100vw', maxHeight:'90vh', overFlow:'hidden'}}>
+      <div className="wrap-element effects" style={{aspectRatio:'16/9', minHeight:'300px', width:'100vw', maxHeight:'90vh', overFlow:'hidden'}}>
 
 
 {YouTube ? (
@@ -328,8 +193,8 @@ function Iframer() {
               config={{
                 file: {
                   attributes: {
-                    sameSite: "none",
-                    crossorigin: "anonymous",
+                    samesite: "none",
+                    crossOrigin: "anonymous",
                   },
                 },
                   youtube: {
@@ -339,8 +204,8 @@ function Iframer() {
               playIcon={
                 <div style={{position:'absolute',
                 // backgroundColor:'var(--theme-ui-colors-bodyBg)',
-                backgroundColor:'rgba(0,0,0,0.6)',
-                 width:'100vw', height:'100vh', minHeight:'40vh', maxHeight:'', zIndex:'0', top:'0', right:'0', textAlign:'center', display:'', placeContent:'center', justifyContent:'', 
+                // backgroundColor:'rgba(0,0,0,0.6)',
+                 width:'100vw', height:'100vh', minHeight:'40vh', maxHeight:'', zIndex:'0', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'center', justifyContent:'', 
                 color:'#ddd',
                 fontFamily:'Verdana, Sans-Serif, System' }}>
 
@@ -349,54 +214,8 @@ function Iframer() {
 <button aria-label="Click To Play" name="Click to play" className="clickplays videohide" style={{position:'relative', zIndex:'0', top:'', border:'0px  solid red', width:'100vw', background:'transparent', color:'', fontSize:'18px', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',}}>
 
 
-                <div className="flex-items" style={{fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', margin:'2vh auto 0 auto', textTransform:'uppercase',}}>The following is rated: <strong>{frontmatter.marate}</strong></div>
+                
 
-<ul className="flex-container" style={{display:'flex', flexDirection:'row', gap:'1vh', justifyContent:'center', alignItems:'center',  textAlign:'left', margin:'0 auto', color:'#ddd', background:'rgba(0, 0, 0, .8)', width:'auto', maxWidth:'800px', height:'', border:'1px solid #222', borderRadius:'12px', padding:'2vh 5vw' }}>
-
-
-{frontmatter.marate ? (
-            <li className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 20px', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(4rem, 12vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}>{frontmatter.marate}</li>
-            ) : (
-              <li className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 20px', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(4rem, 15vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}>PG</li>
-            )}
-
-<div style={{display:'flex', flexDirection:'column', position:'relative', left:'', top:'', gap:'.8vh', justifyContent:'space-around', alignContent:'', alignItems:'start', border:'0px solid red', fontSize:'clamp(.5rem, 1.2vw, 2rem)'}}>
-
-
-{frontmatter.maratingtx1 ? (
-            <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{ }}>
-            {frontmatter.marating1}</strong> {frontmatter.maratingtx1}</li>
-            ) : (
-              ""
-            )}
-
-
-{frontmatter.maratingtx2 ? (
-            <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{ }}>
-{frontmatter.marating2}</strong> {frontmatter.maratingtx2} </li>
-            ) : (
-              ""
-            )}
-
-
-{frontmatter.maratingtx3 ? (
-         <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{ }}>
-{frontmatter.marating3}</strong> {frontmatter.maratingtx3} </li>   
-            ) : (
-              ""
-            )} 
-
-
-{frontmatter.maratingtx4 ? (
-       <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{ }}>
-{frontmatter.marating4}</strong> {frontmatter.maratingtx4} </li>           
-            ) : (
-              ""
-            )} 
-</div>
-
-</ul>
-<div className="flex-items" style={{position:'relative', right:'', top:'', display:'', fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', textTransform:'uppercase', textAlign:'center'}}>{frontmatter.viewerwarning}</div>
 
 <div style={{display:'grid', placeContent:'center', position:'relative', zindex:'1', fontWeight:'bold', padding:'1vh 0', fontSize:'clamp(.6rem, 1.4vw, 2rem)', width:'100%', maxWidth:'25vw', height:'', border:'0px solid', borderRadius:'12px', background:'linear-gradient(180deg, rgba(24, 23, 30, 0.2) 1%, rgba(0, 0, 0, .7) 99%)', margin:'0 auto 0 auto', opacity:'.99', textShadow:'2px 2px 2px black', color:'#fff' }}>
 <ImPlay style={{margin:'0 auto', width:'50%', fontSize:'clamp(2rem, 4.4vw, 3rem)', filter:'drop-shadow(0px 0px 12px #fff',}} />
@@ -450,7 +269,7 @@ zindex:'1'
                 alt={frontmatter.title + " - image"}
                 className="mcboaty1"
                 style={{height:'auto', width:'', maxHeight:'100vh', overflow:'hidden', position:'absolute', left:'0', right:'0', bottom:'0', top:'', zIndex:'0',
-               objectFit:'cover', border:'0px solid red !important', background:'transparent',}}
+               objectFit:'cover', border:'1px solid red !important', background:'transparent',}}
               />
               
             ) : (
@@ -544,7 +363,7 @@ display:'flex', justifyContent:'center', maxHeight:'80px !important', height:'15
           </div>
           </button>}
    
-            light="../assets/transparent.png"
+            light="/assets/transparent.png"
           />
      </div>
 
@@ -623,37 +442,12 @@ display:'flex', justifyContent:'center', maxHeight:'80px !important', height:'15
 ""
         ) : (
 
-<div style={{position:'absolute', height:'', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'', justifyContent:'', color:'var(--theme-ui-colors-text)', fontFamily:'Verdana, Sans-Serif, System' }}>
+<div style={{position:'absolute', height:'100vh', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'center', justifyContent:'center', color:'var(--theme-ui-colors-text)', fontFamily:'Verdana, Sans-Serif, System' }}>
 
 <button aria-label="Click To Play" name="Click to play"  className="clickplays videohide" style={{position:'relative', zIndex:'', top:'70px', border:'0px  solid red', width:'100vw', height:'', backgroundColor:'var(--theme-ui-colors-bodyBg)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', padding:'2vh 0 0 0'}}>
 
 
-          <div className="flex-items" style={{fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', margin:'0 auto 0 auto', textTransform:'uppercase',}}>The following content is rated: </div>
-
-          <ul className="flex-container" style={{display:'flex', flexDirection:'row', gap:'1vh', justifyContent:'center', alignItems:'center',  textAlign:'left', margin:'0 auto', color:'#ddd', background:'rgba(0, 0, 0, .8)', width:'auto', maxWidth:'800px', height:'', border:'1px solid #222', borderRadius:'12px', padding:'2vh 5vw' }}>
-
-
-<li className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 1vw', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(3.5rem, 13vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}><strong style={{}}>MA</strong></li>
-
-
-
-
-<li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{border:'2px solid', padding:'.8em', aspectRatio:'1/1', overFlow:'', marginRight:'1.5vw', textAlign:'center'}}>
-  {frontmatter.marating1}</strong> {frontmatter.maratingtx1}</li>
-
-  <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{border:'2px solid', padding:'.8em', aspectRatio:'1/1', overFlow:'', marginRight:'1.5vw', textAlign:'center'}}>
-  {frontmatter.marating2}</strong> {frontmatter.maratingtx2} </li>
-
-  <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{border:'2px solid', padding:'.8em', aspectRatio:'1/1', overFlow:'', marginRight:'1.5vw', textAlign:'center'}}>
-  {frontmatter.marating3}</strong> {frontmatter.maratingtx3} </li>
-
-  <li className="flex-items" style={{display:'flex', justifyContent:'center', alignItems:'center', alignContent:'end'}}><strong style={{border:'2px solid', padding:'.8em', aspectRatio:'1/1', overFlow:'', marginRight:'1.5vw', textAlign:'center'}}>
-  {frontmatter.marating4}</strong> {frontmatter.maratingtx4} </li>
-
-
-
-</ul>
-<div className="flex-items" style={{position:'relative', right:'', top:'', display:'', fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', textTransform:'uppercase', textAlign:'center'}}>Viewer Discretion Strongly Advised</div>
+          
          <div style={{display:'grid', placeContent:'center', position:'relative', zindex:'1', fontWeight:'bold', padding:'1vh 0', fontSize:'clamp(.6rem, 1.4vw, 2rem)', width:'100%', maxWidth:'25vw', height:'', border:'0px solid', borderRadius:'12px', background:'linear-gradient(180deg, rgba(24, 23, 30, 0.2) 1%, rgba(0, 0, 0, .7) 99%)', margin:'0 auto 0 auto', opacity:'.99', textShadow:'2px 2px 2px black', color:'#fff' }}>
 <ImPlay style={{margin:'0 auto', width:'50%', fontSize:'clamp(2rem, 4.4vw, 3rem)', filter:'drop-shadow(0px 0px 12px #fff',}} />
 Click to play
@@ -781,25 +575,23 @@ Click to play
 
     <Layout>
 {frontmatter.scrollable ? (
-  <Helmet>
-  <body id="body" className="homepage scroll" style={{}} />
+<Helmet>
+  <body id="body" className="homepage scroll"  />
 </Helmet>
 ) : (
-  <Helmet>
-  <body id="body" className="homepage" style={{}} />
+<Helmet>
+  <body id="body" className="homepage" />
 </Helmet>
   )}
-       <Seo
-        title={frontmatter.title}
-        description={
-          frontmatter.description ? frontmatter.description : excerpt
-        }
-   image={ siteUrl + getSrc(frontmatter.featuredImage) }
-      />
+
+
+
+       
+       <Seo {...seoProps} />
 
 
 {showNav ? (
-  <div id="top" className="spacer" style={{height:'70px', border:'0px solid yellow'}}></div>
+  <div className="spacer" style={{height:'', border:'0px solid yellow'}}></div>
       ) : (
         ""
       )}
@@ -821,36 +613,38 @@ Click to play
 
 
 
+<div className="scroll-container">
+
+
 
 {/* show feature */}
 {showFeature ? (   
-
-<ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={true} > 
-
-<section id="feature" order="1" name="feature" className="print" style={{ display:'', height:'auto', maxHeight:'', margin:'0 0 0 0', padding:'0 0 10px 0', position:'relative'}}>
+<section id="feature" order="1" name="feature" className="print scroll-area" style={{ display:'', height:'90vh', maxHeight:'', margin:'0 0 0 0', padding:'0 0 10px 0', position:'relative'}}>
   <article>
 
-  <div className='stack-layout' style={{ display:'flex',justifyContent:'center', position:'relative', top:'0', zIndex:'0', minHeight:'250px', height:'', overflow:'hidden', filter: 'drop-shadow(0 0 20px #000)' }}>
+  <div className=""  >
 {FrontImage ? (
-            <GatsbyImage
-              image={FrontImage}
-              alt={frontmatter.title + " - Featured image"}
-              className="featured-image12 layer1"
-              style={{height:'100vh', maxHeight:'100vh', width:'', position:'absolute', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'cover', paddingTop:'0', overflow:'hidden',}}
-            />
 
+<GatsbyImage
+image={FrontImage}
+alt={frontmatter.title + " - Featured image"}
+className="featured-image2 layer12 iiz__img"
+placeholder="blurred"
+loading="eager"
+style={{height:'auto', width:'100vw', maxHeight:'100vh', position:'relative', zIndex:'0', top:'0', left:'0', right:'0', border:'0px solid !important', objectFit:'contain', margin:'0 auto'}}
+/>
 
 
 
 
           ) : (
 
-            <StaticImage src="../../static/assets/default-og-image.webp" alt="Default Image" style={{height:'auto', maxHeight:'100vh', position:'absolute', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'contain',}} />
+            <StaticImage src="../../static/assets/default-og-image.webp" alt="Default Image" style={{height:'auto', maxHeight:'100vh', position:'relative', zIndex:'0', top:'0',border:'0px solid !important', objectFit:'contain', margin:'0 auto'}} />
   
           )}
 
 {YouTube ? (
-            <Iframer />
+            <div style={{position:'absolute', top:'0'}}><Iframer /></div>
        
           ) : (
             ""
@@ -858,94 +652,17 @@ Click to play
       </div>
   </article>
 </section>
-</ScrollAnimation>
 ) : (
   ""
 )}
-
 {/* end show feature */}
 
 
 
 
-
-
-{showPosts ? (
-  <section id="showPosts" style={{marginTop:''}}>
-  <div style={{position:'relative', background:'none', maxHeight:'', overflow:'', width:'100vw'}}>
-
-
-
-
-
-
-  {/* <TwilightLogo className="bglogo darkened" /> */}
-<div className="contentpanel" style={{padding:''}}>
-
-<div className="sliderSpacer" style={{height:'', paddingTop:'', display:'none'}}></div>
-                         <BlogListHome data={posts} />
-      {/* <div style={{textAlign:'center', display:'grid', placeContent:'center', padding:'20% 0 0 0'}}><Link className="button " to="/archive/2" style={{textDecoration:'none', color:'inherit', textAlign:'center'}}>View More </Link>
-      </div> */}
-</div>
-
-</div>
-</section>
-      ) : (
-        ""
-      )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div id="intro" name="container21" className="container21" style={{position:'relative', zIndex:'1', paddingTop:'0', marginTop:'0'}}>
-
-
 {/* show Info */}
-
 {showInfo ? (
-
-
-
-<section className="vertical" id="info" order="2" name="info" style={{ display:'', height:'100%',  minHeight:'100vh', position:'relative', zIndex:'0', overflow:'visible', margin:'0', padding:'0 0 10vh 0', border:'0px solid blue'}}>
+<section className="scroll-area" id="info" order="2" name="info" style={{ display:'', height:'100%', minHeight:'', position:'relative', zIndex:'0', overflow:'visible', margin:'0', padding:'0 0 10vh 0', border:'0px solid blue'}}>
   <article style={{ margin:'0 0 0 0'}}>
 
   <div className="" style={{maxHeight:'100vh', width:'100vw', height:'', overflow:'visible',position:'absolute', top:'', zIndex:'-1',}}>
@@ -955,222 +672,87 @@ Click to play
             alt={frontmatter.title + " - image"}
             className="mcboaty print"
             placeholder="blurred" loading="eager"
-              style={{height:'auto', width:'100vw', maxHeight:'125vh',  objectFit:'cover', overflow:'visible', border:'0px solid red !important'}}
+              style={{height:'auto', width:'100vw', maxHeight:'100vh',  objectFit:'cover', overflow:'visible', border:'0px solid red !important'}}
           />
-          
-       
-          
           ) : (
             ""
           )}
-       
 </div>
 
-
-
-             
-<div id="profiletop" className="flexbutt" style={{display:'flex', gap:'30px', justifyContent:'center', alignItems:"center", margin:'0 0',
-  padding:'0 4% 0 4%', borderRadius:'0 0 10px 10px',}}>
-
-
+<div id="profiletop" className="flexbutt" style={{display:'', gap:'10px', justifyContent:'center', alignItems:"center", margin:'0 0',
+  padding:'0 2% 0 2%', position:'relative'}}>
 
 
 
 {UnderlayImage ? (
-  // custom image in effect //
-
-  <div className="flexcheek mob print nameblock" style={{marginTop:'', padding:'1rem 2rem 0 2rem', maxHeight:'', fontSize:'clamp(1rem, 1.4vw, 3.2rem)', textShadow:'0 2px 3px #000', color:'#fff', 
-  background:'rgba(0,0,0,0.50)', 
-  backdropFilter:'blur(12px)',
-  borderRadius:'10px'}}>
-  <ScrollAnimation animateIn="bounceInLeft" animateOut="bounceOutLeft" initiallyVisible={true} animateOnce={false} animatePreScroll={false} style={{}}> 
-  <h1 className="title1" style={{fontSize:'clamp(2.5rem, 3.5vw, 3.2rem)'}}>{frontmatter.profTitle}</h1>
-            <h2 className="tagline1">
-              {frontmatter.tagline}
-            </h2>
-            <div
-            style={{paddingBottom:'2rem'}}
-              className="description"
-              dangerouslySetInnerHTML={{ __html: ProfText }}
-            /></ScrollAnimation>
-            </div>
-       
-  
-            ) : (
-          
-            <div className="flexcheek mob print" style={{padding:'0', maxHeight:'', fontSize:'clamp(1rem, 1.5vw, 3.2rem)',}}>
-  
-              <h1 className="title1" style={{fontSize:'clamp(2rem, 4.5vw, 3.2rem)'}}>{frontmatter.profTitle}</h1>
-            <h2 className="tagline1">
-              {frontmatter.tagline}
-            </h2>
-  
-            <div
-            style={{}}
-              className="description"
-              dangerouslySetInnerHTML={{ __html: ProfText }}
-            />
-            </div>
+  <div className="nameblock flexcheek" style={{position:'sticky', top:'0', marginTop: '', width:'100%', padding: '1rem 2rem 0 2rem', maxHeight: '', fontSize: 'clamp(1rem, 1.4vw, 3.2rem)', textShadow: '0 2px 3px #000', color: '#fff', background: 'rgba(0,0,0,0.50)', backdropFilter: 'blur(12px)', borderRadius: '10px' }}>
+    <CommonElements title={frontmatter.profTitle} tagline={frontmatter.tagline} description={ProfText} />
+  </div>
+) : (
+  <div className="nameblock flexcheek" style={{position:'sticky', top:'0', marginTop: '', padding: '1rem 2rem 0 2rem', maxHeight: '', fontSize: 'clamp(1rem, 1.4vw, 3.2rem)',  borderRadius: '10px' }}>
+  <CommonElements title={frontmatter.profTitle} tagline={frontmatter.tagline} description={ProfText} />
+  </div>
+)}
 
 
-            
-  
-            )}
-        
 
-
-      <div className="flexcheek mob2 print" style={{position:'', maxHeight:'', overflow:'', marginBottom:'', paddingTop:'2vh', borderRadius:'0 0 10px 10px',
+      <div className="flexcheek mob2 print" style={{position:'sticky', top:'0', minWidth:'500px', overflow:'', marginBottom:'', paddingTop:'2vh', borderRadius:'0 0 10px 10px',
       }}>
-
-
-
-
-
-           {/* {SecondaryImage ? (
-            <GatsbyImage
-              image={SecondaryImage}
-              alt={frontmatter.title + " - Featured image"}
-              className="drop-shadow avatar-frame"
-              style={{ maxWidth:'', height:'25vh', maxHeight:'25vh', position:'relative',  top:'', objectFit:'contain', backgroundSize:'contain', marginBottom:'10px'}}
-            />
-          ) : (
-            ""
-          )} */}
-
 {SecondaryImage ? (
             <GatsbyImage
               image={SecondaryImage}
               alt={frontmatter.title + " - Featured image"}
-              className="drop-shadow avatar-frame"
-              style={{ maxWidth:'', height:'45vh', maxHeight:'45vh', position:'relative',  top:'', objectFit:'contain', backgroundSize:'contain', marginBottom:'0', border:'2rem'}}
+              className="avatar-frame"
+              style={{ maxWidth:'300px', margin:'0 auto', height:'', maxHeight:'300px', position:'relative', top:'', objectFit:'contain', backgroundSize:'contain', marginBottom:'0', border:'0'}}
             />
           ) : (
             ""
           )}
-
-
-
-
-{UnderlayImage ? (
-
-  <div className="nameblock" style={{margin:'20px auto 0 auto', padding:'0 0 10px 0',alignContent:'center', display:'grid', textAlign:'center', justifyContent:'center', verticalAlign:'center',
+<div className="nameblock" style={{margin:'0 auto 0 auto', padding:'0 0 0 0',alignContent:'center', display:'grid', textAlign:'center', justifyContent:'center', verticalAlign:'center',
   color:'#fff',
   border:'0px solid red', 
-  maxWidth:'80%', paddingTop:'', 
+  paddingTop:'', 
   fontSize:'clamp(1rem, 1.4vw, 3.2rem)',
   background:'rgba(0,0,0,0.50)',
   backdropFilter:'blur(8px)',
   borderRadius:'10px',
   textShadow:'0 2px 7px #000',
-  }} >
-<ScrollAnimation animateIn="bounceInRight" animateOut="bounceOutRight" initiallyVisible={true} animateOnce={false} animatePreScroll={false} style={{marginTop:'10px'}}> 
-<span style={{marginTop:'10px', fontSize:'160%'}}>{companyname}</span>
-<br />
-{frontmatter.addressText}
-<br />
-{frontmatter.addressText2}
-<br />
-<Link state={{modal: true}} to="/contact" className="button print" style={{color:'#fff', fontSize:'clamp(1.2rem, 1.5vw, 3.4rem)', border:'0px solid', margin:'0 auto', textAlign:'center', borderRadius:'8px', maxWidth:'300px', padding:'1rem', display:'grid', placeContent:'center' }}>Contact Me</Link>
+  maxWidth:'70%'
+}}>
+  <span style={{margin:'10px auto', fontSize:'160%'}}>{companyname}</span>
+  
+  {frontmatter.addressText ? (
+    frontmatter.addressText
+  ) : (
+    ""
+  )}
+  <br />
+  {frontmatter.addressText2 ? (
+    frontmatter.addressText2
+  ) : (
+    ""
+  )}
+  <br />
+  <Link to={frontmatter.cta.ctaLink} className="button print" style={{ display: 'flex', justifyContent: 'center', padding:'1vh .2vw', maxWidth:'250px', }}>{frontmatter.cta.ctaText}</Link>
+  <br />
+  {showCover ? (
+    <Link to={frontmatter.coverletter.coverLink} className="print" style={{color:'', fontSize:'', margin:'5px auto', textAlign:'center', textDecoration:'underline', maxWidth:'600px', padding:'0 2rem'}}>{coverText}</Link>
+  ) : (
+    ""
+  )}
 
-<br />
-{showCover ? (
-  <Link state={{modal: true}} to="/about/" className="print" style={{color:'', fontSize:'', margin:'5px auto 0 auto', textAlign:'center', textDecoration:'underline', maxWidth:'600px', padding:'0 2rem'}}>{coverText}</Link>
-) : (
-  ""
-)}
+  {showSocial ? (
+    <Social />
+  ) : (
+    ""
+  )}
 
-{showSocial ? (
-           <Social />
-          ) : (
-            ""
-          )}
-
-
-
-{ !YouTube2 ? (
-            ""
-       
-          ) : (
-            
-            <Iframer3 />
-            
-          )}
-          <br /></ScrollAnimation>
+  { !YouTube2 ? (
+    ""
+  ) : (
+    <Iframer3 />
+  )}
 </div>
-
-
- // end nameblock
-
-
-
-) : (
-
-
-  
-  <div className="nameblock" style={{margin:'0 auto 0 auto', alignContent:'center', display:'grid', textAlign:'center', justifyContent:'center', verticalAlign:'center', border:'0px solid red', maxWidth:'80%', paddingTop:'1rem', fontSize:'clamp(1rem, 1.4vw, 3.2rem)'}} >
-<span style={{color:'', fontSize:'160%'}}>{companyname}</span>
-{frontmatter.addressText}
-<br />
-{frontmatter.addressText2}
-<br />
-{CtaLink ? (
-           <a
-   href={frontmatter.cta.ctaLink}
-   className="button print"
-   target="_blank"
-   rel="noreferrer"
-    style={{
-    cursor:'pointer',
-    textDecoration:'underline',
-    width:'',
-    maxWidth:'',
-    margin:'0 auto',
-    display:'flex',
-    alignSelf:'center',
-    color:''
-    }}>{frontmatter.cta.ctaText}
-</a>
-          ) : (
-            <Link state={{modal: true}} to="/contact" className="button print" style={{color:'#fff', fontSize:'clamp(1.2rem, 1.5vw, 3.4rem)', border:'0px solid', margin:'0 auto', textAlign:'center', borderRadius:'8px', maxWidth:'300px', padding:'1rem', display:'grid', placeContent:'center'}}>{frontmatter.cta.ctaText}</Link>
-          )}
-
-
-{showSocial ? (
-           <Social />
-       
-          ) : (
-            ""
-          )}
-
-
-
-{showCover? (
-
-<Link state={{modal: true}} to="/about" className="print" style={{color:'', fontSize:'', margin:'5px auto 0 auto', textAlign:'center', textDecoration:'underline', maxWidth:'600px', padding:'0 2rem'}}>{frontmatter.coverletter.coverText}</Link>
-
-) : (
-  
-""
-
-)}
-
-
-{ !YouTube2 ? (
-            ""
-       
-          ) : (
-            
-            <Iframer3 />
-            
-          )}
-<br />
-</div> // end nameblock
-
-      // custom image in effect //
-)}
-
-
-
 
 
 </div>
@@ -1185,55 +767,65 @@ Click to play
 
 
 
+{/* show posts */}
+{showPosts ? (
+  <section id="showPosts" order="3" className="scroll-area" style={{display:'block', height:'',  minHeight:'', position:'relative', zIndex:'0', overflow:'visible', margin:'0 auto', padding:'0 0 0 0', border:'0px solid blue'}}>
+  {/* <TwilightLogo className="bglogo darkened" /> */}
+<div className="contentpanel grid-container">
+
+<div className="sliderSpacer" style={{height:'', paddingTop:'', display:''}}></div>
+<BlogListHome data={posts} />
+      {/* <div style={{textAlign:'center', display:'grid', placeContent:'center', padding:'20% 0 0 0'}}><Link className="button " to="/archive/" style={{textDecoration:'none', color:'inherit', textAlign:'center'}}>View More </Link>
+      </div> */}
+</div>
 
 
+</section>
+      ) : (
+        ""
+      )}
+{/* end show posts */}
 
 
 
 
 {/*  show Resume */}
 {showResume ? (
-  
-  <ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={true} >
-
-  
-<section className="vertical" id="resume" order="4" style={{ display:'', minHeight:'', overflow:'', margin:'5vh 0 0 0', position:'relative', border:'0px solid blue'}}>
+  // <ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={true} >
+<section className="scroll-area" id="resume" order="4" style={{ display:'', minHeight:'100vh', overflow:'', margin:'0 0 0 0', position:'relative', border:'0px solid blue',}}>
 
 
-<div className="toolbar noapp print" style={{display:'flex', flexDirection:'', gap:'', width:'', borderTop:'1px solid #777', borderBottom:'1px solid #777', justifyContent:'start', background:'rgba(24, 29, 31, 0.2)', borderRadius:'12px', padding:'5px 0 5px 0', }}>
-<div className="keyboard" order="" style={{display:'flex', justifyContent:'center', border:'0px solid red', width:'', margin:'0 auto', padding:'4px 0 0 0', lineHeight:'calc(2em + .4vw)'}}><span style={{fontWeight:'bold', fontSize:'1.3rem'}}>Print:</span> &nbsp;<kbd>⌘</kbd> + <kbd>p</kbd> &nbsp;OR&nbsp; <kbd>Ctrl</kbd> + <kbd>p</kbd></div>
-  <div className="keyboard" style={{display:'flex', justifyContent:'center', border:'0px solid red', width:'auto !important', margin:'0 auto', lineHeight:'calc(2em + .4vw)',}}><span style={{fontWeight:'bold', fontSize:'1.3rem'}}>Install:</span> &nbsp;<IoShareOutline style={{fontSize:'38px',}} />&nbsp;+&nbsp; 'Add to Home Screen'</div>
-  </div>
-<br />
 <article className="hasapp"  style={{ display:'', height:'', overflow:'', margin:'0', position:'relative', fontSize:'clamp(1rem, 1.4vw, 3.2rem)',  background:'rgba(24, 29, 31, 0.7)',  backdropFilter:'blur(12px)', padding:'4%', borderRadius:'12px', color:'#fff'}}>
 
-<div id="resumename" style={{display:'none', position:'relative', top:'', fontSize:'160%', padding:'0 0 2rem 0', textAlign:'left', width:'100%',}}>{companyname}<br />
+<div id="resumename" style={{display:'none', position:'relative', top:'', fontSize:'160%', padding:'0 0 0 0', textAlign:'left', width:'100%',}}>{companyname}<br />
 {frontmatter.addressText}
 <br />
 {frontmatter.addressText2}
 </div>
-<ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={false} > 
+
+
 <div id="" className="">
 
 <span
           style={{  columnCount:'',
             columnGap:'',
             columnWidth:''}}
-            className=""
+            className="doscol"
             dangerouslySetInnerHTML={{ __html: html }}
           />
   
 </div>
-</ScrollAnimation>
+
 <br />
 <div className="toolbar noapp print" style={{display:'flex', flexDirection:'', gap:'', width:'', borderTop:'1px solid #777', borderBottom:'1px solid #777', justifyContent:'start', background:'rgba(24, 29, 31, 0.2)', borderRadius:'12px', padding:'5px 0 5px 0', }}>
 <div className="keyboard" order="" style={{display:'flex', justifyContent:'center', border:'0px solid red', width:'', margin:'0 auto', padding:'4px 0 0 0', lineHeight:'calc(2em + .4vw)'}}><span style={{fontWeight:'bold', fontSize:'1.3rem'}}>Print:</span> &nbsp;<kbd>⌘</kbd> + <kbd>p</kbd> &nbsp;OR&nbsp; <kbd>Ctrl</kbd> + <kbd>p</kbd></div>
   <div className="keyboard" style={{display:'flex', justifyContent:'center', border:'0px solid red', width:'auto !important', margin:'0 auto', lineHeight:'calc(2em + .4vw)',}}><span style={{fontWeight:'bold', fontSize:'1.3rem'}}>Install:</span> &nbsp;<IoShareOutline style={{fontSize:'38px',}} />&nbsp;+&nbsp; 'Add to Home Screen'</div>
   </div>
 
+
 </article>
 </section>
-</ScrollAnimation>
+// </ScrollAnimation>
 ) : (
   ""
 )}
@@ -1243,18 +835,10 @@ Click to play
 
 {/*  show Skills */}
 {showSkills ? (
-   
-   <ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={true} >
-
-   
-<section className="print vertical" id="skills" order="5" style={{ width:'100%', overflow:'hidden', position:'relative',  justifyContent:'center', alignContent:'center', margin:'0 auto', textAlign:'center', borderRadius:'8px', minHeight:'', maxWidth:'', padding:'1rem', display:'', placeContent:'', border:'0px solid green', }}>
-<br />
-<ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={false} animateOnce={false} animatePreScroll={false} >
+<section className="print scroll-area" id="skills" order="5" style={{ width:'100%', overflow:'hidden', position:'relative',  justifyContent:'center', alignContent:'center', margin:'0 auto', textAlign:'center', borderRadius:'8px', minHeight:'', maxWidth:'', padding:'1rem', display:'', placeContent:'',  }}>
 <div className="flexbutt" style={{display:'flex', justifyContent:'center', width:'', columnGap:'50px', border:'0px solid blue',  background:'rgba(24, 29, 31, 0.7)',  backdropFilter:'blur(12px)', padding:'4%', borderRadius:'12px', color:'#fff' }} dangerouslySetInnerHTML={{ __html: SkillsText }}>
 </div>
-</ScrollAnimation>
   </section>
-</ScrollAnimation>
           ) : (
             ""
           )}
@@ -1264,31 +848,177 @@ Click to play
 
 
 
- </div>{/* end scooch */}
+
 
 
 
 
  {/* <GoogleMap /> */}
-<div id="bottom" className="usability" style={{position:'relative', zIndex:'', bottom:'0', display:'flex', placeSelf:'center', placeContent:'center', width:'100%', margin:'2vh auto', alignContent:'center', alignItems:'center', justifyContent:'center', border:'0px solid blue', textAlign:'center'}}>
-  
-{/* <div id="branding" style={{position:'relative', left:'0', bottom:'5px', fontSize:'90%'}}><a href="https://urbanfetish.com">UrbanFetish.com</a></div> */}
-</div>
-<br/><br/><br/>
+{/* <div id="bottom" className="usability scroll-area" style={{position:'relative', zIndex:'', bottom:'0', display:'flex', placeSelf:'center', placeContent:'center', width:'100%', margin:'2vh auto', alignContent:'center', alignItems:'center', justifyContent:'center', border:'1px solid blue', textAlign:'center'}}>
+<div id="branding" style={{position:'relative', left:'0', bottom:'5px', fontSize:'90%'}}><a href="https://urbanfetish.com">UrbanFetish.com</a></div>
+</div> */}
+
 
 {/* show footer */}
 {showfooter ? (
-  <ScrollAnimation className="animate" animateIn="bounceInUp" animateOut="" initiallyVisible={true} animateOnce={true} animatePreScroll={false} > 
-<Footer className="vertical" />
-</ScrollAnimation>
+<div className="scroll-area" style={{scrollSnapAlign:'end', position:'sticky', bottom:'0'}}>
+<Footer />
+</div>
 ) : (
   ""
 )}
 {/* end show footer */}
-
+</div>
     </Layout>
 
   )
 }
 
 export default HomePage
+
+
+
+export const pageQuery = graphql`
+query HomeQuery($id: String!) {
+  site {
+    siteMetadata {
+      title
+      titleDefault
+      siteUrl
+      description
+      image
+      twitterUsername
+      companyname
+      postcount
+      showfooter
+      showInfo
+      showCover
+      showFeature
+      showPosts
+      showSocial
+      showSkills
+      showNav
+      showPopup
+      showDates
+      showResume
+      showSkills
+    }
+  }
+  markdownRemark(id: {eq: $id}) {
+    id
+    html
+    excerpt(pruneLength: 148)
+    frontmatter {
+      date(formatString: "YYYY-MM-DD-HH-MM-SS")
+      slug
+      title
+      description
+      audiostart
+      audiotitle
+      audioend
+      youtube {
+        youtuber
+        youtuber2
+        youtubestart
+        youtubeend
+        youtubeshoworiginal
+        youtubersuggestion1
+        youtubersuggestion2
+        youtubersuggestion3
+        clicktoplay
+        youtubemute
+        youtubecontrols
+        customcontrols
+        youtubeautostart
+      }
+      contentinvideo
+      bumpertext
+      viewerwarning
+      marate
+      marating1
+      marating2
+      marating3
+      marating4
+      maratingtx1
+      maratingtx2
+      maratingtx3
+      maratingtx4
+      profTitle
+      profText
+      addressText
+      addressText2
+      skillsTitle
+      skillsText
+      svgzindex
+      scrollable
+      tagline
+      featuredImage {
+        publicURL
+        relativePath
+        childImageSharp {
+          gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
+        }
+      }
+      secondaryImage {
+        childImageSharp {
+          gatsbyImageData(layout: FULL_WIDTH)
+        }
+      }
+      underlayImage {
+        childImageSharp {
+          gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
+        }
+      }
+      cta {
+        ctaText
+        ctaLink
+      }
+      coverletter {
+        coverText
+        coverLink
+      }
+      portfolio {
+        openText
+        closeText
+      }
+      svgImage {
+        relativePath
+      }
+    }
+  }
+  posts: allMarkdownRemark(
+    sort: [{frontmatter: {spotlight: ASC}}, {frontmatter: {date: DESC}}]
+    filter: {frontmatter: {template: {eq: "blog-post"}}}
+    limit: 30
+  ) {
+    edges {
+      node {
+        id
+        excerpt(pruneLength: 250)
+        frontmatter {
+          date(formatString: "YYYY-MM-DD-HH-MM-SS")
+          slug
+          title
+          tags
+          category
+          youtube {
+            youtubemute
+            youtubeloop
+            youtubecontrols
+            customcontrols
+            youtuber
+          }
+          spotlight
+          featuredImage {
+            relativePath
+            publicURL
+            childImageSharp {
+              gatsbyImageData(placeholder: BLURRED, layout: FULL_WIDTH)
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;

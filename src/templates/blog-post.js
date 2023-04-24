@@ -1,7 +1,7 @@
 /** @jsx jsx */
-// import * as React from "react"
+import React from "react"
 
-import { useState, useRef,forwardRef } from "react";
+import { useState, useRef, useEffect, forwardRef } from "react";
 
 // import Zoom from 'react-medium-image-zoom'
 // import 'react-medium-image-zoom/dist/styles.css'
@@ -39,7 +39,7 @@ import useSiteMetadata from "../hooks/SiteMetadata"
 
 import { ImCross } from "react-icons/im"
 
-import { RiCloseCircleFill, RiMenuUnfoldFill, RiArrowUpFill } from "react-icons/ri"
+import { RiMenuUnfoldFill, RiCloseCircleFill } from "react-icons/ri"
 
 // import { IoArrowRedoSharp, IoArrowUndoSharp } from "react-icons/io5"
 import { AiOutlineAudioMuted } from "react-icons/ai"
@@ -49,14 +49,14 @@ import Footer from "../components/footer"
 // import { SRLWrapper } from "simple-react-lightbox"
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import ReactPlayer from 'react-player/lazy'
-import { AnchorLink } from "gatsby-plugin-anchor-links"
+// import { AnchorLink } from "gatsby-plugin-anchor-links"
 // import YouTubed from "../components/youtube"
 import Seo from "../components/seo"
 import Layout from "../components/siteLayout"
 import ShareSocial from '../components/share' 
-import GoBack from "../components/goBack"
+// import GoBack from "../components/goBack"
 import { ImPlay } from "react-icons/im"
-// import TimeAgo from 'react-timeago'
+import TimeAgo from 'react-timeago'
 import styled from "styled-components"
 const CustomBox = styled.div`
 
@@ -106,29 +106,8 @@ const Pagination = props => (
           </Link>
         </li>
       )}
-
-
-
     </ul>
-
-    
   </div>
-
-
-
-  
-
-  
-    
-  
-  
-  
-  
-  
-    
-
-
-
 )
 
 
@@ -138,13 +117,59 @@ const Pagination = props => (
 
 const Post = ({ data, pageContext }) => {
 
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  /* eslint-disable-next-line no-unused-vars */
+  const [isMobile, setIsMobile] = useState(false);
+  
 
+  const resizeMobile = () => {
+    setIsMenuOpen(false);
+    setIsMobile(true);
+    const elements = document.querySelectorAll(".menusnapp");
+    elements.forEach((el) => {
+      el.style.display = "none";
+      el.style.overflow = "hidden";
+      el.style.transition = "transform 1550ms ease-in-out";
+    });
+  };
+
+  const resizeDesk = () => {
+    setIsMenuOpen(true);
+    setIsMobile(false);
+    const elements = document.querySelectorAll(".menusnapp");
+    elements.forEach((el) => {
+      el.style.display = "flex";
+      el.style.transition = "transform 1550ms ease-in-out";
+    });
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedIsMenuOpen = window.localStorage.getItem("isMenuOpen");
+      if (storedIsMenuOpen) {
+        setIsMenuOpen(storedIsMenuOpen === "true");
+      } else {
+        setIsMenuOpen(true); // set default value to true if no value found in local storage
+      }
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("isMenuOpen", isMenuOpen);
+    }
+  }, [isMenuOpen]);
+  
+
+  const MenuIcon = isMenuOpen ? RiCloseCircleFill : RiMenuUnfoldFill;
+
+  // const { showModals } = useSiteMetadata()
 
   const { markdownRemark } = data // data.markdownRemark holds your post data
   const { frontmatter, html, excerpt } = markdownRemark
 
   const post = data.markdownRemark
-  const tags = post.frontmatter.tags
+  // const tags = post.frontmatter.tags
   const categories = post.frontmatter.categories
 
   const FrontImage = frontmatter.featuredImage
@@ -157,7 +182,18 @@ const Post = ({ data, pageContext }) => {
 
     
 
-
+    const categoryList = categories && categories.length > 1 && (
+      <div style={{ maxWidth: '300px', margin: '3vh auto', paddingBottom: '2vh', borderBottom: '1px solid' }}>
+        <h4>Category:</h4>
+        {categories.map((category, index) => (
+          
+          <React.Fragment key={category}>
+            {index > 0 && ', '}
+            <Link to={`/category/${category}`}>{category}</Link>
+          </React.Fragment>
+        ))}
+      </div>
+    )
 
 
 
@@ -167,19 +203,7 @@ const Post = ({ data, pageContext }) => {
 
 
 
-  const [isMobile, setIsMobile] = useState(false);
 
-const resizeMobile = () => {
-  setIsMobile(true);
-  const elements = document.querySelectorAll('.menusnapp');
-  elements.forEach(el => el.style.display = 'none', el => el.style.overflow = 'hidden', el => el.style.transition = 'transform 1550ms ease-in-out');
-}
-
-const resizeDesk = () => {
-  setIsMobile(false);
-  const elements = document.querySelectorAll('.menusnapp');
-  elements.forEach(el => el.style.display = 'flex', el => el.style.transition = 'transform 1550ms ease-in-out');
-}
 
   const Svg = frontmatter.svgImage
   // const svgZindex = frontmatter.svgzindex
@@ -211,7 +235,7 @@ const YoutubeLoop = frontmatter.youtube.youtubeloop
 
 const ClickToPlay = frontmatter.youtube.clicktoplay
 
-
+const hasYoutubeFrontmatter = frontmatter.youtube.youtuber
 
 
 
@@ -334,7 +358,7 @@ const OriginalUrl = frontmatter.youtube.youtuber
             config={{
               file: {
                 attributes: {
-                  crossorigin: "anonymous",
+                  crossOrigin: "anonymous",
                 },
               },
               youtube: {
@@ -381,7 +405,7 @@ const OriginalUrl = frontmatter.youtube.youtuber
           playIcon={
             <button aria-label="Click To Play" className="clickplays" style={{position:'relative', zIndex:'', top:'', border:'0px  solid red', width:'100vw', height:'0', background:'transparent', color:'', fontSize:'18px', textAlign:'center', display:'flex', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', paddingTop:'0', borderRadius:'12px'}}>
           
-        <div className="" style={{position:'absolute', top:'-300px', right:'', zIndex:'3', textAlign:'center', animation:'fadeIn 3s', display:'flex', justifyContent:'center', width:'auto', marginBottom:''}}>
+        <div className="audiopopper" style={{position:'absolute', top:'-400px', right:'', zIndex:'3', textAlign:'center', animation:'fadeIn 3s', display:'flex', justifyContent:'center', width:'auto', marginBottom:''}}>
           
       
           {/* <div className="" style={{fontSize:'14px', fontWeight:'', padding:'0 0 0 .3rem',}}>Click For Audio</div> */}
@@ -404,7 +428,7 @@ const OriginalUrl = frontmatter.youtube.youtuber
       </div>
           </button>}
    
-            light="../assets/transparent.png"
+            light="/assets/transparent.png"
           />
      
 
@@ -450,6 +474,7 @@ const YouTube = frontmatter.youtube.youtuber
 
 
   const { showNav } = useSiteMetadata()
+  const { showDates } = useSiteMetadata()
 
 
 
@@ -551,12 +576,12 @@ const YouTube = frontmatter.youtube.youtuber
    
 
 
-<div className="videohide1 554 pane1" style={{position:'absolute', height:'', aspectRatio:'16/9', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'', justifyContent:'', color:'var(--theme-ui-colors-text)', fontFamily:'Verdana, Sans-Serif, System' }}>
+<div className="videohide1 554 pane1" style={{position:'absolute', height:'auto', aspectRatio:'16/9', width:'100vw', zIndex:'3', top:'', right:'0', textAlign:'center', display:'grid', placeContent:'', justifyContent:'', color:'var(--theme-ui-colors-text)', fontFamily:'Verdana, Sans-Serif, System' }}>
 
 
 
 
-<button aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'70px', border:'0px  solid red', width:'100vw', height:'100%', minHeight:'300px', aspectRatio:'16/9', maxHeight:'', background:'rgba(0, 0, 0, .99)', color:'', fontSize:'', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center',   padding:'2vh 0 0 0'}}>
+<div aria-label="Click To Play" className="clickplays videohide 555" style={{position:'relative', zIndex:'', top:'0', border:'0px  solid red', width:'100vw', height:'', minHeight:'300px', aspectRatio:'16/9', maxHeight:'', fontSize:'', textAlign:'center', display:'grid', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', padding:'2vh 0 0 0', background:'#111', color:'#ddd', transition:'all 2s ease-in-out', cursor:'pointer'}}>
 
 
 
@@ -570,20 +595,20 @@ const YouTube = frontmatter.youtube.youtuber
 
           <div className="flex-items" style={{fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', margin:'0 auto 0 auto', textTransform:'uppercase',}}>The following is rated: <strong>{frontmatter.marate}</strong></div>
 
-<ul className="flex-container" style={{display:'flex', flexDirection:'row', gap:'1vh', justifyContent:'center', alignItems:'center',  textAlign:'left', margin:'0 auto', color:'#ddd', background:'rgba(0, 0, 0, .8)', width:'auto', maxWidth:'800px', height:'', border:'1px solid #222', borderRadius:'12px', padding:'2vh 5vw' }}>
+<div className="flex-container" style={{display:'flex', flexDirection:'row', gap:'1vh', justifyContent:'center', alignItems:'center',  textAlign:'left', margin:'0 auto', color:'#ddd', background:'rgba(0, 0, 0, .8)', width:'auto', maxWidth:'800px', height:'', border:'1px solid #222', borderRadius:'12px', padding:'2vh 5vw' }}>
 
 
 {frontmatter.marate ? (
-            <li className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 20px', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(4rem, 15vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}>{frontmatter.marate}</li>
+            <div className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 20px', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(4rem, 15vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}>{frontmatter.marate}</div>
             ) : (
-              <li className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 20px', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(4rem, 15vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}>PG</li>
+              <div className="flex-items" style={{display:'grid', placeContent:'center', width:'', height:'', aspectRatio:'1/1', padding:'0 20px', border:'6.5px solid #fff', margin:'0 auto 0 auto 0', fontSize:'clamp(4rem, 15vw, 5rem)', fontFamily:'Verdana, Sans-Serif, System', fontWeight:'800'}}>PG</div>
             )}
 
 
 
 
 
-<li style={{display:'flex', flexDirection:'column', position:'relative', left:'', top:'', gap:'.8vh', justifyContent:'space-around', alignContent:'', alignItems:'start', border:'0px solid red', fontSize:'clamp(.5rem, 1.2vw, 2rem)'}}>
+<ul style={{display:'flex', flexDirection:'column', position:'relative', left:'', top:'', gap:'.8vh', justifyContent:'space-around', alignContent:'', alignItems:'start', border:'0px solid red', fontSize:'clamp(.5rem, 1.2vw, 2rem)'}}>
 
 
 {frontmatter.maratingtx1 ? (
@@ -619,13 +644,13 @@ const YouTube = frontmatter.youtube.youtuber
 
 
 
-</li>
-
 </ul>
+
+</div>
 <div className="flex-items" style={{position:'relative', right:'', top:'', display:'', fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', textTransform:'uppercase', textAlign:'center'}}>{frontmatter.viewerwarning}</div>
 
 
-         <div style={{display:'grid', placeContent:'center', position:'relative', zindex:'1', fontWeight:'bold', padding:'1vh 0', fontSize:'clamp(.6rem, 1.4vw, 2rem)', width:'100%', maxWidth:'25vw', height:'', border:'0px solid', borderRadius:'12px', background:'linear-gradient(180deg, rgba(24, 23, 30, 0.2) 1%, rgba(0, 0, 0, .7) 99%)', margin:'0 auto 0 auto', opacity:'.99', textShadow:'2px 2px 2px black', color:'#fff' }}>
+         <div style={{display:'grid', placeContent:'center', position:'relative', zindex:'1', fontWeight:'bold', padding:'3% 0 0 0', fontSize:'clamp(.6rem, 1.4vw, 2rem)', width:'100%', maxWidth:'25vw', height:'', border:'0px solid', borderRadius:'12px', margin:'0 auto 0 auto', opacity:'.99', textShadow:'2px 2px 2px black', color:'#fff' }}>
 <ImPlay style={{margin:'0 auto', width:'50%', fontSize:'clamp(2rem, 4.4vw, 3rem)', filter:'drop-shadow(0px 0px 12px #fff',}} />
 Click to play
 </div>
@@ -661,7 +686,7 @@ Click to play
       ></button>
       
       
-      </button>
+      </div>
       </div>
 
 
@@ -676,7 +701,7 @@ Click to play
         
   
   
-  <div ref={ref} className="controlsbox" style={{width:'', height:'', border:'1px solid red', }}>
+  <div ref={ref} className="controlsbox" style={{width:'', height:'', border:'0px solid red', }}>
   
 <button
         aria-label="Video Play/Pause Button"
@@ -688,13 +713,15 @@ Click to play
          height:'auto',
          display:'block',
          placeContent:'',
-         position:'absolute',
+         position:'relative',
          aspectRatio:'16/9',
-         top:'70px',
+         top:'0',
          left:'0',
          right:'0',
          border:'0px solid yellow',
-         zindex:'1'
+         zindex:'1', 
+         cursor:'pointer'
+        //  animation: 'fadeout 4s forwards'
         }}
       ></button>
 
@@ -797,15 +824,15 @@ Click to play
   return (
     
     <Layout className="page">
-<CustomBox style={{}}>
+<CustomBox>
 
 {frontmatter.scrollable ? (
   <Helmet>
-  <body id="body" className="blogpost scroll" style={{}} />
+  <body id="body" className="blogpost scroll" />
 </Helmet>
 ) : (
   <Helmet>
-  <body id="body" className="blogpost" style={{}} />
+  <body id="body" className="blogpost" />
 </Helmet>
   )}
 
@@ -828,7 +855,7 @@ Click to play
 
 
 
-<div id="top"></div>
+
 
 {showNav ? (
   <div className="spacer" style={{height:'70px', border:'0px solid yellow'}}></div>
@@ -837,41 +864,66 @@ Click to play
       )}
 
 
-<div id="gobacker" style={{position:'absolute', top:'12vh', right:'1vw', zIndex:'5'}}><GoBack /></div>
+  {/* { showModals ? (
+    ""
+    ) : (
+      <div id="gobacker" style={{position:'fixed', top:'60px', right:'3vw', zIndex:'5'}}><GoBack /></div>
+      )}  */}
 
 
-{/* <div className="pagemenu panel" style={{position:'fixed', bottom:'20px', zIndex:'4', left:'1vw', right:'', display:'flex', justifyContent:'center', width:'auto', maxWidth:'80vw', margin:'0 auto', gap:'5vw',	background:'rgba(0, 0, 0, .5)', padding:'', border:'1px solid #666', borderRadius:'', textShadow:'0 1px 1px rgba(0, 0, 0, .7)', fontSize:'clamp(2rem, 3vw, 3rem)', verticalAlign:'center' }}>
 
-<div className="menusnapp" style={{display:'flex', gap:'10px', padding:'1vh 1vw', alignItems:'center'}}>
-{frontmatter.scrollable ? (
-  <AnchorLink to="#top" style={{cursor:'pointer', height:'2vh'}}><RiArrowUpFill style={{cursor:'pointer', color:'#999'}} /></AnchorLink>
-) : (
-""
-  )}
-{(previous || next) && <Pagination {...props} />}
-</div>
 
-{isMobile ? 
 
-      <div style={{display:'flex', gap:'10px', padding:'1vh 1vw'}}>
 
-{frontmatter.scrollable ? (
-  <AnchorLink to="#top" aria-label="Return To TOP" style={{cursor:'pointer', marginTop:'2vh'}}><RiArrowUpFill style={{cursor:'pointer', color:'#999',}} /></AnchorLink>
-) : (
-""
-  )}
-        <button onClick={resizeDesk} aria-label="Expand/Collapse menu" style={{cursor:'pointer', padding:'0 0 0 0', color:'#999'}}><RiMenuUnfoldFill />
-        </button>
+{frontmatter.showPageNav ? (
+        <div
+          className="pagemenu panel"
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            zIndex: "4",
+            left: "1vw",
+            right: "",
+            display: "flex",
+            justifyContent: "center",
+            width: "auto",
+            maxWidth: "80vw",
+            margin: "0 auto",
+            gap: "5vw",
+            background: "rgba(0, 0, 0, .5)",
+            padding: "",
+            border: "1px solid #666",
+            borderRadius: "",
+            textShadow: "0 1px 1px rgba(0, 0, 0, .7)",
+            fontSize: "clamp(2rem, 3vw, 3rem)",
+            verticalAlign: "center",
+          }}
+        >
+          <div
+            className="menusnapp"
+            style={{
+              gap: "10px",
+              padding: "1vh 1vw",
+              alignItems: "center",
+              display: isMenuOpen ? "block" : "none",
+            }}
+          >
+            {(previous || next) && <Pagination {...props} />}
+          </div>
+          <button
+            onClick={isMenuOpen ? resizeMobile : resizeDesk}
+            aria-label={isMenuOpen ? "Collapse menu" : "Expand menu"}
+            style={{ cursor: "pointer", padding: "8px", color: "#999" }}
+          >
+            <MenuIcon />
+          </button>
         </div>
+      ) : (
+        ""
+      )}
 
-       :
 
-      <div style={{display:'flex', gap:'2vw', padding:'1vh 1vw'}}>
-        <button onClick={resizeMobile} aria-label="Expand/Collapse menu" style={{cursor:'pointer', padding:'0', color:'#999'}}><RiCloseCircleFill /> 
-        </button>
-        </div>
-    }
-</div> */}
+
 
 
 
@@ -902,84 +954,62 @@ Click to play
   )} */}
 
 
+<div className="wrap-element effects" style={hasYoutubeFrontmatter ? {aspectRatio:'16/9'} : {}}>
 
 
-<div className="wrap-element effects" style={{aspectRatio:'16/9', minHeight:'', maxHeight:'', overFlow:'', marginTop:''}}>
 
 
-{/* <GatsbyImage
-        image={FrontImage}
-        alt={frontmatter.title + " - Featured image"}
-        className="featured-image1 layer1"
-        placeholder="blurred"
-        loading="eager"
-        // layout="constrained"
-        style={{position:'absolute', top:'0', zIndex:'0', width:'100vw', minHeight:'300px'}}
-      /> */}
+
+
+
 
 
 
 {YouTube ? (
-
-<div>
-{FrontImage ? (
-
-
-<GatsbyImage
-image={FrontImage}
-alt={frontmatter.title + " - Featured image"}
-className="featured-image1 layer1"
-placeholder="blurred"
-loading="eager"
-// layout="constrained"
-style={{display:'none', position:'absolute', top:'0', zIndex:'0', width:'100vw', maxHeight:'300px'}}
-/>
-
-    ) : (
-      ""
-    )}
-
-</div>
-    ) : (
-
-<div className="imageonly" style={{ display:'flex', justifyContent:'center', maxHeight:'',}}>
-{/* <InnerImageZoom src={getSrc(FrontImage)}  className="featured-imager"
-        placeholder="blurred"
-        loading="eager" layout="constrained" /> */}
-
-<InnerImageZoom
+  // Show YouTube video if available
+  <div>
+    {/* JSX to display YouTube video */}
+  </div>
+) : (
+  // Show image if YouTube is not available
+  <div>
+    {/* Check if FrontImage is present */}
+    {FrontImage ? (
+      // Show zoom or regular Gatsby image based on showZoom flag
+      frontmatter.showZoom ? (
+        <div className="imageonly" style={{ display: "flex", justifyContent: "center", maxHeight: "" }}>
+          <InnerImageZoom
+          // className="featured-image1"
             src={getSrc(FrontImage)}
+            loading="eager"
             // zoomSrc={getSrc(FrontImage)}
             // fullscreenOnMobile={true}
             // moveType="drag"
-            // zoomScale={0.9}
-            // zoomPreload={true}
-
+            zoomScale={0.9}
+            zoomPreload={true}
+            style={{  maxHeight:'75vh', objectFit:'scale-down'}}
+            
             // height={300}
           />
-    
-{/* <Zoom>
-{FrontImage ? (
-
-
-      <GatsbyImage
+        </div>
+      ) : (
+        <GatsbyImage
         image={FrontImage}
         alt={frontmatter.title + " - Featured image"}
-        className="featured-image1 layer1"
+        // className="featured-image11 layer12 iiz__img"
         placeholder="blurred"
         loading="eager"
-        // layout="constrained"
-        style={{position:'relative', top:'0', zIndex:'0', minHeight:'300px'}}
-
+        style={{  maxHeight:'100vh', objectFit:'scale-down', margin:'0 auto'}}
       />
-
+          
+      )
     ) : (
+      // Show nothing if FrontImage is not present
       ""
     )}
-    </Zoom> */}
-</div>
+  </div>
+)}
 
-    )}
 
 
 
@@ -1039,7 +1069,7 @@ style={{display:'none', position:'absolute', top:'0', zIndex:'0', width:'100vw',
 
 
 
-<button aria-label="Click To Play" className="clickplays videohide 1042" style={{position:'relative', zIndex:'', top:'50px', border:'1px  solid red', width:'100vw', background:'transparent', color:'', fontSize:'18px', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', aspectRatio:'16/9'}}>
+<button aria-label="Click To Play" className="clickplays videohide 1042" style={{position:'relative', zIndex:'', top:'0', border:'1px  solid red', width:'100vw', background:'transparent', color:'', fontSize:'18px', textAlign:'center', display:'', flexDirection:'column', verticalAlign:'center', justifyContent:'center', alignItems:'center', aspectRatio:'16/9'}}>
                 {/* // <div style={{position:'absolute', background:'#111', height:'100vh', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'start', justifyContent:'center', color:'#fff', fontFamily:'Verdana, Sans-Serif, System' }}> */}
    
                 {/* <img className="homepage-bg" src={iconimage} width="250px" height="150px" alt="UrbanFetish" style={{ width:'', margin:'120px auto 0 auto', filter:'drop-shadow(2px 2px 2px #000)', background:'transparent !important', position:'relative', top:''}} /> */}
@@ -1258,57 +1288,65 @@ zindex:'1'
 {ShareThis ? (
 <header style={{ height:'', display:'grid', placeContent:'center'}}>
 
-  <div id="sharethis" style={{width:'auto', height:'', padding:'0', display:'grid', placeContent:'center', border:'0px solid'}}>
-  <ShareSocial style={{}} />
+  <div id="sharethis1" style={{width:'auto', height:'', padding:'0', display:'grid', placeContent:'center', border:'0px solid'}}>
+  <ShareSocial />
   </div>
 
   <div className="article-header" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'12px'}}>
     
             <h1 className="headline panel" style={{color:'#ddd', borderRadius:''}}>{frontmatter.title}</h1>
-            {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
-           {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
+            <time sx={{color: "muted"}}>{frontmatter.date}</time>
+            Posted: <TimeAgo date={frontmatter.date} style={{color:''}} />
            
            {/* <Link to={`/category/${frontmatter.category}`}>Category:{frontmatter.category}</Link>
 
            <p>Tags: {frontmatter.tags.join(", ")}</p> */}
-      {categories && categories.length > 0 && (
-        <div>
-          <h4>Categories:</h4>
-          {categories.map((category) => (
-            <Link to={`/categories/${category}`} key={category}>
-              {category}
-            </Link>
-          ))}
-        </div>
+           {categoryList}
+      {frontmatter.tags && frontmatter.tags.length > 0 && (
+        <>
+  
+          <div style={{ position: 'relative', zindex: '2', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>xx
+            {frontmatter.tags.map((tag) => (
+              <Link to={`/tag/${tag}`} key={tag}>{tag}</Link>
+            ))}
+          </div>
+        </>
       )}
-      {tags && tags.length > 0 && (
-        <div style={{position:'relative', zindex:'2', margin:'1vh auto', width:'100%'}}>
-          <h4>Tags:</h4>
-          {tags.map((tag) => (
-            <Link to={`/tag/${tag}`} key={tag}>
-              {tag} &nbsp;
-            </Link>
-          ))}
-        </div>
-      )}
+
   </div>
-
-
-
-
 </header>
             ) : (
               <header style={{ height:'', display:'grid', placeContent:'center'}}>
-                <div className="article-header panel" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'', marginTop:'10vh'}}>
+                <div className="article-header panel" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'', marginTop:'0'}}>
             <h1 className="headline" style={{color:'#ddd', borderRadius:'12px'}}>{frontmatter.title}</h1>
-            {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
-           {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
-          {frontmatter.category} {frontmatter.tags}</div>
+            <time sx={{color: "muted"}}>{frontmatter.date}</time>
+           Posted: <TimeAgo date={frontmatter.date} style={{color:''}} />
+           
+
+           {categoryList}
+      {frontmatter.tags && frontmatter.tags.length > 0 && (
+        <>
+  
+          <div style={{ position: 'relative', zindex: '2', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>
+            {frontmatter.tags.map((tag) => (
+              <Link to={`/tag/${tag}`} key={tag}>{tag}</Link>
+            ))}
+          </div>
+        </>
+      )}
+
+
+
+        
+
+          
+          
+          </div>
                 </header>
             )}
 
 
-<br /><br /><br />
+
 
   <div className="panel" style={{padding:'0 0', borderTop:'0px solid', margin:'0 0', textAlign:'center', fontSize:'1.5rem', minWidth:'50%', width:'100%', maxWidth:'', border:'0px solid yellow', borderRadius:''}}>
       <div
@@ -1323,16 +1361,58 @@ zindex:'1'
 
   <div>
   {ShareThis ? (
-    <header style={{ height:'', display:'grid', placeContent:'center'}}>
-    <div id="sharethis1" style={{width:'auto', height:'', padding:'0', display:'grid', placeContent:'center', border:'0px solid'}}>
+
+
+
+
+<header style={{ height:'', display:'grid', placeContent:'center'}}>
+<div style={{width:'auto', height:'', padding:'0', display:'grid', placeContent:'center', border:'0px solid'}}>
     <ShareSocial style={{}} />
     </div>
-    <div className="article-header panel" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:''}}>
-            <h1 className="headline" style={{fontSize:''}}>{frontmatter.title}</h1>
-            {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
-           {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
+<div className="article-header panel" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'', marginTop:'0'}}>
+<h1 className="headline" style={{color:'#ddd', borderRadius:'12px'}}>{frontmatter.title}</h1>
+{/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
+
+{showDates ? (
+  <div>
+    Posted:{" "}
+    <time title={frontmatter.date} sx={{ color: "muted" }}>
+      <TimeAgo date={frontmatter.date} style={{ color: "" }} />
+    </time>
+  </div>
+) : (
+  ""
+)}
+
+
+
+
+{categoryList}
+      {frontmatter.tags && frontmatter.tags.length > 0 && (
+        <>
+  
+          <div style={{ position: 'relative', zindex: '2', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>
+            {frontmatter.tags.map((tag) => (
+              <Link to={`/tag/${tag}`} key={tag}>{tag}</Link>
+            ))}
           </div>
-  </header>
+        </>
+      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+</header>
               ) : (
                 <header style={{ height:'', display:'grid', placeContent:'center'}}>
                 <div className="article-header" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:''}}>
@@ -1340,10 +1420,33 @@ zindex:'1'
                 {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
                {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
               </div>
-              
+              {categoryList}
+      {frontmatter.tags && frontmatter.tags.length > 0 && (
+        <>
+  
+          <div style={{ position: 'relative', zindex: '2', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>
+            {frontmatter.tags.map((tag) => (
+              <Link to={`/tag/${tag}`} key={tag}>{tag}</Link>
+            ))}
+          </div>
+        </>
+      )}
+
       </header>
               )}
+
+<div className="panel" style={{padding:'0 0', borderTop:'0px solid', margin:'0 0', textAlign:'center', fontSize:'1.5rem', minWidth:'50%', width:'100%', maxWidth:'', border:'0px solid yellow', borderRadius:''}}>
+<div
+  className="blog-post-content bodycontent" style={{ fontSize:'clamp(1.2rem, 2.8vw, 1.8rem)', textAlign:'center', width:'100%', maxWidth:'', padding:'2vh 6% 10vh 6%', margin:'0 auto', color:'inherit !important'}}
+  dangerouslySetInnerHTML={{ __html: html }}
+/>    
 </div>
+</div>
+
+
+
+
+
           )}
 
  </article>
@@ -1362,7 +1465,8 @@ zindex:'1'
 {/* <AnchorLink className="" to="#sharethis" style={{position:'absolute', top:'0', zIndex:'60'}}>
                 About Us 
               </AnchorLink> */}
-{/* <div style={{position:'fixed', bottom:'20px', zIndex:'1',  left:'', right:'', display:'flex', justifyContent:'center', width:'', margin:'0 auto', gap:'20px',
+
+{/* <div style={{position:'fixed', bottom:'20px', zIndex:'5',  left:'', right:'', display:'flex', justifyContent:'center', width:'', margin:'0 auto', gap:'20px',
 textShadow:'2px 2px 0 #222', filter:'drop-shadow(0px 0px 5px rgba(155,155,155,1))', color:'#fff', padding:'5px 10px', borderRadius:'12px',
 
  }}>
@@ -1429,21 +1533,9 @@ Click to play original video
           )}
 
 
-<div className="panel legal" style={{textAlign: 'center', padding:'1rem',  justifyContent: 'center', fontSize: '.95rem', textDecoration:'none', maxWidth:'90vw'}}>
-            Legal:<br />
-            <Link to="/disclaimer/">Disclaimer</Link>  |  <Link to="/privacy/">Privacy Policy</Link>  |  <Link to="/terms/">Terms of Service</Link>
-      <br /> <br />
-    <div style={{display:'grid', placeContent:'center'}}>
-      <p style={{textAlign:'left'}}>
-        <strong>*This is a parody website meant for education and entertainment purposes.</strong> <br /><br />
-        All characters, and events portrayed in this production are fictitious or are being portrayed in a satirical manner.<br /><br />There is no identification with actual persons (living or deceased), <br />places, buildings, and/or products. There is no harm/insult intended and/or none should be inferred. 
-        <br /><br /> No Celebrities or Politicians were harmed.
 
-        <br /><br />
-        Video footage public youtube.com | Some imagery provided from <a rel="noopener noreferrer" href="https://www.flickr.com/photos/donkeyhotey/" >DonkeyHotey</a>, Wikipedia and other public sourced materials.
-        </p>
-    </div>
-</div>
+
+
 
 
 
@@ -1496,9 +1588,9 @@ Click to play original video
 
       
 
-{/* {iframeFiltered} */}
 
-<br/><br/><br/><br/><br/><br/>
+
+<br/>
 
    </CustomBox>
 
@@ -1545,6 +1637,8 @@ export const pageQuery = graphql`
         tags
         category
         description
+        showZoom
+        showPageNav
         youtube {
           youtuber
           youtuber2

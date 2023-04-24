@@ -33,7 +33,7 @@ marating3: LH
 maratingtx3: It's Humor - laugh
 marating4: AL
 maratingtx4: Adult Language
-scrollable: true
+scrollable: false
 contentinvideo: false
 audiotitle: null
 audioend: "5000"
@@ -48,6 +48,7 @@ svgImage: null
 svgzindex: "0"
 isnftforsale: false
 user: yes
+showZoom: true
 ---
 <!-- <div class="contentinside lake1" style=""> -->
 <!-- <img class="" src="/assets/lakemouth.webp" width="100%" style=" z-index:-1; opacity:0;

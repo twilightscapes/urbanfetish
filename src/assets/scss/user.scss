@@ -180,7 +180,10 @@ gap:30px;
  &:hover,
  &:focus {
    &:after {
-      background:linear-gradient(90deg, rgba(26, 76, 3, 0.4) 20%, rgba(72, 192, 16, 0.3) 80%) ; 
+      background:linear-gradient(90deg, rgba(22, 22, 22, 0.306) 50%, var(--theme-ui-colors-siteColor) 100%) ; 
+
+
+
       // transition: transform 550ms ease-in-out;
       animation: slide 1s reverse;
       animation-direction: reverse;
@@ -197,6 +200,9 @@ gap:30px;
    }
  }
 }
+
+
+
 
 
 
@@ -239,7 +245,11 @@ gap:30px;
 
 
 
-  
+@keyframes slide {
+	100% {
+	width: 0;
+	}
+}
 
 
 @keyframes fade {

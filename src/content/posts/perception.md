@@ -26,7 +26,7 @@ shareable: true
 underlayImage: 
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned11.jpg
 svgImage: 
-scrollable: true
+scrollable: false
 nftdrop: ""
 contentinvideo: false
 bumpertext: ""
@@ -40,6 +40,7 @@ maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
 category: popular
 tags: 
+showZoom: true
 ---
 <div class="contentinside" style="position:relative; aspect-ratio:16/9;  width:100%; border:0px solid white; display:flex; flex-direction:column; justify-content:center;">
 

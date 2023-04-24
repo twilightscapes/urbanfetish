@@ -33,7 +33,7 @@ marating3: LH
 maratingtx3: It's Humor - laugh
 marating4: AL
 maratingtx4: Adult Language
-scrollable: true
+scrollable: false
 contentinvideo: false
 audiotitle: null
 audioend: "5000"

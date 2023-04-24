@@ -4,12 +4,12 @@ import { lightness } from "@theme-ui/color"
 const theme = {
   colors: {
     ...defaultColors,
-    text: "#222 ",
-    background: "rgba(255, 255, 255, 0.6)",
+    text: "",
+    background: "",
     primary: "var(--primary)",
     accent: "#fff",
     muted: "rgba(0, 0, 0, 0.7)",
-    cardBg: "rgba(255, 255, 255, .1)",
+    cardBg: "",
     textShadow: "none",
     borderColor: "#444",
     labelText: "#777",
@@ -22,13 +22,13 @@ const theme = {
     buttonHoverColor: lightness("siteColor", 0.8),
     modes: {
       dark: {
-        text: "#aaa",
-        background: "rgba(0, 0, 0, .8)",
+        text: "",
+        background: "",
         primary: "var(--primary)",
         accent: "#5C2941",
         muted: "rgba(0, 0, 0, 0.2)",
         // cardBg: "linear-gradient(180deg, rgba(13, 11, 11, 0.8) 12%, rgba(19, 20, 22, 0.9) 80%)",
-        cardBg: "rgba(0, 0, 0, 0.5)",
+        cardBg: "",
         textShadow: "rgba(0, 0, 0, 0.99)",
         borderColor: "#888",
         labelText: "#777",

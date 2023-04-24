@@ -6,13 +6,15 @@ import useSiteMetadata from "../hooks/SiteMetadata"
 import { ImPlay } from "react-icons/im"
 import { FaImage } from "react-icons/fa"
 import { AiOutlinePicLeft } from "react-icons/ai"
-
-
-// import TimeAgo from 'react-timeago'
+import { StaticImage } from 'gatsby-plugin-image';
+import { Helmet } from "react-helmet"
+// import { AnchorLink } from 'gatsby-plugin-anchor-links';
+import TimeAgo from 'react-timeago'
 
 const BlogList = ({ data, pageContext }) => {
 
   const { showNav } = useSiteMetadata()
+  const { showDates } = useSiteMetadata()
 
 
 
@@ -28,105 +30,101 @@ const BlogList = ({ data, pageContext }) => {
   return (
     <Layout>
 
+<Helmet>
+        <body className="archivepage utilitypage" />
+      </Helmet>
+
+
 {showNav ? (
   <div className="spacer" style={{height:'70px', border:'0px solid yellow'}}></div>
       ) : (
         ""
       )}
 
-      <div style={{maxHeight:'80vh'}}>
-        <h1 style={{textAlign:'center'}}>Archive</h1>
+      <div style={{maxHeight:'100vh'}}>
 
 
+        {/* <h1 style={{textAlign:'center'}}>Archive</h1> */}
 
 
+        <div className="contentpanel grid-container" style={{}}>
 
-        <div className="contentpanel horizontal-scroll panels" style={{padding:''}}>
-
-<div className="sliderSpacer" style={{height:'', paddingTop:'0', display:'none'}}></div>
+<div className="sliderSpacer" style={{height:'', paddingTop:'', display:''}}></div>
 
 
-        {posts.map(({ node }) => {
+{posts.map(({ node }, index) => {
           // const title = node.frontmatter.title || node.fields.slug
           // const tags = node.frontmatter.tags || []
           // const excerpt = node.frontmatter.excerpt || node.excerpt
-          const featuredImg = node.frontmatter.featuredImage
+          // const featuredImg = node.frontmatter.featuredImage
 
-          return (
-            <div key={node.fields.slug}>
-              {/* Render featured image thumbnail if it exists */}
-              {featuredImg && (
-                <Link to={node.fields.slug}>
-
-
-<GatsbyImage
-          image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
-          alt={node.frontmatter.title + " - Featured image"}
-          className="featured-image1"
-          placeholder="blurred"
-              // loading="eager"
-    
-              style={{position:'relative', zIndex:'1', maxHeight:'', margin:'0 auto'}}
-        />
-
-      
 
 
 
 
-       
+          return (
+            <div className="post-card1" key={node.fields.slug} style={{marginTop:''}}>
 
-                  
-                  
+<Link className="postlink" to={node.frontmatter.slug}>
+
+{node.frontmatter.featuredImage ? (
+    <GatsbyImage
+      image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
+      alt={node.frontmatter.title + " - Featured image"}
+      className="featured-image1"
+      placeholder="blurred"
+      loading="eager"
+      style={{ position: 'relative', zIndex: '1', maxHeight: '', margin: '0 auto' }}
+    />
+) : (
+
+    <StaticImage
+      className="featured-image1"
+      src="../../static/assets/default-og-image.webp"
+      alt="Default Image"
+      style={{ position: 'relative', zIndex: '' }}
+    />
+
+)}
 
 
-                  <div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
+<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'start', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
 
-{node.frontmatter.youtube.youtuber ? (
-<Link to={node.frontmatter.slug} style={{}}>
+  {node.frontmatter.youtube.youtuber ? (
 
-  <div className="spotlight" style={{marginLeft:'10%', marginTop:'-28%', margin:'-24% 10% 0 10%'}}>
-
-<div className="posticons" style={{flexDirection:'column', margin:'0 auto'}}>
-
+<div className="spotlight" style={{border:'0px solid green', }}>
+<div className="posticons" style={{flexDirection:'column', justifyContent:'center', margin:'0 auto'}}>
 <div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff', }}>
-<FaImage className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
-    <ImPlay className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
-    <AiOutlinePicLeft className="posticon" style={{margin:'0 auto', width:'100%', height:'5vh', fontSize:''}} />
+<FaImage className="posticon" style={{margin:'0 auto', width:'60%', height:'30px', fontSize:''}} />
+<ImPlay className="posticon" style={{margin:'0 auto', width:'60%', height:'30px', fontSize:''}} />
+<AiOutlinePicLeft className="posticon" style={{margin:'0 auto', width:'60%', height:'30px', fontSize:''}} />
 </div>
-
 Play Multimedia
 </div>
+</div>
+
+) : (
+""
+)}
+
+<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', width:'auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', border:'0px solid red', color:'#aaa' }}>
+      <h2 className="title" style={{ }}>
+        {node.frontmatter.title}
+      </h2>
+
+  </div>
 
 </div>
 
 </Link>
-) : (
-  ""
-)}
-
-
-
-
-
-<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'0 auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
-
-<h2 className="title1" style={{ }}>
-    {node.frontmatter.title}
-</h2>
-
-
-            </div>
-
-            </div>
-
-
-            
-          </Link>
-              )}
-
-
-            </div>
+{showDates ? (
+            <p style={{position:'', textAlign:'center', border:'0px solid red', fontSize:'70%', minWidth:'100px'}}>
+            <TimeAgo date={node.frontmatter.date}/>
+          </p>
+          ) : (
+            ""
+          )}
+    </div>
           )
         })}
 
@@ -134,8 +132,14 @@ Play Multimedia
       </div>
       </div>
 
+
+
+
+
+<div className="spacer66"></div>
+
       {/* Render pagination links */}
-<div style={{position:'fixed', bottom:'0', width:'100vw',  background:'rgba(0, 0, 0, 0.7)', padding:'2vh 2vw', textAlign:'center', color:'#fff'}}>
+<div style={{position:'fixed', bottom:'0', zIndex:'5', width:'100vw',  background:'rgba(0, 0, 0, 0.7)', padding:'.2vh 2vw .2vh 2vw', textAlign:'center', color:'#fff', display:'flex', justifyContent:'center'}}>
   <button onClick={() => navigate(pageContext.currentPage > 2 ? `/archive/${pageContext.currentPage - 1}` : '/archive')} disabled={pageContext.currentPage === 1}>
     Previous
   </button>
@@ -172,7 +176,7 @@ export const query = graphql`
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
       filter: { frontmatter: { template: { eq: "blog-post" } } }
-      limit: 10
+      limit: 30
       skip: $skip
     ) {
       edges {

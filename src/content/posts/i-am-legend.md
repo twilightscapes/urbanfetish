@@ -31,7 +31,7 @@ shareable: true
 underlayImage: 
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned10.jpg
 svgImage: 
-scrollable: true
+scrollable: false
 nftdrop: ""
 contentinvideo: false
 marating1: YB
@@ -42,6 +42,7 @@ maratingtx1: Use your brain please
 maratingtx2: Spontaneous & Sporadic
 maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
+showZoom: true
 category: popular
 tags:
   - abandoned

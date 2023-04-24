@@ -68,7 +68,7 @@ profTitle: Urban Decay Photography
 coverletter:
   coverText: About UrbanFetish
   coverLink: /about
-scrollable: true
+scrollable: false
 contentinvideo: false
 nftdrop: "2023-02-11T10:00:00"
 youtube:

@@ -1,11 +1,19 @@
 {
   "menuItems": [
     {
-      "menutitle": "Magazine",
-      "url": "/category"
+      "menutitle": "Category",
+      "url": "/category/news"
     },
     {
-      "menutitle": "Submissions",
+      "menutitle": "Keyword",
+      "url": "/tags/"
+    },
+    {
+      "menutitle": "Archive",
+      "url": "/archive"
+    },
+    {
+      "menutitle": "Contact",
       "url": "/contact"
     }
   ]

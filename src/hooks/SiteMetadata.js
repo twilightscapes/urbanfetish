@@ -25,9 +25,11 @@ const useSiteMetadata = () => {
             showSkills
             showNav
             showNav2
-            showSearch
             showPopup
             showDates
+            showSearch
+            showModals
+            showSwipe
             menu1
             menu2
             menu3

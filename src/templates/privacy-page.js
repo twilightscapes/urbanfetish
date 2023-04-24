@@ -30,7 +30,7 @@ const Privacy = ({ data }) => {
 
 
   <Helmet>
-  <body id="body" className="utilitypage scroll" style={{}} />
+  <body id="body" className="utilitypage" style={{}} />
 </Helmet>
 
 

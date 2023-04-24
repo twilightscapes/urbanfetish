@@ -1,10 +1,13 @@
 ---
 template: contact-page
 slug: /contact
-title: Submissions
-scrollable: true
+title: Contact
+scrollable: false
+redirect: true
+contactname: true
+contactphone: true
+contactupload: true
+uploadtext: "JPG preferred - (1600px wide)"
 ---
 
-We love to highlight upcoming artists and urban explorers who are pushing the boundaries.
 
-If you feel like your work should be displayed here, please feel free to submit your best work.

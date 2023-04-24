@@ -26,7 +26,7 @@ shareable: true
 underlayImage: 
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned6.jpg
 svgImage: 
-scrollable: true
+scrollable: false
 nftdrop: ""
 contentinvideo: false
 bumpertext: ""
@@ -38,7 +38,7 @@ maratingtx1: Use your brain please
 maratingtx2: Spontaneous & Sporadic
 maratingtx3: It's Humor - laugh
 maratingtx4: Adult Language
-category: popular
+category: news
 tags:
   - abandoned
   - building
