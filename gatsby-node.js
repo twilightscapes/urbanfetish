@@ -196,3 +196,13 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
   }
 }
 
+
+exports.onCreatePage = async ({ page, actions }) => {
+  const { createPage } = actions;
+
+  if (page.path.match(/^\/rss-feed/)) {
+    page.matchPath = "/rss-feed/*";
+    createPage(page);
+  }
+};
+
