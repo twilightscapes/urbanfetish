@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import useSiteMetadata from "../hooks/SiteMetadata"
+import useSiteMetadata from "../hooks/SiteMetadata"
 // import { StaticImage } from "gatsby-plugin-image"
 // import {Link} from "gatsby"
 import styled from "styled-components"
@@ -11,7 +11,13 @@ const CustomBox = styled.div`
 
 `
 
+
+
 const RSSFeedPage = () => {
+
+  const { showNav } = useSiteMetadata()
+  const { showDates } = useSiteMetadata()
+
   const [feed, setFeed] = useState([]);
 
   useEffect(() => {
@@ -48,15 +54,20 @@ const RSSFeedPage = () => {
         <body id="body" className="test" />
       </Helmet>
 
-      <div>
-      <h1>RSS Feed</h1>
-      <ul>
+      {showNav ? (
+        <div className="spacer" style={{ height: "70px", border: "0px solid yellow" }}></div>
+      ) : (
+        ""
+      )}
+
+<div className="contentpanel grid-container" style={{ marginTop: "" }}>
+          <div className="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }}></div>
+
         {feed.map((item, index) => (
-          <li key={index}>
+          <div className="post-card1" style={{ justifyContent: "center", alignItems: "center" }} key={index}>
+            <a className="postlink" href={item.link} rel="noopener noreferrer">
             <h2>
-              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 {item.title}
-              </a>
             </h2>
             {item.imageUrl && <img src={item.imageUrl} alt={item.title} />}
             <p>{item.description}</p>
@@ -70,10 +81,11 @@ const RSSFeedPage = () => {
                 })}
               </small>
             </p>
-          </li>
+            </a>
+          </div>
         ))}
-      </ul>
-    </div>
+      </div>
+
     </Layout>
 
 

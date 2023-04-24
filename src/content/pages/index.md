@@ -2,6 +2,7 @@
 slug: /
 tagline:  Take only memories, leave nothing but footprints
 featuredImage: /assets/trump-epstein-promo.webp
+excludeFromRSS: true
 audiostart: "20"
 audioend: "5000"
 audiotitle: "Lamb - Gorecki"
