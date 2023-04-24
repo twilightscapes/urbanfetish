@@ -2,11 +2,11 @@
   "menuItems": [
     {
       "menutitle": "Category",
-      "url": "/category/news"
+      "url": "/category"
     },
     {
       "menutitle": "Keyword",
-      "url": "/tags/"
+      "url": "/tags"
     },
     {
       "menutitle": "Archive",
