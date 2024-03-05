@@ -23,6 +23,7 @@ isnftforsale: false
 svgzindex: "0"
 comments: false
 shareable: true
+showZoom: true
 underlayImage: 
 featuredImage: /assets/urbanfetish/favorites/favorites-abandoned29.jpg
 svgImage: 
@@ -30,14 +31,7 @@ scrollable: false
 nftdrop: ""
 contentinvideo: false
 bumpertext: ""
-marating1: YB
-marating2: SS
-marating3: LH
-marating4: AL
-maratingtx1: Use your brain please
-maratingtx2: Spontaneous & Sporadic
-maratingtx3: It's Humor - laugh
-maratingtx4: Adult Language
+
 
 tags:
   - abandoned
