@@ -20,7 +20,7 @@
     "featureOptions": {
       "showArchive": true,
       "showSearch": false,
-      "showDates": true,
+      "showDates": false,
       "showTitles": true,
       "showfooter": false,
       "showSocial": false,
@@ -42,11 +42,11 @@
       "showResume": false,
       "showLocation": false,
       "showPopup": false,
-      "showPWA": true
+      "showPWA": false
     },
     "magicOptions": {
-      "showMagic": true,
-      "showMagicCat": true,
+      "showMagic": false,
+      "showMagicCat": false,
       "showMagicTag": true,
       "showMagicSearch": true
     },
