@@ -1,23 +1,31 @@
 import React from "react";
 import { Link } from "gatsby";
-import Menu from "../util/menu.json";
+import MenuSocial from "../../static/data/menu-social.json";
+import MenuDefault from "../../static/data/menu.json";
+import useSiteMetadata from "../hooks/SiteMetadata";
 
-const newMenu = Menu.menuItems.map((menu) => (
-  <Link
-    key={menu.menutitle}
-    aria-label={menu.menutitle}
-    to={menu.url}
-    title={menu.menutitle}
-    className="navbar-item"
-  >
-    {menu.menutitle}
-  </Link>
-));
+export function MenuInc({ bodyClass }) {
+  const { proOptions } = useSiteMetadata();
+  const { showModals } = proOptions;
 
-export function MenuInc() {
+  const menuItems = bodyClass === 'social' ? MenuSocial.menuItems : MenuDefault.menuItems;
+
+  const menuLinks = menuItems.map((menu) => (
+    <Link
+      key={menu.menutitle}
+      aria-label={menu.menutitle}
+      to={menu.url}
+      title={menu.menutitle}
+      className="navbar-item"
+      state={showModals ? { modal: true } : {}}
+    >
+      {menu.menutitle}
+    </Link>
+  ));
+
   return (
     <>
-      {newMenu.map((menuItem, index) => (
+      {menuLinks.map((menuItem, index) => (
         <li key={index}>{menuItem}</li>
       ))}
     </>

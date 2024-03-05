@@ -1,10 +1,9 @@
 import React from "react"
-import { graphql, Link } from "gatsby"
+import { graphql } from "gatsby"
 import useSiteMetadata from "../hooks/SiteMetadata"
 import Seo from "../components/seo"
 import Layout from "../components/siteLayout"
 import GoBack from "../components/goBack"
-import Footer from "../components/footer"
 import { Helmet } from "react-helmet"
 export const pageQuery = graphql`
   query TermsQuery($id: String!) {
@@ -55,15 +54,14 @@ const Terms = ({ data }) => {
 
 
 
-      <Link to="../" className="print" style={{position:'', bottom:'', border:'0px solid red', width:'200px', margin:'0 auto', textAlign:'center', textDecoration:'underline', padding:'.5rem 2rem', display:'flex', placeContent:'center', justifyContent:'center',borderRadius:'12px 12px 0 0'}}>Return Home</Link>
-      {/* <GoBack /> */} 
+        <div className="print"><GoBack /></div>
       
       </div>
       <br />
       <br />
       <br />
       <br />
-      <Footer />
+
     </Layout>
   )
 }

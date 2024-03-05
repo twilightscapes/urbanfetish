@@ -1,17 +1,14 @@
-import defaultColors from "../util/default-colors.json"
-import darkColors from "../util/dark-theme-colors.json"
+import defaultColors from "../../static/data/default-colors.json"
+import darkColors from "../../static/data/dark-theme-colors.json"
 import { lightness } from "@theme-ui/color"
 const theme = {
   colors: {
     ...defaultColors,
-    text: "",
-    background: "",
-    primary: "var(--primary)",
+    background: "transparent",
+    primary: "",
     accent: "#fff",
     muted: "rgba(0, 0, 0, 0.7)",
     cardBg: "",
-    textShadow: "none",
-    borderColor: "#444",
     labelText: "#777",
     inputBorder: "#aaa",
     inputBackground: "#fff",
@@ -22,15 +19,11 @@ const theme = {
     buttonHoverColor: lightness("siteColor", 0.8),
     modes: {
       dark: {
-        text: "",
-        background: "",
-        primary: "var(--primary)",
+        background: "transparent",
+        primary: "",
         accent: "#5C2941",
         muted: "rgba(0, 0, 0, 0.2)",
-        // cardBg: "linear-gradient(180deg, rgba(13, 11, 11, 0.8) 12%, rgba(19, 20, 22, 0.9) 80%)",
         cardBg: "",
-        textShadow: "rgba(0, 0, 0, 0.99)",
-        borderColor: "#888",
         labelText: "#777",
         inputBorder: "#777",
         inputBackground: "#333",

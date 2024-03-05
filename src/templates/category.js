@@ -1,181 +1,126 @@
-import React from 'react';
-import { graphql, Link, navigate } from "gatsby"
-import { GatsbyImage } from "gatsby-plugin-image"
-import Layout from "../components/siteLayout"
-import useSiteMetadata from "../hooks/SiteMetadata"
-import { ImPlay } from "react-icons/im"
-import { FaImage } from "react-icons/fa"
-import { AiOutlinePicLeft, AiFillDownSquare } from "react-icons/ai"
-import { StaticImage } from 'gatsby-plugin-image';
-import { Helmet } from "react-helmet"
-import TimeAgo from 'react-timeago'
+import React, { useState } from "react";
+import { graphql, Link, navigate } from "gatsby";
+import useSiteMetadata from "../hooks/SiteMetadata";
+// import { AiFillDownSquare } from "react-icons/ai";
+import Layout from "../components/siteLayout";
+import { Helmet } from "react-helmet";
 
-const Category = ({ data, pageContext }) => {
-  const { category } = pageContext
-  const posts = data.posts.edges
-  const categories = data.allMarkdownRemark.group.map((group) => group.fieldValue)
+const CategoryIndex = ({ data, pageContext }) => {
+  const { category } = pageContext;
+  const categories = data.allMarkdownRemark.group.map((group) => group.fieldValue);
 
-  const { showNav } = useSiteMetadata()
-  const { showDates } = useSiteMetadata()
+
+
+
+
+
+  const {  postcount, language, proOptions } = useSiteMetadata()
+
+  const { showModals  } = proOptions
+  const { dicCategory } = language;
+
+
+  const [visibleItems, setVisibleItems] = useState(postcount);
+
+  const showMoreItems = () => {
+    setVisibleItems(visibleItems + postcount);
+  };
 
   return (
     <Layout>
       <Helmet>
-        <body id="body" className="category" />
+        <body className="category utilitypage" />
       </Helmet>
 
-      {showNav ? (
-        <div className="spacer" style={{ height: "70px", border: "0px solid yellow" }}></div>
-      ) : (
-        ""
-      )}
 
-      <div>
-      <div className="selectArrow" style={{position:'fixed', top:'', left:'1%', right:'1%',  margin:'-55px auto 0 auto', zIndex:'3', display:'grid', placeSelf:'center',  padding:'',}}>
-        {/* <h1 style={{ textAlign: "center" }}>{category}</h1> */}
+      <div className="magicisland">
+        <div className="cattags font panel">
         <select
-  className="cattags"
-  style={{}}
-  onChange={(e) => {
-    const selectedCategory = e.target.value;
-    navigate(`/category/${selectedCategory}`);
-  }}
-  value={category}
->
-  <option value="">Categories:</option>
-  {categories.map((category) => (
-    <option key={category} value={category}>
-      {category}
-    </option>
-  ))}
-</select>
-
-<div style={{position:'absolute', right:'10px', top:'8px', height:'100%', color:'#fff', zIndex:'-1', fontSize:'30px'}}><AiFillDownSquare /></div>
- </div>       
-        
-
- <div className="contentpanel grid-container" style={{ marginTop: "" }}>
-          <div className="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }}></div>
-
-          {posts.map(({ node }) => {
-            const featuredImg = node.frontmatter.featuredImage;
-
-            return (
-              <div className="post-card1" style={{ justifyContent: "center", alignItems: "center" }} key={node.id}>
-                
-    
-                  <Link className="postlink" key={node.id} to={node.frontmatter.slug}>
-
-
-{featuredImg ? (
-
-<GatsbyImage
-      image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
-      alt={node.frontmatter.title + " - Featured image"}
-      className="featured-image1"
-      placeholder="blurred"
-      // loading="eager"
-      style={{ position: 'relative', zIndex: '1', maxHeight: '', margin: '0 auto' }}
-    />
-) : (
-
-    <StaticImage
-      className="featured-image1"
-      src="../../static/assets/default-og-image.webp"
-      alt="Default Image"
-      style={{ position: 'relative', zIndex: '' }}
-    />
-)}
-
-<div className="post-content" style={{display:'flex', flexDirection:'column', justifyContent:'center', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
-        
-
-<div className="panel" style={{display:'flex', justifyContent:'space-between', alignItems:'center', margin:'10px auto', maxWidth:'80vw', gap:'.4vw', height:'', textAlign:'center', padding:'1vh 2vw', fontSize:'clamp(1rem, 1vw, 1rem)',  background:'rgba(0, 0, 0, 0.7)', borderRadius:'', color:'#aaa' }}>
-            <h2 className="title" style={{ }}>
-              {node.frontmatter.title}
-            </h2>
-          {/* <p style={{position:'', textAlign:'center', border:'0px solid red', fontSize:'70%', minWidth:'100px'}}>
-            <TimeAgo date={data.frontmatter.date}/>
-          </p> */}
-        </div>
-
-            {node.frontmatter.youtube.youtuber ? (
-              <div className="spotlight" style={{border:'0px solid green', }}>
-  <div className="posticons" style={{flexDirection:'column', justifyContent:'center', margin:'0 auto'}}>
-    <div style={{display:'flex', justifyContent:'space-around', gap:'2vw', color:'fff', }}>
-      <FaImage className="posticon" style={{margin:'0 auto', width:'60%', height:'30px', fontSize:''}} />
-      <ImPlay className="posticon" style={{margin:'0 auto', width:'60%', height:'30px', fontSize:''}} />
-      <AiOutlinePicLeft className="posticon" style={{margin:'0 auto', width:'60%', height:'30px', fontSize:''}} />
-    </div>
-    Play Multimedia
-  </div>
+          className=""
+          style={{ background: 'var(--theme-ui-colors-siteColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)', padding: '2px', width:'380px', display:'block', margin:'0 1%', overflow:'hidden', height:'34px', lineHeight:'100%', color:'var(--theme-ui-colors-siteColorText)' }}
+          onChange={(e) => {
+            const selectedCategory = e.target.value;
+            navigate(`/category/${selectedCategory}`);
+          }}
+          value={category}
+        >
+          <option value="">{dicCategory}:</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+        {/* <div style={{ position: 'absolute', right: '10px', top: '8px', height: '100%', color: '#fff', zIndex: '-1', fontSize: '30px' }}><AiFillDownSquare /></div> */}
+      </div>
 </div>
-) : (
-""
-)}
 
+      <div className="contentpanel grid-container" style={{ justifyContent: 'center', alignItems: 'center', marginTop: '0', padding:'12vh 10vw 10vh 10vw' }}>
+
+        <div className="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }}></div>
+
+        {categories.slice(0, visibleItems).map((category, index) => (
+          <Link
+            key={index}
+            state={showModals ? { modal: true } : {}}
+            style={{
+              display: 'block',
+              maxHeight: '',
+              width: '',
+              height: '',
+              maxWidth: '',
+              overflow: 'hidden',
+              padding: '',
+              fontSize: 'clamp(1rem, 1.4vw, 1.2rem)',
+              border: '1px solid',
+              color: '#fff',
+              textShadow: '2px 2px 0 #222',
+              borderRadius: '8px',
+              opacity: '.8',
+              textAlign:'center'
+            }}
+            to={`/category/${category}`}
+          >
+            <div
+              className="post-card12 font"
+              key={index}
+              style={{
+                display: 'grid',
+                width: '100%',
+                maxWidth: '',
+                height: '90%',
+                minHeight: '350px',
+                placeContent: 'center',
+                textTransform: 'capitalize',
+                background: 'rgba(0, 0, 0, 0.5)',
+                border: '1px solid #999',
+                borderRadius: '8px',
+                fontSize: 'clamp(2.5rem,3vw,3rem)'
+              }}
+            >
+              {category}
             </div>
-
-
-                  </Link>
-{showDates ? (
-            <p style={{position:'', textAlign:'center', border:'0px solid red', fontSize:'70%', minWidth:'100px'}}>
-            <TimeAgo date={node.frontmatter.date}/>
-          </p>
-          ) : (
-            ""
-          )}
-              </div>
-            );
-          })}
-        </div>
+          </Link>
+        ))}
+        {visibleItems < categories.length && (
+          <button className="post-card1" style={{ justifyContent: "center", alignItems: "center" }} onClick={showMoreItems}>
+            Load more
+          </button>
+        )}
       </div>
     </Layout>
   );
 };
 
-
 export const query = graphql`
-query pageUserstoddlambertSitesbasesrctemplatescategoryJs4001253895($category: String!) {
+query {
   allMarkdownRemark(sort: {frontmatter: {date: DESC}}) {
-    edges {
-      node {
-        frontmatter {
-          category
-        }
-      }
-    }
     group(field: {frontmatter: {category: SELECT}}) {
       fieldValue
     }
   }
-  posts: allMarkdownRemark(
-    filter: {frontmatter: {category: {eq: $category}}}
-    sort: {frontmatter: {date: DESC}}
-  ) {
-    edges {
-      node {
-        id
-        frontmatter {
-          slug
-          title
-          date(formatString: "MMMM DD, YYYY")
-          category
-          youtube {
-            youtuber
-          }
-          featuredImage {
-            childImageSharp {
-              gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
-            }
-          }
-        }
-      }
-    }
-  }
 }
+`;
 
 
-`
-
-export default Category
+export default CategoryIndex;

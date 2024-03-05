@@ -10,22 +10,29 @@ backend:
     deleteMedia: "[skip ci] Delete “{{path}}”"
 
 # Uncomment local_backend when you need to develop in your local
-# local_backend: true # run npx netlify-cms-proxy-server for local testing
-logo_url: https://urbanfetish.com/assets/logo.svg
+local_backend: true # run npx netlify-cms-proxy-server for local testing
+logo_url: https://piratesocial.org/assets/pirate-logo-bw.svg
 media_folder: "static/assets"
 public_folder: "/assets"
+# publish_mode: editorial_workflow
+# site_url: ""
+# display_url: ""
+show_preview_links: false
+
 
 collections:
-  
-   
 
+
+      
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
-    label: "Posts" # Used in the UI
-    label_singular: "Post" # Used in the UI, ie: "New Post"
+    editor:
+      preview: false
+    label: "Site Posts" # Used in the UI
+    label_singular: "Site Post" # Used in the UI, ie: "New Post"
     description: >
-      Create awesome stuff here.
-    folder: "src/content/posts"
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+      Create stuff for your website here.
+    folder: "static/content/posts"
+    slug: "{{slug}}"
     summary: "{{title}} — {{year}}/{{month}}/{{day}}"
     create: true # Allow users to create new documents in this collection
     fields: # The fields each document in this collection have
@@ -35,13 +42,8 @@ collections:
           widget: "hidden",
           default: "blog-post",
         }
-      - { label: "Title", name: "title", widget: "string", tagname: "h1" }
-      - {
-          label: "Slug",
-          name: "slug",
-          widget: "string",
-          hint: "Start slug with /. Use only alphanumeric characters, - and _. Avoid spaces in any cases.",
-        }
+
+
       - {
           label: "Publish Date",
           name: "date",
@@ -50,75 +52,26 @@ collections:
           time_format: "HH:mm",
           format: "YYYY-MM-DD HH:mm",
         }
-      - { label: "SEO Description", name: "description", widget: "text" }
+
       - {
-          label: "Category",
-          name: "category",
-          widget: "select",
-          options: [
-            {
-              label: "News",
-              value: "news",
-            },
-            {
-              label: "Opinion",
-              value: "opinion",
-            },
-            {
-              label: "Feature",
-              value: "feature",
-            },
-          ],
+          label: "Slug or URL or Location (seo)",
+          name: "slug",
+          widget: "string",
+          hint: "Start slug with /. Use only alphanumeric characters, - and _. AVOID SPACES",
+          default: "/",
         }
 
-      - { label: "Page Tags", name: "tags", widget: "list", collapsed: true, default: "", required: false, add_to_top: true, field: {label: Tag, name: name, widget: string, add_to_top: true, collapsed: true,}}
-
-      - {
-              label: "YouTube",
-              name: "youtube",
-              widget: "object",
-              collapsed: true, # Set to true to collapse panel by default
-            fields: [
-              { label: "YouTube Url", name: "youtuber", widget: "string",required: false },
-              { label: "YouTube Start", name: "youtubestart", widget: "string", required: false },
-              { label: "YouTube End", name: "youtubeend", widget: "string", required: false },
-              { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false },
-              { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false },
-              { label: "YouTube Audio End", name: "audioend", widget: "string", required: false },
-              { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false },
-              { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: false, required: false },
-              { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: false, required: false },
-              { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: true, required: false },
-              { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: false, required: false },
-              { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: true, required: false },
-              { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: false, required: false }
-            ]
-          }
+      - { label: "Title", name: "title", widget: "string", tagname: "h1", hint: "Page Title (seo)" }
 
 
-      - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "", required: false  }
-      - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "", required: false  }
-      - { label: "Content Rating", name: "marate", widget: "string", default: "PG", required: false }
-      - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC", required: false  }
-      - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description", required: false  }
-      - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC", required: false  }
-      - { label: "Content Sub Rating Desc", name: "maratingtx2", widget: "string", default: "Sub Rating description", required: false  }
-      - { label: "Content Sub Rating", name: "marating3", widget: "string", default: "NC", required: false  }
-      - { label: "Content Sub Rating Desc", name: "maratingtx3", widget: "string", default: "Sub Rating description", required: false  }
-      - { label: "Content Sub Rating", name: "marating4", widget: "string", default: "NC", required: false  }
-      - { label: "Content Sub Rating Desc", name: "maratingtx4", widget: "string", default: "Sub Rating description", required: false  }
-      - { label: "Make Comments Available?", name: "comments", widget: "boolean", default: "true", required: false }
-      - { label: "Make Post Shareable?", name: "shareable", widget: "boolean", default: "true", required: false }
-      - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "false", hint: "Allows post to be scrolled vertically", required: false  }
-      - { label: "Place content inside Video Frame", name: "contentinvideo", widget: "boolean", default: "false", hint: "For Devs to inject the content of the post directly into video frame area, allowing for custom layout and features - By doing so, this replaces the normally visible content on your page - BEWARE", required: false }
-      - { label: "Fact Checked NO Mark", name: "liarliar", widget: "boolean", default: "false", hint: "Shows Red X mark next to 2nd Video", required: false }
-      - { label: "Secondary Video Title", name: "audiotitle", widget: "string", hint: "The button title for the secondary video", required: false }
-      - { label: "For NFT DROP - enter drop time", name: "nftdrop", widget: "datetime", date_format: "YYYY-MM-DD", time_format: "HH:mm", format: "YYYY-MM-DDTHH:mm:ss", required: false }
+      - { label: "Page Description", name: "description", widget: "string", hint: "Short description of the page. This is the description text in search engine results (seo)" }
 
 
+      - { label: "Category", name: "category", widget: "list", collapsed: true, default: "Default", required: false, add_to_top: true, field: {label: Category, name: name, widget: string, add_to_top: true,}, hint: "Create categories to segment a group of posts"}
+
+      - { label: "Tags", name: "tags", widget: "list", collapsed: true, default: "tagged", required: false, add_to_top: true, field: {label: Tag, name: name, widget: string, add_to_top: true, collapsed: true,}, hint: "Create tags to segment a group of posts"}
 
 
-      
       - {
           label: "Featured Image",
           name: "featuredImage",
@@ -126,43 +79,111 @@ collections:
           hint: "The primary image used for all social media, blog previews and the feature image at the top of the post",
           required: false,
           tagname: "",
+          # default: "/assets/transparent.png"
         }
       - {
-          label: "Underlay Image",
+          label: "Alternate Image",
           name: "underlayImage",
           widget: "image",
-          hint: "This is used to put a transparent png over the video but under the animation layer",
+          hint: "This image can be used over the feature image, or it can be used over the video. It is layered above the video but under the animation layer below.",
           required: false,
           tagname: "",
+          # default: "/assets/transparent.png"
         }
       - {
-          label: "SVG",
+          label: "Animation Layer",
           name: "svgImage",
           widget: "image",
-          hint: "This is the animation layer where your animated or static SVG image goes - it is on the top of the stack",
+          hint: "This is the animation layer where your animated or static SVG image goes - it is on the top of the stack. We recommend SVGator.com for creating animations",
           required: false,
           tagname: "",
+          # default: "/assets/null.svg"
         }
-      - { label: "SVG Z-Index", name: "svgzindex", widget: "string", required: false, tagname: "", }
 
 
 
       - {
-          label: "Body",
+              label: "Video Settings",
+              name: "youtube",
+              widget: "object",
+              collapsed: true, # Set to true to collapse panel by default
+            fields: [
+              { label: "Video Url", name: "youtuber", widget: "string",required: false },
+              { label: "Show Video Only (PIRATE Plus ONLY)", name: "xshowVidOnly", widget: "boolean", default: false, required: false },
+              { label: "Primary Video Start Time", name: "youtubestart", widget: "string", default: "0", required: false },
+              { label: "Primary Video End Time", name: "youtubeend", widget: "string", default: "0", required: false },
+              { label: "Video Mute", name: "youtubemute", widget: "boolean", default: false, required: false },
+              { label: "Video AutoPlay", name: "youtubeautostart", widget: "boolean", default: false, required: false },
+              { label: "Video Loop", name: "youtubeloop", widget: "boolean", default: true, required: false },
+              { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: false, required: false },
+              { label: "Video Use Custom Controls", name: "customcontrols", widget: "boolean", default: false, required: false },
+              { label: "Click To Play", name: "clicktoplay", widget: "boolean", default: false, required: false },
+              { label: "Secondary Video", name: "youtuber2", widget: "string", required: false },
+              { label: "Secondary Video Start", name: "audiostart", widget: "string",  default: "0", required: false },
+              { label: "Secondary Video End", name: "audioend", widget: "string", default: "0", required: false },
+              { label: "Secondary Video Title", name: "audiotitle", widget: "string", default: "0", required: false },
+
+              { label: "Place content inside Video Frame", name: "xcontentinvideo", widget: "boolean", default: false, hint: "(PIRATE Plus ONLY) For Devs to place the content of the post directly into video frame area, allowing for custom layout and features - By doing so, this replaces the normally visible content on your page - BEWARE", required: false },
+              
+              { label: "Fact Checked NO Mark", name: "liarliar", widget: "boolean", default: false, hint: "Shows Red X mark next to 2nd Video", required: false }
+            ]
+          }
+
+      - {
+              label: "Bumper Content Warnings (PIRATE Plus ONLY)",
+              name: "mediawarnings",
+              widget: "object",
+              collapsed: true, # Set to true to collapse panel by default
+            fields: [
+              { label: "Viewer Warning", name: "xviewerwarning", widget: "string", default: "MA", required: false },
+              { label: "Content Rating", name: "marate", widget: "string", required: false },
+              { label: "Content Sub Rating 1", name: "marating1", widget: "string", required: false },
+              { label: "Content Sub Rating 1 Text", name: "maratingtx1", widget: "string", required: false },
+              { label: "Content Sub Rating 2", name: "marating2", widget: "string", required: false },
+              { label: "Content Sub Rating 2 Text", name: "maratingtx2", widget: "string", required: false },
+              { label: "Content Sub Rating 3", name: "marating3", widget: "string", required: false },
+              { label: "Content Sub Rating 3 Text", name: "maratingtx3", widget: "string", required: false },
+              { label: "Content Sub Rating 4", name: "marating4", widget: "string", required: false },
+              { label: "Content Sub Rating 4 Text", name: "maratingtx4", widget: "string", required: false }
+            ]
+          }
+
+      - { label: "Post is Hidden (PIRATE Plus ONLY)", name: "xdraft", widget: "boolean", required: false, hint: "This hides the post from search, and filtering across the site. The post is still visible to google and anyone who know the location", }
+
+      - { label: "Share Buttons", name: "shareable", widget: "boolean", default: false, required: false }
+      - { label: "Header Image Zoom", name: "showZoom", widget: "boolean", default: false, required: false }
+      - { label: "Page Level Navigation", name: "showPageNav", widget: "boolean", default: true, required: false }
+      - { label: "Spotlight on Homepage", name: "spotlight", widget: "boolean", required: false, hint: "This weights this post to always show on the top of page results" }
+
+      # - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "false", hint: "Allows post to be scrolled vertically", required: false  }
+
+
+
+      - {
+          label: "Body Content",
           name: "body",
           widget: "markdown",
+          required: false,
           hint: "Main content goes here.",
         }
-    preview_template: "preview-templates/posts.js"
+        
+
+        
 
 
 
-  - label: "Pages"
+
+
+
+
+  - label: "Site Pages"
     name: "pages"
+    editor:
+      preview: false
     files:
-      - label: "Home"
+      - label: "Default Home Page - Important to set defaults for Search Engines"
         name: "home"
-        file: "src/content/pages/index.md"
+        file: "static/content/pages/index.md"
         fields:
           - {
               label: "Template",
@@ -174,149 +195,55 @@ collections:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Tagline", name: "tagline", widget: "string" }
           - { label: "Featured Image", name: "featuredImage", widget: "image", required: false }
-          - { label: "Secondary Image", name: "secondaryImage", widget: "image", hint: "this image is used for the background on the homepage", required: false }
+          
+
+          - { label: "Secondary Image", name: "secondaryImage", widget: "image", hint: "this image is used for the profile photo in the info section", required: false }
           - { label: "Underlay Image", name: "underlayImage", widget: "image", required: false }
-          - { label: "SVG Image", name: "svgImage", widget: "image", required: false}
-          - { label: "SVG Z-Index", name: "svgzindex", widget: "string", required: false }
 
-          - {
-              label: "YouTube",
-              name: "youtube",
-              widget: "object",
-              collapsed: true, # Set to true to collapse panel by default
-            fields: [
-              { label: "YouTube Url", name: "youtuber", widget: "string",required: false },
-              { label: "YouTube Start", name: "youtubestart", widget: "string", required: false },
-              { label: "YouTube End", name: "youtubeend", widget: "string", required: false },
-              { label: "YouTube Audio", name: "youtuber2", widget: "string", required: false },
-              { label: "YouTube Audio Start", name: "audiostart", widget: "string", required: false },
-              { label: "YouTube Audio End", name: "audioend", widget: "string", required: false },
-              { label: "YouTube Audio Title", name: "audiotitle", widget: "string", required: false },
-              { label: "YouTube Mute", name: "youtubemute", widget: "boolean", default: false, required: false },
-              { label: "YouTube AutoPlay", name: "youtubeautostart", widget: "boolean", default: false, required: false },
-              { label: "YouTube Loop", name: "youtubeloop", widget: "boolean", default: true, required: false },
-              { label: "YouTube Controls", name: "youtubecontrols", widget: "boolean", default: false, required: false },
-              { label: "YouTube Use Custom Controls", name: "customcontrols", widget: "boolean", default: true, required: false },
-              { label: "YouTube Click To Play", name: "clicktoplay", widget: "boolean", default: false, required: false }
-            ]
-          }
-
-
-
-
-
-          
-          - { label: "Embed Content inside Video (BEWARE)", 
-            hint: "Do not use this unless you understand how to put custom html and css into your content panel. Please ask     before using and breaking your website", name: "contentinvideo", widget: "boolean", default: "false", required: false }
-          - { label: "Turn Fact Check On", name: "liarliar", widget: "boolean", default: "false", required: false }
-
-          - { label: "Bumper Text", name: "bumpertext", widget: "string", default: "" }
-          - { label: "Viewer Warning", name: "viewerwarning", widget: "string", default: "" }
-
-          - { label: "Content Rating", name: "marate", widget: "string", default: "PG" }
-
-          - { label: "Content Sub Rating", name: "marating1", widget: "string", default: "NC" }
-          - { label: "Content Sub Rating Desc", name: "maratingtx1", widget: "string", default: "Sub Rating description" }
-          - { label: "Content Sub Rating", name: "marating2", widget: "string", default: "NC" }
-          - { label: "Content Sub Rating Desc", name: "maratingtx2", widget: "string", default: "Sub Rating description" }
-          - { label: "Content Sub Rating", name: "marating3", widget: "string", default: "NC" }
-          - { label: "Content Sub Rating Desc", name: "maratingtx3", widget: "string", default: "Sub Rating description" }
-          - { label: "Content Sub Rating", name: "marating4", widget: "string", default: "NC" }
-          - { label: "Content Sub Rating Desc", name: "maratingtx4", widget: "string", default: "Sub Rating description" }
-          - { label: "Cover Letter Text", name: "coverText", widget: "string", default: "" }
-          - { label: "Cover Letter Link", name: "coverLink", widget: "string", default: "" }
-
-          - { label: "Turn Page Scroll On", name: "scrollable", widget: "boolean", default: "true", hint: "Allows page to be scrolled vertically", required: false }
-
-          - { label: "Address Text", name: "addressText", widget: "string", default: "" }
-          - { label: "Address Text2", name: "addressText2", widget: "string", default: "" }
-
-          - { label: "Profile Title", name: "profTitle", widget: "string", default: "" }
-          - { label: "Profile Text", name: "profText", widget: "string", default: "" }
-
-          - { label: "Skills Title", name: "skillsTitle", widget: "string", default: "" }
-          - { label: "Skills Text", name: "skillsText", widget: "string", default: "" }
-          
-
-
-          - { label: "Body", name: "body", widget: "markdown" }
-
-          - label: "CTA"
-            name: "cta"
+          - label: "Call To Action Button (PIRATE Plus only)"
+            name: "xcta"
             widget: "object"
             fields:
+              - name: "showCTA"
+                label: "Show CTA (call to action button)"
+                widget: "boolean"
               - name: "ctaText"
-                label: "CTA text"
+                label: "CTA (call to action button) Text"
                 widget: "string"
               - name: "ctaLink"
-                label: "CTA Link"
+                label: "CTA (call to action button) - Link"
                 widget: "string"
 
-          - label: "Cover Letter"
-            name: "coverletter"
+          - label: "Cover Letter (PIRATE Plus only)"
+            name: "xcoverletter"
             widget: "object"
             fields:
+              - name: "showCover"
+                label: "Show Cover Link"
+                widget: "boolean"
               - name: "coverText"
-                label: "Custom Cover Letter Text"
+                label: "Custom Cover Link Text"
                 widget: "string"
               - name: "coverLink"
                 label: "Custom Cover Link"
                 widget: "string"
-                
-      - label: "About"
-        name: "about"
-        file: "src/content/pages/about.md"
-        fields:
-          - {
-              label: "Template",
-              name: "template",
-              widget: "hidden",
-              default: "about-page",
-            }
-          - { label: "Slug", name: "slug", widget: "hidden", default: "/about" }
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Body", name: "body", widget: "markdown" }
-      - label: "Contact"
-        name: "contact"
-        file: "src/content/pages/contact.md"
-        fields:
-          - {
-              label: "Template",
-              name: "template",
-              widget: "hidden",
-              default: "contact-page",
-            }
-          - {
-              label: "Slug",
-              name: "slug",
-              widget: "hidden",
-              default: "/contact",
-            }
-          - { label: "Title", name: "title", widget: "string" }
+
+
           - { label: "Body", name: "body", widget: "markdown" }
 
-  - name: "team"
-    label: "Team Member"
-    description: >
-      Team Member Pages
-    folder: "src/content/team"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - {label: "Template Key", name: "templateKey", widget: "hidden", default: "team"}
-      - {label: "Team Member Name", name: "name", widget: "string"}
-      - {label: "Job Title", name: "jobTitle", widget: "string"}
-      - {label: "Credentials", name: "credentials", widget: "string"}
-      - {label: "Page Order", name: "order", widget: "string"}
-      - {label: "Team Image", name: "profilePicture", widget: "image", required: false,}
-      - {label: "Body", name: "body", widget: "markdown"}
+      
+      
+
+  
 
   - name: settings
-    label: Settings
+    editor:
+      preview: false
+    label: Site Settings
     files:
       - name: general
         label: General
-        file: "src/util/site.json"
+        file: "static/data/site.json"
         fields:
           - label: meta
             name: meta
@@ -326,7 +253,7 @@ collections:
                 name: title
                 label: Site Title
                 required: true
-              - widget: string
+              - widget: hidden
                 name: titleTemplate
                 label: Title Template (ignore)
                 default: "%s"
@@ -340,34 +267,6 @@ collections:
                 label: Description
                 default: ""
                 required: false
-              - widget: image
-                name: image
-                label: Default OG Image
-                required: true
-                default: "/assets/default-og-image.webp"
-              - widget: image
-                name: iconimage
-                label: Site Logo (should be SVG if at all possible)
-              - widget: image
-                name: favicon16x16
-                label: Site Favicon 16x16 (name image like 'favicon-16x16.png')
-                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
-                default: "/assets/favicon-16x16.png"
-              - widget: image
-                name: favicon32x32
-                label: Site Favicon 32x32 (name image like 'favicon-16x16.png')
-                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
-                default: "/assets/favicon-32x32.png"
-              - widget: image
-                name: icon192
-                label: Site Icon 192x192 (name image like 'icon-192x192.png')
-                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
-                default: "/assets/icon-192x192.png"
-              - widget: image
-                name: icon512
-                label: Site Icon 512x512 (name image like 'icon-512x512.png')
-                hint: "You can use the same 512x512 image for all at the expense of users with slower connections"
-                default: "/assets/icon-512x512.png"
               - widget: string
                 name: twitterUsername
                 label: Twitter user (no '@' justthename)
@@ -376,111 +275,350 @@ collections:
                 name: companyname
                 label: Company Name or Site Name
                 required: true
-              - widget: boolean
-                name: showfooter
-                label: Show the Footer
-                required: false
-              - widget: boolean
-                name: showFeature 
-                label: Show Feature 
-                required: false
+              - widget: "number"
+                label: "Number of posts on HOME PAGE"
+                name: "homecount"
+                default: 5
+                value_type: "int"
+                min: 1
+                max: 51
+                step: 2
+                hint: "Max #50"
+              - widget: "number"
+                label: "Number of posts on other pages"
+                name: "postcount"
+                default: 18
+                value_type: "int"
+                min: 1
+                max: 51
+                step: 2
+                hint: "Max #50"
 
-              - widget: boolean
-                name: showInfo 
-                label: Show Info 
-                required: false
 
-              - widget: boolean
-                name: showPosts 
-                label: Show Posts 
-                required: false
 
-              - widget: boolean
-                name: showNav 
-                label: Show Top Nav
-                required: false
 
-              - widget: boolean
-                name: showNav2 
-                label: Show Side Nav
-                required: false
 
-              - widget: boolean
-                name: showSocial 
-                label: Show Social Links
-                required: false
 
-              - widget: boolean
-                name: showSearch
-                label: Show Search Icon 
-                required: false
 
-              - widget: boolean
-                name: showCover
-                label: Show Cover Link
-                required: false
+              - name: "navOptions"
+                label: "Navigation Options"
+                widget: "object"
+                collapsed: true
+                fields:
 
-              - widget: boolean
-                name: showResume
-                label: Show Resume
-                required: false
+                  - widget: boolean
+                    name: showNav 
+                    label: Show Top Nav
+                    required: false
+                    default: true
 
-              - widget: boolean
-                name: showSkills
-                label: Show Skills
-                required: false
+                  - widget: boolean
+                    name: showNav2 
+                    label: Show Side Nav
+                    required: false
+                  
+                  - widget: boolean
+                    name: showFooterMenu 
+                    label: Show Footer Menu
+                    required: false
 
-              - widget: boolean
-                name: showModals
-                label: Show Modals
-                required: false
 
-              - widget: string
-                name: font1
-                label: Google Font
-                required: false
+              - name: "language"
+                label: "UI Language"
+                widget: "object"
+                collapsed: true
+                fields:
 
-              - widget: string
-                name: menu1
-                label: Menu Title 1
-                required: false
-                default: Info
+                  - name: "dicLoadMore"
+                    label: "Load More"
+                    widget: "string"
+                    required: false
+                  - name: "dicViewArchive"
+                    label: "View Archive"
+                    widget: "string"
+                    required: false
+                  - name: "dicCategory"
+                    label: "Category"
+                    widget: "string"
+                    required: false
+                  - name: "dicKeyword"
+                    label: "Keyword"
+                    widget: "string"
+                    required: false
+                  - name: "dicSearch"
+                    label: "Search"
+                    widget: "string"
+                    required: false
+                  - name: "dicClear"
+                    label: "Clear"
+                    widget: "string"
+                    required: false
+                  - name: "dicResults"
+                    label: "Result"
+                    widget: "string"
+                    required: false
+                  - name: "dicContact"
+                    label: "Contact"
+                    widget: "string"
+                    required: false
+                  - name: "dicSocial"
+                    label: "Social Links"
+                    widget: "string"
+                    required: false
+                  - name: "dicDisclaimer"
+                    label: "Disclaimer"
+                    widget: "string"
+                    required: false
+                  - name: "dicPrivacy"
+                    label: "Privacy"
+                    widget: "string"
+                    required: false
+                  - name: "dicTerms"
+                    label: "Terms of Use"
+                    widget: "string"
+                    required: false
+                  - name: "dicCopyright"
+                    label: "Copyright"
+                    widget: "string"
+                    required: false
+                  - name: "dicSwipe"
+                    label: "Swipe"
+                    widget: "string"
+                    required: false
+                  - name: "dicScroll"
+                    label: "Scroll"
+                    widget: "string"
+                    required: false
+                  - name: "dicPirate"
+                    label: "Powered by PIRATE"
+                    widget: "string"
+                    eequired: false
+                  - name: "dicSiteReport"
+                    label: "Site Report"
+                    widget: "string"
+                    required: false
+                  - name: "dicLight"
+                    label: "Light"
+                    widget: "string"
+                    required: false
+                  - name: "dicDark"
+                    label: "Dark"
+                    widget: "string"
+                    required: false
+                  - name: "dicGoBack"
+                    label: "Go Back"
+                    widget: "string"
+                    required: false
+                  - name: "dicPlayVideo"
+                    label: "Play Video"
+                    widget: "string"
+                    required: false
+                  - name: "dicPlayMultimedia"
+                    label: "Play Multimedia"
+                    widget: "string"
+                    required: false
+                  - name: "dicClickToView"
+                    label: "Click To View"
+                    widget: "string"
+                    required: false
+                  - name: "dicSignUpButton"
+                    label: "Sign Up"
+                    widget: "string"
+                    required: false
+                  - name: "dicSignUpText"
+                    label: "Sign Up - Enter your email"
+                    widget: "string"
+                    required: false
+                  - name: "dicClose"
+                    label: "X Close"
+                    widget: "string"
+                    required: false
+                  - name: "dicName"
+                    label: "Your Name"
+                    widget: "string"
+                    required: false
+                  - name: "dicEmail"
+                    label: "your@email.com"
+                    widget: "string"
+                    required: false
+                  - name: "dicMessage"
+                    label: "Your Message"
+                    widget: "string"
+                    required: false
+                  - name: "dicSubmit"
+                    label: "Send Message"
+                    widget: "string"
+                    required: false
+                  - name: "dicPhone"
+                    label: "Your Phone Number"
+                    widget: "string"
+                    required: false
+                  - name: "dicConfirmation"
+                    label: "Message Received"
+                    widget: "string"
+                    required: false
+                  - name: "xdicProfileAudioText"
+                    label: "I just listened to:"
+                    widget: "string"
+                    required: false
+                  - name: "xdicProfileAudioActionText"
+                    label: "Click to listen"
+                    widget: "string"
+                    required: false  
 
-              - widget: string
-                name: menu2
-                label: Menu Title 
-                required: false
-                default: Posts
+              - name: "magicOptions"
+                label: "Sort/Search Island options"
+                widget: "object"
+                collapsed: true
+                fields:
 
-              - widget: string
-                name: menu3 
-                label: Menu Title 3
-                required: false
-                default: Resume
+                  - name: "showMagic"
+                    label: "Show Floating Sort/Search Island?"
+                    widget: "boolean"
+                    hint: "A floating navigation bar that allows for sorting and searching posts"
+                    default: true
+                    required: false
 
-              - widget: string
-                name: menu4
-                label: Menu Title 4
-                required: false
-                default: Skills
-                
+                  - name: "showMagicCat"
+                    label: "Show Categories?"
+                    widget: "boolean"
+                    required: false
+                    default: true
+
+                  - name: "showMagicTag"
+                    label: "Show Tags?"
+                    widget: "boolean"
+                    required: false
+                    default: "true"
+
+                  - name: "showMagicSearch"
+                    label: "Show Search?"
+                    widget: "boolean"
+                    required: false
+                    default: true
+
+
+              - name: "featureOptions"
+                label: "Site Features"
+                widget: "object"
+                collapsed: true
+                fields:
+                  - widget: boolean
+                    name: showVideoPlayer
+                    label: Show Pirate Video on home page
+                    required: false
+                  - widget: boolean
+                    name: showProfile
+                    label: Show Profile section on homepage
+                    required: false
+                    default: false
+                  - widget: boolean
+                    name: showPosts
+                    label: Show posts section on homepage
+                    required: false
+                    default: false
+                  - widget: boolean
+                    name: showDefault
+                    label: Show Swipe(horizontal scroll) by default
+                    required: false
+                    default: false
+                  - widget: boolean
+                    name: showfooter
+                    label: Show the Footer
+                    required: false
+                  - widget: boolean
+                    name: showTitles
+                    label: Show Post Titles
+                    required: false
+                  - widget: boolean
+                    name: showDates
+                    label: Show Dates
+                    required: false
+                  - widget: boolean
+                    name: showSearch
+                    label: Show Search Icon 
+                    required: false
+                  - widget: boolean
+                    name: showSwipe
+                    label: Show Swipe Icon
+                    required: false
+                  - widget: boolean
+                    name: showSocial 
+                    label: Show Social Links
+                    required: false
+                  # - widget: boolean
+                  #   name: showArchive 
+                  #   label: Show Archive link under "Load More" button
+                  #   required: false
+                    # PRO BELOW
+              - name: "proOptions"
+                label: "Plus Features (PIRATE Plus users only)"
+                widget: "object"
+                collapsed: true
+                fields:
+                  - widget: boolean
+                    name: xshowFeature
+                    label: Show Feature Image Video section on homepage
+                    required: false
+                  - widget: boolean
+                    name: xshowModals
+                    label: Show Posts in Modal Window
+                    required: false
+                  - widget: boolean
+                    name: xshowBranding
+                    label: Hide Pirate Branding
+                    required: false
+                  - widget: boolean
+                    name: xshowPopup 
+                    label: Show Sign Up Form In Posts
+                    required: false
+                  - widget: boolean
+                    name: xshowLegal
+                    label: Show Legal Pages (note the pages are still there just not visible)
+                    required: false
+                  - widget: boolean
+                    name: xshowContact
+                    label: Show Contact in Footer
+                    required: false
+                  - widget: boolean
+                    name: xshowConsent
+                    label: Show Cookie Consent Banner
+                    required: false
+                  - widget: string
+                    name: xstartUrl
+                    label: the url of the page you want when your app is installed
+                    hint: "to make your contact page or resume just type contact or     resume"
+                    required: false
+                    default: false
+
+
+
+
+
+
               
 
-          - label: "Commenting – Go to: https://commentbox.io - sign up for free account "
-            name: comments
-            widget: string
-            hint: "Add your CommentBox ID – should look like xxxxxxxxxxxxxxxx-proj"
-            required: false
-          - label: "Google Analytics"
-            name: ga
-            widget: string
-            hint: "Add your tracking ID, should look like UA-XXXXXXXXX-X or G-XXXXXXXXXX"
-
-
-
+              - widget: image
+                name: image
+                label: Site Background Image
+                required: false
+                default: "/assets/default-og-image.webp"
+              - widget: image
+                name: iconimage
+                label: Site Logo (should be SVG if at all possible)
+                required: false
+              - widget: image
+                name: icon512
+                label: Site Icon 512x512
+                hint: "This is for icon usage in various locations"
+                required: false
+                
+              
       - label: Social Icons
         name: socialIcons
-        file: "src/util/socialmedia.json"
+        editor:
+          preview: false
+        file: "static/data/socialmedia.json"
         fields:
           - label: Social Icons
             name: socialIcons
@@ -494,7 +632,7 @@ collections:
                 options:
                   [
                     "facebook",
-                    "twitter",
+                    "x-twitter",
                     "linkedin",
                     "youtube",
                     "instagram",
@@ -517,9 +655,15 @@ collections:
                 required: true
                 hint: "Paste the 'URL' of your Social media"
 
+
+
+    
+
       - label: Menu Navigation
         name: menuNavigation
-        file: "src/util/menu.json"
+        editor:
+          preview: false
+        file: "static/data/menu.json"
         fields:
           - label: Menu Items
             name: menuItems
@@ -538,25 +682,159 @@ collections:
                 required: true
                 hint: "add the url of the menu item"
 
-  - label: "Appearance"
+  - label: "Site Appearance"
     name: "appearance"
+    editor:
+      preview: false
     identifier_field: "name"
     files:
+      - label: "User Styles"
+        name: "userStyles"
+        file: "static/data/userStyles.json"
+        fields:
+          - label: "Override Site Styles"
+            name: "userStyles"
+            widget: "text"
+            hint: "Additional CSS can be written here, overwriting the site's default styles."
+
       - label: "Default Theme"
         name: "themescolors"
-        file: "src/util/default-colors.json"
+        file: "static/data/default-colors.json"
         fields:
-          - label: "Primary Color"
+
+          - label: "Site Font - powered by Google"
+            name: "siteFont"
+            widget: "string"
+            hint: "Google Font Name"
+
+          - label: "Site Background Color"
+            name: "siteBackground"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Default Page Background Color"
+
+          - label: "Site Text Color"
+            name: "text"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Default Page Text Color"
+
+          - label: "Site Text Shadow Color"
+            name: "textShadow"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Default Page Text Shadow Color"
+        
+          - label: "Highlight Color"
             name: "siteColor"
             widget: "color"
             enableAlpha: true
             allowInput: true
+            hint: "Used for buttons and link colors"
+
+          - label: "Hightlight Text Color"
+            name: "siteColorText"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Used for buttons and link colors"
+
+          - label: "Header/Menu Background"
+            name: "headerColor"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Header and Side Menu background"
+
+          - label: "Header/Menu Text Color"
+            name: "headerColorText"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Used for buttons and link colors"
+
+          - label: "Site Border Color"
+            name: "borderColor"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Used for element borders"
+
+          - label: "Site Border Radius"
+            name: "borderRadius"
+            widget: "string"
+            hint: "Rounded Corners Radius"
+
       - label: "Dark Theme"
         name: "darkthemescolors"
-        file: "src/util/dark-theme-colors.json"
+        file: "static/data/dark-theme-colors.json"
         fields:
-          - label: "Primary Color"
+
+          - label: "Site Font - powered by Google"
+            name: "siteFont"
+            widget: "string"
+            hint: "Google Font Name"
+
+          - label: "Site Background Color"
+            name: "siteBackground"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Default Page Background Color"
+
+          - label: "Site Text Color"
+            name: "text"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Default Page Text Color"
+
+          - label: "Site Text Shadow Color"
+            name: "textShadow"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Default Page Text Shadow Color"
+        
+          - label: "Highlight Color"
             name: "siteColor"
             widget: "color"
             enableAlpha: true
             allowInput: true
+            hint: "Used for buttons and link colors"
+
+          - label: "Hightlight Text Color"
+            name: "siteColorText"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Used for buttons and link colors"
+
+          - label: "Header/Menu Background"
+            name: "headerColor"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Header and Side Menu background"
+
+          - label: "Header/Menu Text Color"
+            name: "headerColorText"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Used for buttons and link colors"
+
+          - label: "Site Border Color"
+            name: "borderColor"
+            widget: "color"
+            enableAlpha: true
+            allowInput: true
+            hint: "Used for element borders"
+
+          - label: "Site Border Radius"
+            name: "borderRadius"
+            widget: "string"
+            hint: "Rounded Corners Radius"

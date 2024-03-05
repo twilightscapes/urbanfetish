@@ -1,15 +1,14 @@
 import * as React from "react"
 // import useSiteMetadata from "../hooks/SiteMetadata"
 // import ScrollAnimation from 'react-animate-on-scroll'
-
+import Xlogo from "../img/xcorp-logo.svg"
 
 // import Install from "../components/Install-footer"
-import Icons from "../util/socialmedia.json"
+import Icons from "../../static/data/socialmedia.json"
 // import { FaHandPointDown } from "react-icons/fa"
 
 import {
   RiFacebookBoxFill,
-  RiTwitterFill,
   RiLinkedinBoxFill,
   RiYoutubeFill,
   RiInstagramFill,
@@ -48,8 +47,8 @@ const sIcons = Icons.socialIcons.map((icons, index) => {
         ""
       )}
       {icons.icon === "twitter" ? (
-        <a aria-label="Link to Twitter" title="Twitter" className="social" href={icons.url} rel="noreferrer" target="_blank">
-          <RiTwitterFill />
+        <a aria-label="Link to Twitter X" title="The App Formerly known as Twitter" className="social" href={icons.url} rel="noreferrer" target="_blank">
+          <Xlogo style={{maxWidth:'30px'}} />
         </a>
       ) : (
         ""
@@ -76,7 +75,7 @@ const sIcons = Icons.socialIcons.map((icons, index) => {
         ""
       )}
       {icons.icon === "rss" ? (
-        <a className="social" href={icons.url} rel="noreferrer" target="_blank">
+        <a aria-label="Link to RSS" className="social" href={icons.url} rel="noreferrer" target="_blank">
           <RiRssFill />
         </a>
       ) : (

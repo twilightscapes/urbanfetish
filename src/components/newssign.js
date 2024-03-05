@@ -1,106 +1,178 @@
 
 import * as React from "react"
+import { useState } from "react"
 import { Link } from "gatsby"
-import { RiSendPlane2Line } from "react-icons/ri"
-
-// import Layout from "./layout"
-// import Seo from "./seo"
-import styled from "styled-components";
-const CustomBox = styled.div`
+import useSiteMetadata from "../hooks/SiteMetadata";
 
 
-.newsletter{position:relative;}
+export function NewsletterPage() {
 
-input::placeholder {
-  color: #fff !important;
-  filter: drop-shadow(0px 0px 6px var(--primary-color));
-}
+  const { showModals, language } = useSiteMetadata();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-
-
-
-
-
-    @media (max-width: 58em) {
-
-
-      .signbox input{margin-bottom:10px; margin-right:20px;}
-
-    }
-
-
-}
-
-`
-
-
-const NewsletterPage = () => (
-
-
-<CustomBox style={{}}> 
-
-
-<form  style={{width:'90%', margin:'0 auto 10vh auto', display:'flex', flexDirection:'column', justifyContent:'center', background: 'rgba(0,0,0,0.50)',
-  backdropFilter: 'blur(4px)', border:'1px solid #000', borderRadius:'12px', textAlign:'center', alignSelf:'center', overflow:'hidden', color:'#fff'}}
-          className="contact-form"
-          action="/signedup/"
-          name="ts-news"
-          method="POST"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="news" />
+  const encode = data => {
+    // console.log(data);
+    return Object.keys(data)
+      .map(key => {
+        if (key === "file") {
+          return encodeURIComponent(key) + "=" + encodeURIComponent(data[key][0].name);
+        }
+        return encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+      })
+      .join("&");
+  };
+  
+  const handleSubmit = e => {
+    e.preventDefault();
+    const form = e.target;
+    setIsSubmitting(true);
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      if (key === "file") {
+        data[key] = [value];
+      } else {
+        data[key] = value;
+      }
+    });
 
 
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: encode({
+          "form-name": form.getAttribute("signup"),
+          ...data,
+        }),
+      })
+        .then(() => setSubmitted(true))
+        .catch(error => alert(error));
+    
+  };
 
-            
-              <div className="txtshadow" style={{fontSize:'clamp(1.4rem, 1.5vw, 1.5rem)', textAlign:'center', marginTop:'10px'}}><strong>Get All The Latest Minutes</strong></div>
-              <br />
-              <span className="txtshadow" style={{fontSize:'95%'}}>Get notified when NEW Minutes drop </span>
+const { dicPrivacy, dicSignUpText, dicSignUpButton } = language;
 
-             <div className="signbox" style={{display:'flex', gap:'10px'}}>
-             
-             
-
-               <label style={{color:'#fff'}} htmlFor="email">
-                 <input type="email" name="email" required={true}
-                      placeholder="your@email.com"
-                      style={{}}/></label>
-                      
-            
+return (
 
 
+
+
+
+<div className="signup" >
+<form
+  className={`contact-form flexcheek1 ${submitted ? "submitted" : ""}`}
+  // action="/install2"
+  name="signup"
+  method="POST"
+  data-netlify="true"
+  data-netlify-honeypot="bot-field"
+  encType="multipart/form-data"
+  onSubmit={handleSubmit}
+  style={{width:'100%', minWidth:'300px', maxWidth:'400px', margin:'0 auto 0 auto', display:'flex', flexDirection:'column', justifyContent:'center', background: 'var(--theme-ui-colors-headerColor)',
+  backdropFilter: 'blur(44px)', borderRadius:'var(--theme-ui-colors-borderRadius)', textAlign:'center', alignSelf:'center', overflow:'hidden', color:'var(--theme-ui-colors-headerColorText)', border:'0px solid red'}}
+>
+
+
+<div className="txtshadow" style={{fontSize:'95%', marginTop:'.5rem'}}>{dicSignUpText} 
+
+             <div className="signbox" style={{display:'flex', flexDirection:'column',gap:'10px',}}>
+
+  {submitted ? (
+    <div className="thank-you-message" style={{fontSize:'200%', height:'', textAlign:'center'}}>
+      Submitted!
+    </div>
+  ) : (
+    <>
+      <input type="hidden" name="form-name" value="signup" />
+
+
+    {/* <p>
+      <label htmlFor="name" aria-label="Your Name">
+        <input type="text" id="name" name="name" placeholder="Your name" required />
+      </label>
+    </p> */}
   
 
-            
+      
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+      <label style={{ color: '#fff' }} htmlFor="email">
+  <input
+    name="email"
+    type="email"
+    id="email"
+    required={true}
+    placeholder="your@email.com"
+    autoComplete="email"
+  />
+</label>
+      
 
-            <button
-              className="button"
-              
+
+    {/* <p>
+      <label htmlFor="phone" aria-label="Your Phone">
+        <input type="tel" id="phone" name="phone" placeholder="Your phone number" />
+      </label>
+    </p> */}
+      {/* <p>
+        <label htmlFor="message" aria-label="Your Message">
+          <textarea id="message" name="message" placeholder="Your Bio" required></textarea>
+        </label>
+      </p> */}
+   {/* <label htmlFor="file"  aria-label="Upload your file" style={{padding: '0', color: 'inherit', textShadow:'1px 1px 0 #555', display:'flex', flexDirection:'column', width:'100%', fontSize:'90%', gap:'15px', justifyContent:'center', alignItems:'center'}}>
+  Upload file
+        <input className="file-input hidden" type="file" id="file" name="file" />
+      </label> */}
+
+
+       
+       {/* <button
+              className="button fire"
               type="submit"
-              style={{marginTop:'-8px', fontSize:'clamp(1rem, 1.5vw, 1.5rem)', whiteSpace:'nowrap'}}
+              style={{marginTop:'-8px', whiteSpace:'nowrap', color:''
+            }}
             >
-              Notify Me&nbsp;{" "}
+              {dicSignUpButton}&nbsp;
               <span className="icon -right">
                 <RiSendPlane2Line />
               </span>
-            </button>
+            </button> */}
 
+            
 
+        <button
+            className="button"
+            type="submit"
+            disabled={isSubmitting}
+            style={{ margin:'-8px auto', whiteSpace:'nowrap', width:'80%',
+            border: '1px solid var(--theme-ui-colors-siteColor)',
+            background: 'var(--theme-ui-colors-headerColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)', color: 'var(--theme-ui-colors-headerColorText)',
+
+            
+          }}
+          >
+            {isSubmitting ? "Submitting..." : dicSignUpButton}
+          </button>
+          
+
+          
+
+          <div style={{padding: '', margin:'0 0 5px 0', textAlign: 'center', color:'', fontSize:'70%'}}>
+            <Link state={showModals ? { modal: true } : {}} to="/privacy/" className="" style={{textAlign: 'center', padding: '',  textDecoration: 'underline', border:'0px solid yellow'}}>{dicPrivacy}</Link>
             </div>
-
-
-            <div style={{fontSize: '', padding: '0px 3%', margin:'30px 0 10px 0', textAlign: 'center', color:'#fff'}}>
-            <Link to="/privacy/" className="" style={{textAlign: 'center', padding: '15px',  textDecoration: 'underline', border:'0px solid yellow'}}>privacy policy (NO SPAM!)</Link>
-           
-            </div>
+            
+    </>
+  )}
+  </div>
+  </div>
 </form>
 
+</div>
 
-        
-        
-</CustomBox>
-  
 )
+  
+}
 
-  export default NewsletterPage
+export default NewsletterPage;
+

@@ -1,47 +1,101 @@
-const { useStaticQuery, graphql } = require("gatsby")
+const { useStaticQuery, graphql } = require("gatsby");
 
 const useSiteMetadata = () => {
   const { site } = useStaticQuery(
     graphql`
-      query SiteMetaData {
-        site {
-          siteMetadata {
-            title
-            titleDefault
-            siteUrl
-            description
-            image
-            twitterUsername
-            iconimage
-            companyname
-            comments
+    query SiteMetaData {
+      site {
+        siteMetadata {
+          title
+          titleDefault
+          siteUrl
+          description
+          image
+          twitterUsername
+          iconimage
+          companyname
+          postcount
+          homecount
+
+          featureOptions{
             showfooter
-            showInfo
-            showCover
-            showFeature
-            showPosts
-            showResume
-            showSocial
-            showSkills
-            showNav
-            showNav2
-            showPopup
             showDates
             showSearch
-            showModals
             showSwipe
-            menu1
-            menu2
-            menu3
-            menu4
-            font1
-            postcount
+            showDefault
+            showArchive
+            showTitles
+            showSocial
+            showVideoPlayer
+            showHomePosts
+            showProfile
+          }
+
+          proOptions{
+            showConsent
+            showBranding
+            showLegal
+            showModals
+            showContact
+            showPopup
+            ShowDisclaimer
+            startUrl
+            showFeature
+            showPWA
+          }
+          navOptions{
+            showFooterMenu
+            showNav
+            showNav2
+          }
+          magicOptions {
+            showMagic
+            showMagicCat
+            showMagicTag
+            showMagicSearch
+          }
+          language {
+            dicLoadMore
+            dicViewArchive
+            dicCategory
+            dicKeyword
+            dicSearch
+            dicClear
+            dicResults
+            dicContact
+            dicSocial
+            dicDisclaimer
+            dicPrivacy
+            dicTerms
+            dicCopyright
+            dicSwipe
+            dicScroll
+            dicPirate
+            dicSiteReport
+            dicLight
+            dicDark
+            dicGoBack
+            dicPlayVideo
+            dicPlayMultimedia
+            dicClickToView
+            dicSignUpText
+            dicSignUpButton
+            dicClose
+            dicName
+            dicEmail
+            dicMessage
+            dicSubmit
+            dicPhone
+            dicConfirmation
+            dicProfileAudioText
+            dicProfileAudioActionText
           }
         }
       }
-    `
-  )
-  return site.siteMetadata
-}
+    }
+  `
+  );
+  return site.siteMetadata;
+};
 
 module.exports = useSiteMetadata;

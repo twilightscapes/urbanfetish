@@ -1,22 +1,19 @@
 [build]
+  command = "npm run build"
   publish = "public"
-  command = "gatsby build"
 
 [build.environment]
   NODE_VERSION = "18"
   NODE_OPTIONS = "--max_old_space_size=4096"
 
-
 [[headers]]
-  # Define which paths this specific [[headers]] block will cover.
   for = "/*"
-    [headers.values]
+  [headers.values]
     Access-Control-Allow-Origin = "*"
+    X-Frame-Options = "ALLOWALL"
+    Content-Security-Policy = "frame-ancestors *"
+    Secure-Referrer-Policy = "origin-when-cross-origin"
 
-
-
-
-
-
-
-
+[[edge_functions]]
+  function = "hello" 
+  path = "/hello"

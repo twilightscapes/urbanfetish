@@ -1,0 +1,12 @@
+{
+  "menuItems": [
+    {
+      "menutitle": "Timeline",
+      "url": "/timeline"
+    },
+    {
+      "menutitle": "Create",
+      "url": "/pirate"
+    }
+  ]
+}

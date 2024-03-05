@@ -1,0 +1,12 @@
+{
+  "siteColor": "#ff00dd",
+  "siteColorText": "white",
+  "headerColor": "rgba(0, 0, 0, .8)",
+  "headerColorText": "#fff",
+  "siteBackground": "#333",
+  "text": "#cccccc",
+  "textShadow": "rgba(0, 0, 0, .6)",
+  "borderColor": "#333",
+  "borderRadius": "3px",
+  "siteFont": "Titan One"
+}

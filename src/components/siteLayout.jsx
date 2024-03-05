@@ -1,611 +1,371 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Seo from "./seo"
 import { Link } from 'gatsby-plugin-modal-routing-4'
-// import { ModalRoutingContext } from '@decantyme/gatsby-plugin-modal-routing'
-// import { AiOutlineClose } from "react-icons/ai"
-import { window } from "browser-monads"
-import "../assets/scss/reset.scss"
-import "../assets/scss/global.scss"
-// import "../assets/scss/styles.css"
+import "../styles/reset.css"
+import "../styles/global.css"
 import { AnchorLink } from "gatsby-plugin-anchor-links"
-// import { StoreContext } from "../context/store-context"
-// import { Toast } from "./toast"
-// import Bug from "../../static/assets/logo.svg"
-// import SiteLogo from "../../static/assets/logo.svg"
+// import { navigate } from "gatsby"
+// import { RiCloseCircleFill } from "react-icons/ri";
 import { Helmet } from "react-helmet"
 import Theme from "./theme"
-// import { CartButton } from "./cart-button"
 import SearchIcon from "../../src/img/search"
-// import SearchForm from "./searchbox"
 import useSiteMetadata from "../hooks/SiteMetadata"
 import { RiArrowUpFill } from "react-icons/ri"
 import GoBack from "../components/goBack"
-import { BiLeftArrow } from "react-icons/bi"
 import { ModalRoutingContext } from 'gatsby-plugin-modal-routing-4'
-// import { AiOutlineClose } from "react-icons/ai"
-import { BiGridHorizontal } from "react-icons/bi"
-import { MdOutlineRectangle } from "react-icons/md"
 import Menu from "../components/menu"
-import userStyles from "../util/userStyles.json"
-import SignUp from "../components/newssign"
-
-
-
+import SocialMenu from "../components/menu-social"
+import { BiLeftArrow } from "react-icons/bi"
+// import Consent from "../components/Consent"
+import defaultColors from "../../static/data/default-colors.json";
+import userStyles from "../../static/data/userStyles.json"
+import Switch from "../components/Switch"
+import BlueCheck from './bluecheck';
+import Footer from "../components/footer"
+import PwaInstaller from "../components/PwaInstaller"
 
 const Layout = ({ children }) => {
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
 
-
-
-const { companyname } = useSiteMetadata()
-const { iconimage } = useSiteMetadata()
-
-const { image } = useSiteMetadata()
-
-// const { showModals } = useSiteMetadata()
-
-const { showNav } = useSiteMetadata()
-const { showNav2 } = useSiteMetadata()
-// const { showInfo } = useSiteMetadata()
-// const { showFeature } = useSiteMetadata()
-// const { showPosts } = useSiteMetadata()
-const { showSearch } = useSiteMetadata()
-
-// const { showResume } = useSiteMetadata()
-// const { showSocial } = useSiteMetadata()
-// const { showSkills } = useSiteMetadata()
-// const { showCover } = useSiteMetadata()
-// const { showfooter } = useSiteMetadata()
-const { showPopup } = useSiteMetadata()
-// const { menu1 } = useSiteMetadata()
-// const { menu2 } = useSiteMetadata()
-// const { menu3 } = useSiteMetadata()
-// const { menu4 } = useSiteMetadata()
-const { font1 } = useSiteMetadata()
-// const { userStyles } = useSiteMetadata()
-
-
-
-const { showSwipe } = useSiteMetadata()
-const [archiveView, setArchiveView] = useState('');
-
-const applyArchiveView = useCallback(() => {
-  const elements = document.querySelectorAll(".contentpanel");
-  elements.forEach((el) => {
-    if (archiveView === "grid") {
-      el.classList.remove("horizontal-scroll", "panels");
-      el.classList.add("grid-container");
-      // document.body.classList.add("scrollable");
-      // document.querySelector('#showPosts').style.height = 'auto';
-      // window.scrollTo(0, 0);
-    } else if (archiveView === "swipe") {
-      el.classList.remove("grid-container");
-      el.classList.add("horizontal-scroll", "panels");
-      // document.body.classList.remove("scrollable");
-
-      document.querySelector('.contentpanel').style.transition = 'all .5s ease-in-out';
-      // document.querySelector('#showPosts').style.height = '600px';
-      window.scrollTo(0, 0);
+  function isRunningStandalone() {
+    if (typeof window !== 'undefined') {
+        return window.matchMedia('(display-mode: standalone)').matches;
     }
-  });
-  localStorage.setItem("archiveView", archiveView);
-}, [archiveView]);
-
-useEffect(() => {
-  sessionStorage.setItem("currentScrollPos", window.pageYOffset)
-  let prevScrollpos = window.pageYOffset;
-
-  const handleScroll = () => {
-    const currentScrollPos = window.pageYOffset;
-    if (prevScrollpos > currentScrollPos && prevScrollpos - currentScrollPos > 75) {
-      // document.querySelector('.header').style.transform = 'translateY(0)';
-      if (showNav2) {
-        document.querySelector('#menuicon').style.transform = 'translateX(0)';
-      }
-      document.querySelector('.upbar').style.transform = 'translateY(140px)';
-      // document.body.classList.remove('scroll');
-      // document.body.classList.add('scroll');
-    } else if (prevScrollpos < currentScrollPos && currentScrollPos - prevScrollpos > 75) {
-      // document.querySelector('.header').style.transform = 'translateY(-100px)';
-      if (showNav2) {
-        document.querySelector('#menuicon').style.transform = 'translateX(200px)';
-      }
-      document.querySelector('.upbar').style.transform = 'translateY(-100px)';
-      // document.body.classList.add('scroll');
-    }
-    prevScrollpos = currentScrollPos;
-  };
-
-  handleScroll();
-
-  window.addEventListener("scroll", handleScroll);
-
-  return () => {
-    window.removeEventListener("scroll", handleScroll);
-  }
-}, [showNav2]);
-
-useEffect(() => {
-  if (showSwipe) {
-    // Retrieve the selected option from local storage or default to 'grid' or 'swipe'
-    const storedArchiveView = localStorage.getItem("archiveView");
-    setArchiveView(
-      storedArchiveView || (showSwipe ? "swipe" : "grid")
-    );
-  }
-}, [showSwipe]);
-
-useEffect(() => {
-  // Apply the selected option on page load
-  applyArchiveView();
-}, [applyArchiveView]);
-
-const toggleArchiveView = () => {
-  const newArchiveView = archiveView === "grid" ? "swipe" : "grid";
-  setArchiveView(newArchiveView);
-  applyArchiveView();
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const QUERY = '(prefers-reduced-motion: no-preference)';
-  const mediaQueryList = window.matchMedia(QUERY);
-  const prefersReducedMotion = !mediaQueryList.matches;
-
-  
-
-const navStyle = {
-  bg: "",
+    return false;
 }
 
-const fontUrl = "https://fonts.googleapis.com/css?family=" + font1.replace(/\s+/g, '+') + "&display=swap";
+
+  const handleScroll = () => {
+    const currentScrollPos = document.documentElement.scrollTop || document.body.scrollTop;
+
+    if (currentScrollPos === 0) {
+      setShowBackToTop(false);
+    } else {
+      setShowBackToTop(true);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('scroll', handleScroll);
+
+    return () => {
+      document.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', 
+    });
+  };
+
+  const { language, navOptions, featureOptions, proOptions } = useSiteMetadata();
+  const { dicSearch, dicPirate, dicGoBack } = language;
+  const { showNav, showNav2 } = navOptions
+  const { showfooter, showSwipe, showSearch } = featureOptions
+  const { showModals, showBranding,
+    //  showConsent, 
+     showPWA } = proOptions
+
+  const { companyname } = useSiteMetadata()
+  const { iconimage } = useSiteMetadata()
+  const { image } = useSiteMetadata()
+
+  const fontUrl = `https://fonts.googleapis.com/css?family=${defaultColors?.siteFont}&display=swap`;
 
 
 
+  // Determine the current page location
+  const currentPage = typeof window !== 'undefined' ? window.location.pathname : '/';
+  // console.log('Current Page:', currentPage);
+  
 
+  // Define an array of page locations where you want to show the social menu
+  const socialMenuPages = ['/pirate', '/feeds', '/favorites'];
+
+  
   return (
+    <>
+      <Helmet>
+      <meta
+    http-equiv="Content-Security-Policy"
+    content="font-src 'self' https://fonts.gstatic.com"
+  />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link id="yyy" rel="stylesheet" href={fontUrl} crossOrigin="anonymous" referrerPolicy="no-referrer-when-downgrade" />
+        
+        {/* .ReactModal__Content{opacity:.99} */}
+        <style>{`
+    
+          ${userStyles.userStyles}
+        `}</style>
+      </Helmet>
 
-<>
-
-
-
-
-<Helmet>
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-  {font1 ? (
-    <link id="yyy" rel="stylesheet" href={fontUrl} crossOrigin="anonymous" referrerPolicy="no-referrer-when-downgrade" />
-  ) : null}
-  <style>{`
-    #menu,.font,.full-width-image:after,.h1,.h2,.h3,.h4,.header .menu-icon:before,.horizontal-scroll:before,.intro:after,.intro:before,.scrolldown,h1,h2,h3,h4,input.special{font-family:${font1}, sans-serif}
-    ${userStyles.userStyles}
-  `}</style>
-</Helmet>
-
-
-
+      <Seo />
 
 
 
-
-<Seo />
-
-
-<div id="top" name="pagetop"></div>
-
-
-<ModalRoutingContext.Consumer >
-{({ modal, closeTo }) => (
+      <ModalRoutingContext.Consumer>
+      {({ modal, closeTo }) => (
 <>
   {modal ? (
-    <div style={{display:'', position:'fixed', top:'80px', right:'3%', padding:'0px', fontSize:'', opacity:'1 !important', zIndex:'105', filter:' drop-shadow(0px 4px 3px #000)', color:'#fff', border:'1px solid red !important'}}>
-    <Link state={{noScroll: true }} to={closeTo} style={{fontSize:'',  textDecoration:'none', lineHeight:'', display:'flex', flexDirection:'column', color:'#fff', cursor:'pointer'}}>
-    <button className="button" style={{display:'flex', justifyContent:'center'}}><span className="icon -left" style={{paddingRight:''}}><BiLeftArrow /></span> {" "}Go Back</button>
-    </Link>
-   
-    </div>
+<div style={{display:'flex', justifyContent: 'center', color: '#ccc',  position:'fixed', top:'60px', right:'1vw', padding:'0px', fontSize:'', opacity:'1 !important', zIndex:'12',}}>
+<Link state={{noScroll: true }} to={closeTo} style={{fontSize:'',  textDecoration:'none', lineHeight:'', display:'flex', flexDirection:'column', color:'#fff', cursor:'pointer'}}>
+<button className="button" style={{ display: 'flex', justifyContent: 'center', padding:'0 .5vw' }}><span className="icon -left" style={{ paddingRight: '' }}><BiLeftArrow /></span> {" "}{dicGoBack}</button>
+</Link>
+</div>
   ) : (
 ''
   )}
 </>
 )}
 </ModalRoutingContext.Consumer>
-  
-
-
-<div className="upbar button" style={{position:'fixed', bottom:'20px', zIndex:'4', left:'', right:'1vw', display:'flex', justifyContent:'center', width:'auto', maxWidth:'80vw', margin:'0 auto', gap:'5vw', padding:'0', border:'1px solid #666', borderRadius:'', textShadow:'0 1px 1px rgba(0, 0, 0, .7)', fontSize:'', verticalAlign:'center', transform: 'translateY(200%)' }}>
-
-<div className="uparrow" style={{display:'flex', flexDirection:'column', gap:'0', padding:'1vh 1vw', alignItems:'center', textAlign:'center'}}>
-  <a href="#top" onClick={(e) => {
-  e.preventDefault();
-  document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
-}} aria-label="Link to Top" style={{cursor:'pointer', height:'', fontSize:''}}>
-  <RiArrowUpFill className="" style={{cursor:'pointer', color:'#ddd', fontSize:'3rem'}} />
-</a>
-</div>
-</div>
 
 
 
-<div id="gobacker" style={{position:'fixed', top:'60px', right:'3vw', zIndex:'5'}}><GoBack /></div>
+      <header className="header" style={{ display: 'block', height: showNav ? '60px' : '0' }}>
 
+        {showNav ? (
 
+          <div id="menu" className="menu print panel1 header" style={{ position: 'fixed', width: '100vw', top: '0', zIndex: '30', maxHeight: '', overFlow: '', boxShadow: '0 0 0 rgba(0,0,0,.7)', padding: '0 2%', alignItems: 'start', borderRadius: '0', display: 'flex', justifyContent: 'space-around', gap: '10px', color: 'var(--theme-ui-colors-headerColorText)', borderBottom: '0px solid #222', }}>
 
-{showNav ? (
-<div id="menu" className="menu print panel1 header" style={{position:'fixed', width:'100vw', top:'0', zIndex:'10', maxHeight:'', overFlow:'', boxShadow:'0 0 2px rgba(0,0,0,.7)', padding:'0 2%', alignItems:'start', borderRadius:'0', display:'flex', justifyContent:'space-around', gap:'10px', color:'#fff',  borderBottom:'1px solid #222',
+            <div style={{ position: 'absolute', left: '10px', top: '22px', cursor: 'pointer' }}><BlueCheck /></div>
 
-  }}>
-
-
-{prefersReducedMotion ? (
-    <Link to="/" className="cornerlogo" name="homereturn" style={{position:'', display:'block', maxWidth:'', height:'auto', border:'0px solid transparent'}}  aria-label="Link to Top" title="Back to Top">
-            <button className="cornerlogo" style={{position:'relative', top:'', left:'4%', border:'0px solid white', borderBottom:'0px solid transparent'}} aria-label="Return to Home">
-            {iconimage ? (
-      <img className="" src={iconimage} alt={companyname} style={{maxHeight:'', border:'none'}} width="117" height="60" />
-                ) : (
-                  <div style={{fontWeight:'bold',}}>{companyname}</div>
-                )}
-            </button>
+            <Link state={showModals ? { modal: true } : {}} to="/" className="cornerlogo" name="homereturn" style={{ position: '', display: 'flex', marginLeft: '25px', alignItems: 'center', justifyContent: 'center', maxWidth: '', height: '60px', border: '0px solid transparent' }} aria-label="Link to Top" title="Back to Top">
+              {iconimage ? (
+                <img className="cornerlogo" style={{ position: 'relative', top: '', left: '4%', border: '0px solid white', padding: '0', maxHeight: '60px' }} src={iconimage} alt={companyname} width="111" height="60" />
+              ) : (
+                <div style={{ fontWeight: '', display: 'grid', justifyContent: 'center', alignItems: 'center', height: '', fontSize: 'clamp(.9rem,2vw,1rem)', color: 'var(--theme-ui-colors-headerColorText)', maxWidth: '50vw' }}>
+                  {companyname}
+                </div>
+              )}
             </Link>
-          ) : (
-          
-                        <Link to="/" className="cornerlogo" name="homereturn" style={{position:'', display:'block', maxWidth:'', height:'auto', border:'0px solid transparent'}}  aria-label="Link to Top" title="Back to Top">
-            {iconimage ? (
-      <img className="cornerlogo" style={{position:'relative', top:'', left:'4%', border:'0px solid white', padding:'0', maxHeight:''}} src={iconimage} alt={companyname} width="117" height="60" />
-                ) : (
-                  <div style={{fontWeight:'bold',}}>{companyname}</div>
-                )}
-            </Link>
-                        
-          )}
 
-
-          
+            <ul className="topmenu" style={{ fontSize: 'clamp(.6rem, 1.6vw, 1.8rem)', textAlign: 'center', maxHeight: '', display: 'flex', justifyContent: 'space-between', gap: '4vw', alignItems: 'center', margin: '0 auto 0 auto', padding: '1.5vh 2% 0 2%', border: '0px solid white' }}>
 
 
 
+            {socialMenuPages.some(page => currentPage.startsWith(page)) ? <SocialMenu /> : <Menu />}
 
 
-<ul className="topmenu" sx={navStyle} style={{ fontSize:'clamp(.6rem, 1.6vw, 1.8rem)',  textAlign:'center',maxHeight:'', display:'flex', justifyContent:'space-between', gap:'4vw',  alignItems:'center', margin:'0 auto 0 auto', padding:'1.5vh 2% 0 2%', border:'0px solid white',}}>
-      
+              {/* <li key="demo"><Link to="/pirate">View Demo</Link></li> */}
+            </ul>
 
+            <div id="missioncontrol" className="missioncontrol sitecontrols" style={{ display: 'flex', justifyContent: 'space-around', fontSize: 'clamp(.8rem, 2.3vw, 2.5rem)', gap: '3vw', textAlign: 'center', maxHeight: '', alignItems: 'center', paddingTop: '5px' }}>
 
+              {showSearch ? (
+                <div className="searchIcon">
+                  <Link state={showModals ? { modal: true } : {}} aria-label="Search" to="/search/" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginTop: '0px', textAlign: 'center' }}>
+                    <SearchIcon style={{ height: '30px' }} />
+                    <span className="themetext">{dicSearch}</span>
+                  </Link>
+                </div>
+              ) : (
+                ""
+              )}
 
+              <div>
+                <Theme style={{}} />
+              </div>
 
-
-      
- 
-
-{/* {showInfo ? (
-<li style={{position:'relative',}}>
-      {prefersReducedMotion ? (
-       <Link aria-label="Menu 1" className="navbar-item" to="/#info" style={{paddingRight:'',}}>{menu1}</Link>    
-   ) : (
-      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/#info" style={{paddingRight:'',}}>
-      {menu1}</AnchorLink>         
-    )}
-</li>
-      ) : (
-  ""
-)}
-
-{showResume ? (
-<li style={{position:'relative',}}>
-      {prefersReducedMotion ? (
-       <Link aria-label="Menu 3" className="navbar-item" to="/#resume" style={{paddingRight:'',}}>{menu3}</Link>    
-   ) : (
-      <AnchorLink aria-label="Menu 3" className="navbar-item" to="/#resume" style={{paddingRight:'',}}>
-      {menu3}</AnchorLink>         
-    )}
-</li>
-      ) : (
-  ""
-)}
-
-{showSkills ? (
-<li style={{position:'relative',}}>
-      {prefersReducedMotion ? (
-       <Link className="navbar-item" to="/#skills" style={{paddingRight:'',}}>{menu4}</Link>    
-   ) : (
-      <AnchorLink aria-label="Menu 4" className="navbar-item" to="/#skills" style={{paddingRight:'',}}>
-      {menu4}</AnchorLink>         
-    )}
-</li>
-      ) : (
-  ""
-)} */}
-
-
-<Menu />
-
-
-
-
-
-
-
-</ul>
-
-<div id="missioncontrol" className="missioncontrol sitecontrols" style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'3vw', textAlign:'center', maxHeight:'', alignItems:'center', paddingTop:'5px'}}>
-
-{showSearch ? (
-<div>
-   <Link aria-label="Search UrbanFetish" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
-    <SearchIcon style={{height:'30px'}} />
-    <span className="themetext">search</span>
-   </Link>
-        </div>
-      ) : (
-        ""
-      )}
-
-
-  <div>
-      <Theme  style={{}} />
-        </div>
-
-  
-        {showSwipe ? (
-  <div>
-  <button
-  aria-label="Grid/Swipe View"
-  onClick={toggleArchiveView}
-  className="swipescroll"
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: "0px",
-    textAlign: "center",
-  }}
->
-  {archiveView === "grid" ? (
-    <MdOutlineRectangle style={{ width: "40px", height: "30px" }} />
-  ) : (
-    <BiGridHorizontal style={{ width: "40px", height: "30px" }} />
-  )}
-  <span className="themetext">
-    {archiveView === "grid" ? "swipe" : "scroll"}
-  </span>
-</button>
-</div>
-      ) : (
-        ""
-      )}
- 
-
-
-</div>
-      
-
-        
-           
-      
+              {showSwipe ? (
+                <Switch />
+              ) : (
+                ""
+              )}
 
             </div>
 
-) : (
-  ""
-)}
+          </div>
+
+        ) : (
+          ""
+        )}
+      </header>
 
 
 
+      <main id="top" name="top" style={{height:'',}}>
+        {children}
 
+      <div className={`upbar button ${showBackToTop ? 'visible' : ''}`}
+        style={{
+          position: 'fixed',
+          bottom: '80px',
+          zIndex: '60',
+          left: '',
+          right: '1vw',
+          display: 'flex',
+          justifyContent: 'center',
+          width: 'auto',
+          maxWidth: '80vw',
+          margin: '0 auto',
+          gap: '5vw',
+          padding: '0',
+          border: 'none',
+          borderRadius: '',
+          textShadow: '0 1px 1px rgba(0, 0, 0, .7)',
+          fontSize: '',
+          verticalAlign: 'center',
+          transform: showBackToTop ? 'translateY(0)' : 'translateY(300%)',
+        }}
+      >
+        <AnchorLink
+          to="#top"
+          aria-label="Link to Top"
+          onClick={scrollToTop}
+          style={{ cursor: 'pointer', height: '', fontSize: '', border: 'none', outline: 'none' }}
+          state={showModals ? { modal: true } : {}}
+        >
+          <div className="uparrow" style={{ display: 'flex', flexDirection: 'column', gap: '0', padding: '', alignItems: 'center', textAlign: 'center' }}>
+            <RiArrowUpFill
+            aria-label="Link to Top"
+              className=""
+              style={{ cursor: 'pointer', color: 'var(--theme-ui-colors-siteColorText)', fill: 'var(--theme-ui-colors-siteColorText)', fontSize: '3rem' }}
+            />
+          </div>
+        </AnchorLink>
+      </div>
 
-<header>
-{showNav2 ? (
-
+      {showPWA ? (
 <>
-
-<input type="checkbox" className="openSidebarMenu" id="openSidebarMenu" />
-<>{ /* eslint-disable-next-line jsx-a11y/label-has-associated-control */ }</>
-  <label htmlFor="openSidebarMenu" className="backdrop1" ></label>
-
-<label id="menuicon" htmlFor="openSidebarMenu" className="sidebarIconToggle bug">
-<div style={{textAlign:'center', opacity:'1', textShadow:'2px 2px 10px 2px #000', maxWidth:'500px', color:'#fff', fontWeight:'bold', border:'0px solid blue'}}>
-{iconimage ? (
-      <img className="" src={iconimage} alt={companyname} width="120" height="60" style={{maxHeight:'60px', maxWidth:'120px', border:'none'}} />
-                ) : (
-                  <div style={{fontWeight:'bold', color:'yellow'}}>companyname</div>
-                )}
-</div>
-  </label>
-
-  
-
-   <div id="sidebarMenu" style={{minWidth:'', width:'',}}>
-
-<ul className="sidebarMenuInner post-card panel" style={{maxWidth:'260px', position:'absolute', right:'0', display:'', justifyContent:''}}>
-
-    <li className="grad logo" style={{position:'relative', maxHeight:'100px', width:'auto', display:'flex', justifyContent:'center'}}>
-            <AnchorLink className="sidelogo" to="/" name="homereturn" style={{position:'', display:'block', maxWidth:'150px', height:'60px', border:'0px solid'}}  aria-label="Link to Top" title="Back to Top">
-            {iconimage ? (
-      <img src={iconimage} alt={companyname} width="120" height="60" style={{maxHeight:'60px', border:'none'}} />
-                ) : (
-                  <div style={{fontWeight:'bold'}}>companyname</div>
-                )}
-            </AnchorLink>
-    </li>
-      
-{/* {showInfo ? (
-<li style={{position:'relative',}}>
-      {prefersReducedMotion ? (
-       <Link aria-label="Menu 1" className="navbar-item" to="/#info" style={{paddingRight:'',}}>{menu1}</Link>    
-   ) : (
-      <AnchorLink aria-label="Menu 1" className="navbar-item" to="/#info" style={{paddingRight:'',}}>
-      {menu1}</AnchorLink>         
-    )}
-</li>
-      ) : (
-  ""
+{!isRunningStandalone() && (
+<PwaInstaller />
 )}
-
-{showResume ? (
-<li style={{position:'relative',}}>
-      {prefersReducedMotion ? (
-       <Link aria-label="Menu 3" className="navbar-item" to="/#resume" style={{paddingRight:'',}}>{menu3}</Link>    
-   ) : (
-      <AnchorLink aria-label="Menu 3" className="navbar-item" to="/#resume" style={{paddingRight:'',}}>
-      {menu3}</AnchorLink>         
-    )}
-</li>
-      ) : (
-  ""
-)}
-
-
-{showSkills ? (
-<li style={{position:'relative',}}>
-      {prefersReducedMotion ? (
-       <Link className="navbar-item" to="/#skills" style={{paddingRight:'',}}>{menu4}</Link>    
-   ) : (
-      <AnchorLink aria-label="Menu 4" className="navbar-item" to="/#skills" style={{paddingRight:'',}}>
-      {menu4}</AnchorLink>         
-    )}
-</li>
-      ) : (
-  ""
-)} */}
-
-<Menu />
-
-<li>
-<ul className="missioncontrol sitecontrols" style={{display:'flex', justifyContent:'space-around', fontSize:'clamp(.8rem, 2.3vw, 2.5rem)', gap:'', textAlign:'center', maxHeight:'', alignItems:'center', paddingTop:'5px'}}>
-
-{showSearch ? (
-<li>
-   <Link aria-label="Search UrbanFetish" to="/search/" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:'0px', textAlign:'center'}}>
-    <SearchIcon style={{height:'30px'}} />
-    <span className="themetext">search</span>
-   </Link>
-        </li>
-      ) : (
-        ""
-      )}
-
-
-  <li>
-      <Theme  style={{}} />
-        </li>
-
-  
-        {showSwipe ? (
-  <li>
-  <button
-  aria-label="Grid/Swipe View"
-  onClick={toggleArchiveView}
-  className="swipescroll"
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: "0px",
-    textAlign: "center",
-  }}
->
-  {archiveView === "grid" ? (
-    <MdOutlineRectangle style={{ width: "40px", height: "30px" }} />
-  ) : (
-    <BiGridHorizontal style={{ width: "40px", height: "30px" }} />
-  )}
-  <span className="themetext">
-    {archiveView === "grid" ? "swipe" : "scroll"}
-  </span>
-</button>
-</li>
-      ) : (
-        ""
-      )}
-
-
-</ul>
-</li>
-
-</ul>
-</div>
 </>
-
-
-) : (
-  ""
+  ) : (
+''
 )}
+      </main>
+
+      
+      {showfooter ? (
+    <Footer />
+      ) : (
+        <footer className="" style={{display:'flex', flexDirection:'column', zIndex:'1', justifyContent:'end', padding:'0', marginTop:'0', width:'100vw',textAlign:'center'}}>
+          {showBranding ? (
+            <div style={{ textAlign: 'center', margin: '0 0 2rem 0', justifyContent: 'center', fontSize: '.75rem', position: 'relative', right: '', top: '10px' }}>
+              <a className="panel" href="https://pirateweb.org" rel="noreferrer">{dicPirate}</a>
+            </div>
+          ) : (
+            ""
+          )}
+        </footer>
+      )}
+
+
+
+      
+
+
+
+<div id="gobacker"><GoBack /></div>
 
 
 
 
 
 
-
-
-
-
-</header>
-
-
-
-{showPopup ? (
-<div className="signup popper"
-  style={{
-  position:'fixed',
-  top:'15vh',
-  left:'20vw',
-  right:'20vw',
-  zIndex:'1',
-  margin:'70px auto 0 auto',
-  padding:' 0',
-  maxWidth:'500px',
-  borderRadius:'12px',
-  // display:'grid',
-  // placeSelf:'center',
-  }}>
-<SignUp />
-  </div>
-
+      {image ? (
+        <img type="image/svg+xml" className="backimage" src={image} alt="Default Background" style={{}} width="10" height="10" />
       ) : (
         ""
       )}
 
 
 
+      {/* {showConsent ? (
+        <div style={{display:'flex', placeContent:'', position:'absolute', width:'100vw', margin:'0 auto', height:'100%', top:'50%', left:'', right:'', zIndex:'2', border:'0px solid blue'}}>
+          <Consent />
+          </div>
+      ) : (
+        ""
+      )} */}
 
-<div style={{maxWidth:'', overflowX:'hidden', position:'relative'}}>
-{children}
-</div>
-      
 
 
- 
 
-{image ? (
-<img className="backimage" src={image} alt="Default Background" style={{height:'100vh', width:'100vw', position:'fixed', zIndex:'-2', top:'0', objectFit:'cover',}} width="10" height="10" />
-) : (
-  ""
-)}
 
-      
 
-      
-      </>
 
-    
-    );
-  };
-  
-  export default Layout;
+      {showNav2 ? (
+        <div>
 
-  
+          <input type="checkbox" className="openSidebarMenu" id="openSidebarMenu" />
+          <>{/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}</>
+          <label htmlFor="openSidebarMenu" className="backdrop1"></label>
+
+          <label id="menuicon" htmlFor="openSidebarMenu" className="sidebarIconToggle bug">
+            <div style={{ textAlign: 'center', opacity: '1', maxWidth: '500px', color: 'var(--theme-ui-colors-headerColorText)', fontWeight: 'bold' }}>
+              {iconimage ? (
+                <img className="" src={iconimage} alt={companyname} width="120" height="60" style={{ maxHeight: '60px', maxWidth: '120px', border: 'none' }} />
+              ) : (
+                <div className="fire" style={{ opacity: '.6', fontWeight: '', color: '', border: '0px solid blue', padding: '1vh 2vw', marginRight: '4px', boxShadow: '0px 0px 0px 0px var(--theme-ui-colors-headerColorText)' }}>{companyname}</div>
+              )}
+            </div>
+          </label>
+
+          <div id="sidebarMenu" style={{ minWidth: '', width: '', }}>
+
+            <ul className="sidebarMenuInner post-card panel" style={{ maxWidth: '260px', position: 'absolute', right: '0', display: '', justifyContent: '' }}>
+
+              <li className="grad logo" style={{ position: 'relative', maxHeight: '100px', width: 'auto', display: 'flex', justifyContent: 'center' }}>
+                <AnchorLink className="sidelogo" to="/" state={showModals ? { modal: true } : {}} name="homereturn" style={{ position: '', display: 'block', maxWidth: '150px', height: '60px', border: '0px solid' }} aria-label="Link to Top" title="Back to Top">
+                  {iconimage ? (
+                    <img src={iconimage} alt={companyname} width="120" height="60" style={{ maxHeight: '60px', border: 'none' }} />
+                  ) : (
+                    <div style={{ fontWeight: 'bold' }}>{companyname}</div>
+                  )}
+                </AnchorLink>
+              </li>
+
+              {/* <Menu id="sidechick" /> */}
+              {socialMenuPages.some(page => currentPage.startsWith(page)) ? <SocialMenu id="sidechick" /> : <Menu id="sidechick" />}
+
+              <li>
+                <ul className="missioncontrol sitecontrols" style={{ display: 'flex', justifyContent: 'space-around', fontSize: 'clamp(.8rem, 2.3vw, 2.5rem)', gap: '', textAlign: 'center', maxHeight: '', alignItems: 'center', paddingTop: '5px' }}>
+
+                  {showSearch ? (
+                    <li className="searchIcon">
+                      <Link state={showModals ? { modal: true } : {}} aria-label="Search" to="/search/" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginTop: '0px', textAlign: 'center' }}>
+                        <SearchIcon style={{ height: '30px' }} />
+                        <span className="themetext">{dicSearch}</span>
+                      </Link>
+                    </li>
+                  ) : (
+                    ""
+                  )}
+
+                  <li>
+                    <Theme style={{}} />
+                  </li>
+
+                  {showSwipe ? (
+                    <li>
+                      <Switch />
+                    </li>
+                  ) : (
+                    ""
+                  )}
+
+                </ul>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      ) : (
+        ""
+      )}
+
+
+
+    </>
+  );
+};
+
+export default Layout;
