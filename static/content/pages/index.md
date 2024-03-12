@@ -79,6 +79,7 @@ draft: true
 spotlight: false
 comments: false
 shareable: false
+externalLink: https://piratesocial.org
 ---
 <div class="" style="text-align:left;">Take a walk on the wild side and follow along as Todd Lambert goes in search of the creepiest, freakiest, spookiest abandoned and desolate locations and the people who dare to go there.
  <br /> <br />
