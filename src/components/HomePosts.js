@@ -27,8 +27,8 @@ const HomePosts = ({ isSliderVisible }) => {
   const data = useStaticQuery(graphql`
   query ($homecount: Int) {
     allMarkdownRemark(
-      sort: [{ frontmatter: { spotlight: ASC } }, { frontmatter: { date: DESC } }]
-      filter: { frontmatter: { template: { eq: "blog-post" }, draft: { ne: true } } }
+      sort: {frontmatter: {date: DESC}}
+      filter: {frontmatter: {template: {eq: "blog-post"}, draft: {ne: true}}}
       limit: $homecount
     ) {
       edges {
@@ -52,6 +52,7 @@ const HomePosts = ({ isSliderVisible }) => {
             category
             tags
             slug
+            externalLink
             spotlight
             draft
           }
@@ -146,19 +147,42 @@ const { dicLoadMore, dicCategory, dicKeyword, dicSearch, dicClear, dicResults, d
   const allTagsSet = new Set(allPosts.flatMap(({ node }) => node.frontmatter.tags || []));
   const allTags = Array.from(allTagsSet);
 
-  const filteredPosts = allPosts.filter(({ node }) => {
-    const { title, tags, category: categories, spotlight } = node.frontmatter;
+
+
+
+
+
+  const spotlightTruePosts = allPosts.filter(({ node }) => node.frontmatter.spotlight === true);
+  const filteredPosts = allPosts
+  .filter(({ node }) => {
+    const { title, tags, category: categories } = node.frontmatter; // Remove the spotlight declaration
     const titleMatch = query === "" || title.toLowerCase().includes(query.toLowerCase());
     const categoryMatch = selectedCategory === "" || (Array.isArray(categories) && categories.includes(selectedCategory));
     const tagMatch = selectedTag === "" || (tags && Array.isArray(tags) && tags.includes(selectedTag));
-  
-    // Check if spotlight is explicitly set to false or is undefined
-    if (spotlight === false || spotlight === undefined) {
-      return false; // Exclude posts with spotlight: false
-    }
-  
     return titleMatch && categoryMatch && tagMatch;
-  });
+  })
+    .sort((a, b) => {
+      if (a.node.frontmatter.spotlight === b.node.frontmatter.spotlight) {
+        return new Date(b.node.frontmatter.date) - new Date(a.node.frontmatter.date);
+      } else {
+        return a.node.frontmatter.spotlight ? -1 : 1;
+      }
+    });
+  
+  // Prepend posts with spotlight: true to the filteredPosts array
+  filteredPosts.unshift(...spotlightTruePosts.filter(post => !filteredPosts.includes(post)));
+  
+  
+
+
+
+
+  
+  
+  
+  
+  
+  
   
   
 
@@ -277,131 +301,142 @@ const [playingIndex, setPlayingIndex] = useState(null);
 
 
         {filteredPosts.slice(0, numVisibleItems).map(({ node }, index) => (
-  
+  <>
 
+  {node.frontmatter.externalLink ? (
+
+  <div style={{display:'block', width:'100%', height:'100%'}}><iframe loading="lazy" id="" style={{width:'100%', minWidth:'350px', maxHeight:'80vh', margin:'0 auto'}} title="iFrame" className="iframe boom" width="980" height="550" src={node.frontmatter.externalLink} frameBorder="0" allowFullScreen></iframe></div>
+    
+
+    ) : (
+
+    
 <div key={index} className="post-card1" style={{ alignItems: '', overflow: 'visible', position:'relative' }}>
 
 {(node.frontmatter.youtube?.showVidOnly && node.frontmatter.youtube.showVidOnly) ? (
 
 <div style={{minWidth:'300px', minHeight: index === playingIndex ? '200px' : '200px', background: index === playingIndex ? 'rgba(0, 0, 0, 0.5)' : 'transparent', zindex:'1'}}>
-                <ReactPlayer
-                playing={index === playingIndex}
-                ref={playerRef}
-                url={node.frontmatter.youtube.youtuber}
-                  allow="web-share"
-                  // style={{ position: 'relative', margin: '0 auto 15px auto', zIndex: '',aspectRatio:'16/9', }}
-                  width="350px"
-                  height="200px"
-                  className='inline'
-                  playsinline
-                  // className={`relative ${index === playingIndex ? 'fixed' : 'relative'}`}
-                  style={{
-                    position: index === playingIndex ? 'fixed' : 'relative',
-                    
-                    // top: index === playingIndex ? '50%' : 'auto',
-                    // left: index === playingIndex ? '50%' : 'auto',
-                    // transform: index === playingIndex ? 'translate(-50%, -50%)' : 'none',
-                    bottom: index === playingIndex ? '10vh' : '',
-                    left: index === playingIndex ? '5%' : '',
-                    margin:'0 auto',
-                    transition: 'all 1.3s ease-in-out',
-                    // width: index === playingIndex ? '100%' : '350px',
-                    // height: index === playingIndex ? '100%' : '200px',
-                    border: index === playingIndex ? '1px solid var(--theme-ui-colors-siteColor)' : 'inherit',
-                    boxShadow: index === playingIndex ? '2px 1px 10px 10px rgba(0, 0, 0, 0.5)' : 'inherit',
-                    // width: '80vw',
-                    // height:'60vh',
-                    // margin: index === playingIndex ? '0' : '0 auto 15px auto',
-                    zIndex: index === playingIndex ? '9999' : '1',
-                    aspectRatio: '16/9',
-                    maxHeight:'40dvh'
-                  }}
-                  light={`https://i.ytimg.com/vi/${extractVideoId(node.frontmatter.youtube.youtuber)}/hqdefault.jpg`}
-                  config={{
-                    file: {
-                      attributes: {
-                        crossOrigin: "anonymous",
-                      },
-                    },
-                    youtube: {
-                      playerVars: { showinfo: 0, autoplay: 1, controls: 1, mute: 0, loop: 1 },
-                    },
-                  }}
-                  playIcon={
-                    <div style={{display:'flex', flexDirection:'column', placeContent:'', justifyContent:'', position:'absolute', zindex:'1', top:'', fontWeight:'bold', padding:'3% 0 0 0', width:'100%', maxWidth:'25vw', height:'100%', border:'0px solid', borderRadius:'12px', margin:'0 auto 0 auto', opacity:'.99', textShadow:'2px 2px 2px black', color:'#fff' }}>
-                      <div className="spotlight font" style={{}}>
-                        <div className="posticons" style={{ flexDirection: 'column', margin: '0 auto' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-around', gap: '2vw', color: 'fff', }}>
-                            <ImPlay className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', fontSize: '' }} />
-                          </div>
-                          {dicPlayVideo}
-                        </div>
-                      </div>
-                    </div>}
-                    onPlay={() => handleVideoPlay(index)}
-                    onPause={handleVideoPause}
-                />
+      <ReactPlayer
+      playing={index === playingIndex}
+      ref={playerRef}
+      url={node.frontmatter.youtube.youtuber}
+        allow="web-share"
+        // style={{ position: 'relative', margin: '0 auto 15px auto', zIndex: '',aspectRatio:'16/9', }}
+        width="350px"
+        height="200px"
+        className='inline'
+        playsinline
+        // className={`relative ${index === playingIndex ? 'fixed' : 'relative'}`}
+        style={{
+          position: index === playingIndex ? 'fixed' : 'relative',
+          
+          // top: index === playingIndex ? '50%' : 'auto',
+          // left: index === playingIndex ? '50%' : 'auto',
+          // transform: index === playingIndex ? 'translate(-50%, -50%)' : 'none',
+          bottom: index === playingIndex ? '10vh' : '',
+          left: index === playingIndex ? '5%' : '',
+          margin:'0 auto',
+          transition: 'all 1.3s ease-in-out',
+          // width: index === playingIndex ? '100%' : '350px',
+          // height: index === playingIndex ? '100%' : '200px',
+          border: index === playingIndex ? '1px solid var(--theme-ui-colors-siteColor)' : 'inherit',
+          boxShadow: index === playingIndex ? '2px 1px 10px 10px rgba(0, 0, 0, 0.5)' : 'inherit',
+          // width: '80vw',
+          // height:'60vh',
+          // margin: index === playingIndex ? '0' : '0 auto 15px auto',
+          zIndex: index === playingIndex ? '9999' : '1',
+          aspectRatio: '16/9',
+          maxHeight:'40dvh'
+        }}
+        light={`https://i.ytimg.com/vi/${extractVideoId(node.frontmatter.youtube.youtuber)}/hqdefault.jpg`}
+        config={{
+          file: {
+            attributes: {
+              crossOrigin: "anonymous",
+            },
+          },
+          youtube: {
+            playerVars: { showinfo: 0, autoplay: 1, controls: 1, mute: 0, loop: 1 },
+          },
+        }}
+        playIcon={
+          <div style={{display:'flex', flexDirection:'column', placeContent:'', justifyContent:'', position:'absolute', zindex:'1', top:'', fontWeight:'bold', padding:'3% 0 0 0', width:'100%', maxWidth:'25vw', height:'100%', border:'0px solid', borderRadius:'12px', margin:'0 auto 0 auto', opacity:'.99', textShadow:'2px 2px 2px black', color:'#fff' }}>
+            <div className="spotlight font" style={{}}>
+              <div className="posticons" style={{ flexDirection: 'column', margin: '0 auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', gap: '2vw', color: 'fff', }}>
+                  <ImPlay className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', fontSize: '' }} />
                 </div>
-              ) : (
-                <Link className="postlink" state={showModals ? { modal: true } : {}} key={node.frontmatter.slug} to={node.frontmatter.slug}>
-                  {node.frontmatter.featuredImage ? (
-                    <GatsbyImage
-                      image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
-                      alt={node.frontmatter.title + " - Featured image"}
-                      className="featured-image1"
-                      placeholder="blurred"
-                      style={{ position: 'relative', zIndex: '1', maxHeight: '', margin: '0 auto', borderRadius:'var(--theme-ui-colors-borderRadius)' }}
-                    />
-                  ) : (
-                    <StaticImage
-                      className="featured-image1"
-                      src="../../static/assets/default-og-image.webp"
-                      alt="Default Image"
-                      style={{ position: 'relative', zIndex: '1', maxHeight: '', margin: '0 auto', borderRadius:'var(--theme-ui-colors-borderRadius)' }}
-                    />
-                  )}
+                {dicPlayVideo}
+              </div>
+            </div>
+          </div>}
+          onPlay={() => handleVideoPlay(index)}
+          onPause={handleVideoPause}
+      />
+      </div>
+    ) : (
+      <Link className="postlink" state={showModals ? { modal: true } : {}} key={node.frontmatter.slug} to={node.frontmatter.slug}>
+        {node.frontmatter.featuredImage ? (
+          <GatsbyImage
+            image={node.frontmatter.featuredImage.childImageSharp.gatsbyImageData}
+            alt={node.frontmatter.title + " - Featured image"}
+            className="featured-image1"
+            placeholder="blurred"
+            style={{ position: 'relative', zIndex: '1', maxHeight: '', margin: '0 auto', borderRadius:'var(--theme-ui-colors-borderRadius)' }}
+          />
+        ) : (
+          <StaticImage
+            className="featured-image1"
+            src="../../static/assets/default-og-image.webp"
+            alt="Default Image"
+            style={{ position: 'relative', zIndex: '1', maxHeight: '', margin: '0 auto', borderRadius:'var(--theme-ui-colors-borderRadius)' }}
+          />
+        )}
 {(node.frontmatter.youtube?.youtuber && node.frontmatter.youtube.youtuber) ? (
 
-                      <div className="spotlight font" style={{border:'0px solid'}}>
-                        <div className="posticons" style={{ flexDirection: 'column', margin: '0 auto' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-around', gap: '2vw', color: 'fff', }}>
-                            <FaImage className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', fontSize: '' }} />
-                            <ImPlay className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', fontSize: '' }} />
-                            <AiOutlinePicLeft className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', }} />
-                          </div>
-                          {dicPlayMultimedia}
-                        </div>
-                      </div>
-                    ) : ("")}
-                </Link>
-              )}
+            <div className="spotlight font" style={{border:'0px solid'}}>
+              <div className="posticons" style={{ flexDirection: 'column', margin: '0 auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', gap: '2vw', color: 'fff', }}>
+                  <FaImage className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', fontSize: '' }} />
+                  <ImPlay className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', fontSize: '' }} />
+                  <AiOutlinePicLeft className="posticon" style={{ margin: '0 auto', width: '60%', height: '30px', }} />
+                </div>
+                {dicPlayMultimedia}
+              </div>
+            </div>
+          ) : ("")}
+      </Link>
+    )}
 
-              <div className="post-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', height: '', position: 'relative', background: '', padding: '', margin: '0 auto 0 auto', textAlign: 'center', overFlow: 'hidden' }}>
+    <div className="post-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', height: '', position: 'relative', background: '', padding: '', margin: '0 auto 0 auto', textAlign: 'center', overFlow: 'hidden' }}>
 
 {showTitles ? (
-  <>
-                <div className="panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', alignContent:'center', margin: '10px auto', maxWidth: '', gap: '.4vw', maxHeight: '74px', textAlign: 'left', padding: '10px 5%', fontSize: 'clamp(.7rem,.8vh,12px)', outline:'0px solid #444', overFlow:'hidden', lineHeight:'2.5vh', borderRadius:'var(--theme-ui-colors-borderRadius)', background: showTitles ? 'var(--theme-ui-colors-headerColor)' : 'transparent', color:'var(--theme-ui-colors-headerColorText)' }}>
-                  
-                    <h2 className="title1" style={{maxWidth:'', }}>{node.frontmatter.title}</h2>
-            
+<>
+      <div className="panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', alignContent:'center', margin: '10px auto', maxWidth: '', gap: '.4vw', maxHeight: '74px', textAlign: 'left', padding: '10px 5%', fontSize: 'clamp(.7rem,.8vh,12px)', outline:'0px solid #444', overFlow:'hidden', lineHeight:'2.5vh', borderRadius:'var(--theme-ui-colors-borderRadius)', background: showTitles ? 'var(--theme-ui-colors-headerColor)' : 'transparent', color:'var(--theme-ui-colors-headerColorText)' }}>
+        
+          <h2 className="title1" style={{maxWidth:'', }}>{node.frontmatter.title}</h2>
+  
 
-                  {showDates ? (
-                    <p style={{ position: '', textAlign: 'center', border: '0px solid red', fontSize: '', padding:'0', margin:'0 0 0 20px', maxWidth: '60px', lineHeight:'100%' }}>
-                      <TimeAgo date={node.frontmatter.date} />
-                    </p>
-                  ) : ("")}
+        {showDates ? (
+          <p style={{ position: '', textAlign: 'center', border: '0px solid red', fontSize: '', padding:'0', margin:'0 0 0 20px', maxWidth: '60px', lineHeight:'100%' }}>
+            <TimeAgo date={node.frontmatter.date} />
+          </p>
+        ) : ("")}
 
 
-                </div>
-                </>
+      </div>
+      </>
 ) : (
-  ""
+""
 )}
-              </div>
+    </div>
 
-          </div>
+</div>
 
 
+)}
+
+</>
       
         ))}
 
@@ -464,17 +499,20 @@ const [playingIndex, setPlayingIndex] = useState(null);
                     <select
                       value={selectedCategory}
                       onChange={handleCategoryChange}
-                      style={{
-                        background: 'var(--theme-ui-colors-siteColor)',
-                        color: 'var(--theme-ui-colors-siteColorText)',
-                        borderRadius: 'var(--theme-ui-colors-borderRadius)',
-                        minWidth: '85px',
-                        maxWidth: '20%',
-                        overflow: 'hidden',
-                        height: '',
-                        lineHeight: '100%',
-                        padding: '5px 2px',
-                      }}
+                      style={{ padding: '.5vh .2vw', minWidth:'75px', width: '100%', maxWidth: '500px', textAlign:'center', fontSize: 'clamp(.6rem,1vw,1rem)', transition: 'all .4s ease-in-out', background:'rgba(0,0,0,.2)', outline:'1px solid #999', border:'0px solid var(--theme-ui-colors-siteColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)'
+                      // color:'var(--theme-ui-colors-siteColor)' 
+                    }}
+                      // style={{
+                      //   background: 'var(--theme-ui-colors-siteColor)',
+                      //   color: 'var(--theme-ui-colors-siteColorText)',
+                      //   borderRadius: 'var(--theme-ui-colors-borderRadius)',
+                      //   minWidth: '85px',
+                      //   maxWidth: '20%',
+                      //   overflow: 'hidden',
+                      //   height: '',
+                      //   lineHeight: '100%',
+                      //   padding: '5px 2px',
+                      // }}
                       aria-label="Select Category"
                       id="categoryselect"
                     >
@@ -496,17 +534,20 @@ const [playingIndex, setPlayingIndex] = useState(null);
     id="tagselect"
     value={selectedTag}
     onChange={handleTagChange}
-    style={{
-      background: 'var(--theme-ui-colors-siteColor)',
-      color: 'var(--theme-ui-colors-siteColorText)',
-      borderRadius: 'var(--theme-ui-colors-borderRadius)',
-      minWidth: '85px',
-      maxWidth: '30%',
-      overflow: 'hidden',
-      height: '',
-      lineHeight: '100%',
-      padding: '5px 2px',
-    }}
+    style={{ padding: '.5vh .2vw', minWidth:'75px', width: '100%', maxWidth: '500px', textAlign:'center', fontSize: 'clamp(.6rem,1vw,1rem)', transition: 'all .4s ease-in-out', background:'rgba(0,0,0,.2)', outline:'1px solid #999', border:'0px solid var(--theme-ui-colors-siteColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)' 
+    // color:'var(--theme-ui-colors-siteColor)' 
+  }}
+    // style={{
+    //   background: 'var(--theme-ui-colors-siteColor)',
+    //   color: 'var(--theme-ui-colors-siteColorText)',
+    //   borderRadius: 'var(--theme-ui-colors-borderRadius)',
+    //   minWidth: '85px',
+    //   maxWidth: '30%',
+    //   overflow: 'hidden',
+    //   height: '',
+    //   lineHeight: '100%',
+    //   padding: '5px 2px',
+    // }}
     aria-label="Select Keyword"
   >
     <option value="">{dicKeyword}</option>
@@ -529,19 +570,9 @@ const [playingIndex, setPlayingIndex] = useState(null);
                       type="text"
                       placeholder={dicSearch + ":"}
                       onChange={handleSearch}
-                      style={{
-                        width: '',
-                        background: 'var(--theme-ui-colors-siteColor)',
-                        color: 'var(--theme-ui-colors-siteColorText)',
-                        marginRight: '',
-                        borderRadius: 'var(--theme-ui-colors-borderRadius)',
-                        height: '',
-                        lineHeight: '100%',
-                        padding: '6px 6px',
-                        minWidth: '85px',
-                        maxWidth: '35%',
-                      }}
+                      style={{ padding: '.2vh .2vw', minWidth:'75px', width: '100%', maxWidth: '500px', textAlign:'center', fontSize: 'clamp(.6rem,1vw,1rem)', transition: 'all .4s ease-in-out', background:'rgba(0,0,0,.1)', outline:'1px solid #999', border:'0px solid var(--theme-ui-colors-siteColor)',  borderRadius: 'var(--theme-ui-colors-borderRadius)', color:'inherit' }}
                       aria-label="Search"
+                      className="youtubelinker"
                     />
                   
                 </>
@@ -554,7 +585,7 @@ const [playingIndex, setPlayingIndex] = useState(null);
                       style={{
                         width: '',
                         background: 'var(--theme-ui-colors-siteColor)',
-                        color: 'var(--theme-ui-colors-siteColorText)',
+                        // color: 'var(--theme-ui-colors-siteColorText)',
                         marginRight: '',
                         borderRadius: 'var(--theme-ui-colors-borderRadius)',
                         height: '',
@@ -568,6 +599,12 @@ const [playingIndex, setPlayingIndex] = useState(null);
                     />
               )}
 
+<div style={{ display:'block', minWidth:'40px', position: '', right: '', top: '', textAlign: 'center', fontSize: '9px', color: 'var(--theme-ui-colors-headerColorText)', borderRadius: 'var(--theme-ui-colors-borderRadius)', }}>
+                {filteredPosts.length} <br />
+                {dicResults}{filteredPosts.length !== 1 && 's'}
+              </div>
+
+              
               <button
                 id="clearbutton"
                 type="reset"
@@ -578,8 +615,8 @@ const [playingIndex, setPlayingIndex] = useState(null);
                   position: '',
                   right: '',
                   top: '',
-                  background: 'var(--theme-ui-colors-siteColor)',
-                  color: 'var(--theme-ui-colors-siteColorText)',
+                  // background: 'var(--theme-ui-colors-siteColor)',
+                  // color: 'var(--theme-ui-colors-siteColorText)',
                   textAlign: 'center',
                   fontSize: '10px',
                   maxWidth: '',
@@ -594,10 +631,7 @@ const [playingIndex, setPlayingIndex] = useState(null);
                 {dicClear}
               </button>
 
-              <div style={{ display:'block', minWidth:'40px', position: '', right: '', top: '', textAlign: 'center', fontSize: '9px', color: 'var(--theme-ui-colors-headerColorText)', borderRadius: 'var(--theme-ui-colors-borderRadius)', }}>
-                {filteredPosts.length} <br />
-                {dicResults}{filteredPosts.length !== 1 && 's'}
-              </div>
+              
             </div>
           </div>
         </>

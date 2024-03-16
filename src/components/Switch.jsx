@@ -36,8 +36,8 @@ function Switch() {
           const posttopElement = document.getElementById("posttop");
           if (posttopElement) {
             // Add 60px to the scrollTop
-            const offset = posttopElement.offsetTop - 60;
-            window.scrollTo({ top: offset, behavior: "smooth" });
+            // const offset = posttopElement.offsetTop - 60;
+            // window.scrollTo({ top: offset, behavior: "smooth" });
           }
         }
       }

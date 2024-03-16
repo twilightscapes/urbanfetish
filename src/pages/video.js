@@ -8,7 +8,7 @@ const VideoPage = ({ location }) => {
   return (
     <Layout>
       <Helmet>
-        <body id="body" className="youtube" />
+        <body id="body" className="youtube nope" />
       </Helmet>
       <SeoWrapper location={location} />
       <div className='player-wrapper'>

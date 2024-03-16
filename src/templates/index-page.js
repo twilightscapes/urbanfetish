@@ -58,9 +58,16 @@ const HomePage = ({ data, location }) => {
 
 
 
+      function isRunningStandalone() {
+        if (typeof window !== 'undefined') {
+            return window.matchMedia('(display-mode: standalone)').matches;
+        }
+        return false;
+    }
 
 
 
+    
 
   // Check if localStorage is available
   const isLocalStorageAvailable = typeof window !== "undefined" && window.localStorage;
@@ -446,7 +453,12 @@ display:'flex', justifyContent:'center', maxHeight:'80px !important', height:'15
    )} 
 
 {/* show feature */}
-{showFeature ? (   
+
+{isRunningStandalone() ? (
+  ""
+) : (
+  <>
+  {showFeature ? (   
 <section id="feature" name="feature" className="print scroll-area" style={{  
   // backgroundColor:'var(--theme-ui-colors-headerColor)'
   height:'100%'
@@ -509,11 +521,17 @@ style={{height:'auto', width:'100dvw', maxHeight:'100dvh', position:'relative', 
 ) : (
   ""
 )}
+  </>
+)} 
 {/* end show feature */}
 
 
 
 {/* show profile */}
+{isRunningStandalone() ? (
+  ""
+) : (
+  <>
 {showProfile ? (
   <section className="scroll-area panel" id="profile" name="profile" style={{ display:'', height:'', minHeight:'', position:'relative', overflow:'hidden', margin:'0 auto 0 auto', padding:'0 0 60px 0', background:'var(--theme-ui-colors-background)', color:'var(--theme-ui-colors-text)', width:'100vw', borderRadius:'var(--theme-ui-colors-borderRadius)', }}>
   <article style={{ margin:'0 0 0 0'}}>
@@ -627,6 +645,8 @@ style={{height:'auto', width:'100dvw', maxHeight:'100dvh', position:'relative', 
 </section>
   ) : (
     ""
+)}
+</>
 )}
 {/* end show profile */}
 

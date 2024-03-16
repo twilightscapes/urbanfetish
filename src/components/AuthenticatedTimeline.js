@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import useSiteMetadata from "../hooks/SiteMetadata";
-import { Link } from "gatsby"
+// import { Link } from "gatsby"
 import Layout from "../components/siteLayout"
 
 import TimeAgo from "react-timeago";
 import userRssData from "../../static/data/userRss.json";
 // import Menu from "../components/menu";
 // import useNetlifyIdentity from '../components/useNetlifyIdentity';
-import { RiMenuUnfoldFill, RiCloseCircleFill } from "react-icons/ri"
+// import { RiMenuUnfoldFill, RiCloseCircleFill } from "react-icons/ri"
 
 import { Helmet } from "react-helmet"
 
@@ -65,57 +65,13 @@ const handleScroll = (e) => {
 
   const [storedFeedUrls, setStoredFeedUrls] = useState([]);
 
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
-  /* eslint-disable-next-line no-unused-vars */
-  const [isMobile, setIsMobile] = useState(false);
-  
 
-  const resizeMobile = () => {
-    setIsMenuOpen(false);
-    setIsMobile(true);
-    const elements = document.querySelectorAll(".menusnapp");
-    elements.forEach((el) => {
-      el.style.display = "none";
-      el.style.overflow = "hidden";
-      el.style.transition = "transform 1550ms ease-in-out";
-    });
-  };
-
-  const resizeDesk = () => {
-    setIsMenuOpen(true);
-    setIsMobile(false);
-    const elements = document.querySelectorAll(".menusnapp");
-    elements.forEach((el) => {
-      el.style.display = "flex";
-      el.style.transition = "transform 1550ms ease-in-out";
-    });
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedIsMenuOpen = window.localStorage.getItem("isMenuOpen");
-      if (storedIsMenuOpen) {
-        setIsMenuOpen(storedIsMenuOpen === "true");
-      } else {
-        setIsMenuOpen(true); // set default value to true if no value found in local storage
-      }
-    }
-  }, []);
-  
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("isMenuOpen", isMenuOpen);
-    }
-  }, [isMenuOpen]);
-  
-
-  const MenuIcon = isMenuOpen ? RiCloseCircleFill : RiMenuUnfoldFill;
 
 
 
 
   // const { showNav } = useSiteMetadata();
-  const { showDates } = useSiteMetadata();
+  // const { showDates } = useSiteMetadata();
   const { postcount } = useSiteMetadata();
   const [feed, setFeed] = useState([]);
   const [visibleItems, setVisibleItems] = useState(postcount);
@@ -319,84 +275,7 @@ return (
 
 
 
-        <div
-          className="pagemenu panel"
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            zIndex: "4",
-            left: "1vw",
-            right: "",
-            display: "none",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "auto",
-            maxWidth: "80vw",
-            margin: "0 auto",
-            gap: "5vw",
-            background: "rgba(0, 0, 0, .5)",
-            padding: "",
-            border: "1px solid #666",
-            borderRadius: "",
-            textShadow: "0 1px 1px rgba(0, 0, 0, .7)",
-            // fontSize: "clamp(2rem, 3vw, 3rem)",
-            verticalAlign: "center",
-          }}
-        >
-          <div
-            className="menusnapp"
-            style={{
-              gap: "0",
-              padding: "2vh 4vw",
-              alignItems: "center",
-              display: isMenuOpen ? "block" : "none",
-            }}
-          >
 
-<div className="flexbutt" style={{width:'100%', gap:'2vw'}}>
-
-{/* <div className="contact-form flexcheek" style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', minWidth:'30vw' }}>
-<h4>Add A Feed:</h4>
-        <input
-          type="text"
-          placeholder="Feed name"
-          value={newFeedName}
-          onChange={(e) => setNewFeedName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Feed URL"
-          value={newFeedUrl}
-          onChange={(e) => setNewFeedUrl(e.target.value)}
-/>
-<button className="button" onClick={addSubscription}>Add Subscription</button>
-</div> */}
-<div className="flexcheek" style={{ minWidth: '200px', maxHeight: '40vh', overflow: 'scroll', border:'1px solid #333', padding:'100px 3% 0 3%', borderRadius:'8px', textAlign:'center', position:'relative' }}>
-{/* <h3>Latest Feeds:</h3>
-
-<ul style={{display:'flex', flexDirection:'column'}}>
-  {uniqueSubscriptions.map((subscription, index) => (
-    <li key={index}>{subscription}</li>
-  ))}
-</ul> */}
-
-
-        <Link state={{modal: true}} to="/favorites" className="button" style={{position:'absolute',  top:'10px', left:'0', right:'0', width:'70%', margin:'0 auto'}} >Manage Feeds</Link>
-
-</div>
-
-
-</div>   
-
-          </div>
-          <button
-            onClick={isMenuOpen ? resizeMobile : resizeDesk}
-            aria-label={isMenuOpen ? "Collapse menu" : "Expand menu"}
-            style={{ cursor: "pointer", padding: "8px", color: "#999", fontSize: 'clamp(2rem, 3vw, 3rem)' }}
-          >
-            <MenuIcon />
-          </button>
-        </div>
 
 
       
@@ -444,14 +323,16 @@ return (
           {filteredFeed.slice(0, visibleItems).map((item, index) => (
   <div className='post-card1' style={{ justifyContent: 'center', alignItems: 'center' }} key={index}>
 
-    <div className="post-content1 panel" style={{display:'flex', flexDirection:'column', justifyContent:'start', width:'100%', height:'', position:'relative', background:'', padding:'0', margin:'0 auto 0 auto', textAlign:'center', overFlow:'hidden'}}>
+    <div className="post-content1 panel" style={{display:'flex', flexDirection:'column', justifyContent:'', width:'100%', height:'', position:'relative', gap: '.4vw', }}>
+
       
-    <a className="postlink" href={item.link} rel="noopener noreferrer">
+      
+    <a className="postlink" href={item.link} rel="noopener noreferrer" style={{maxHeight: '', textAlign: 'center', padding:'1rem', fontSize: 'clamp(.7rem,.8vh,12px)', lineHeight:'2.5vh', borderRadius:'var(--theme-ui-colors-borderRadius)', background: 'var(--theme-ui-colors-headerColor)', color:'var(--theme-ui-colors-headerColorText)'}}>
       {item.imageUrl && (
         <img src={item.imageUrl} alt={item.title} className="featured-image1" style={{ position: 'relative', zIndex: '1', width: 'auto', margin: '0 auto' }} />
       )}
-      
-        <h2 className="post-title">{item.title}</h2>
+      <br />
+        <h2 className="title1">{item.title}</h2>
         <p className="post-excerpt">{createExcerpt(item.description, 150)}</p> 
       
     </a>
@@ -464,11 +345,12 @@ return (
     addSubscription(item);
     toggleFavorite(item);
   }}
-  style={{ border: 'none', background: 'none' }}
+  style={{ border: 'none', background: 'none', textAlign:'center' }}
 >
   {item.name}
 </a>
-      {showDates && <TimeAgo date={item.pubDate} />}
+<TimeAgo date={item.pubDate} style={{textAlign:'center'}} />
+      {/* {showDates && <TimeAgo date={item.pubDate} />} */}
     </div>
 
     
@@ -489,7 +371,11 @@ return (
       )}
 
     </div>
-
+<br />
+<br />
+<br />
+<br />
+<br />
 </Layout>
 
 );

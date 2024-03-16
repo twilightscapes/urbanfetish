@@ -44,7 +44,7 @@ showPageNav: true
 tags:
   - abandoned
   - building
-featuredImage: /assets/urbanfetish/favorites/favorites-abandoned4.jpg
+featuredImage: /assets/favorites/favorites-abandoned4.jpg
 underlayImage: null
 svgImage: null
 svgzindex: "0"

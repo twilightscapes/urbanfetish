@@ -29,7 +29,7 @@ svgzindex: "0"
 comments: false
 shareable: true
 underlayImage: 
-featuredImage: /assets/urbanfetish/favorites/favorites-abandoned27.jpg
+featuredImage: /assets/favorites/favorites-abandoned27.jpg
 svgImage: 
 scrollable: false
 nftdrop: "2023-02-11T10:00:00"

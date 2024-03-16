@@ -24,6 +24,7 @@ import BlueCheck from './bluecheck';
 import Footer from "../components/footer"
 import PwaInstaller from "../components/PwaInstaller"
 
+
 const Layout = ({ children }) => {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -80,10 +81,8 @@ const Layout = ({ children }) => {
   // Determine the current page location
   const currentPage = typeof window !== 'undefined' ? window.location.pathname : '/';
   // console.log('Current Page:', currentPage);
-  
-
   // Define an array of page locations where you want to show the social menu
-  const socialMenuPages = ['/pirate', '/feeds', '/favorites'];
+  const socialMenuPages = ['/pirate', '/pirate/feeds', '/pirate/explore', '/pirate/favorites'];
 
   
   return (
@@ -96,12 +95,11 @@ const Layout = ({ children }) => {
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link id="yyy" rel="stylesheet" href={fontUrl} crossOrigin="anonymous" referrerPolicy="no-referrer-when-downgrade" />
-        
-        {/* .ReactModal__Content{opacity:.99} */}
         <style>{`
-    
           ${userStyles.userStyles}
         `}</style>
+
+<script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
       </Helmet>
 
       <Seo />
@@ -126,9 +124,9 @@ const Layout = ({ children }) => {
 
 
 
-      <header className="header" style={{ display: 'block', height: showNav ? '60px' : '0' }}>
+      <header className="header" style={{ display: 'block', height: showNav === true || socialMenuPages.some(page => currentPage.startsWith(page)) || showNav !== false ? '60px' : '0' }}>
 
-        {showNav ? (
+      {(showNav === true || socialMenuPages.some(page => currentPage.startsWith(page)) || showNav !== false) ? (
 
           <div id="menu" className="menu print panel1 header" style={{ position: 'fixed', width: '100vw', top: '0', zIndex: '30', maxHeight: '', overFlow: '', boxShadow: '0 0 0 rgba(0,0,0,.7)', padding: '0 2%', alignItems: 'start', borderRadius: '0', display: 'flex', justifyContent: 'space-around', gap: '10px', color: 'var(--theme-ui-colors-headerColorText)', borderBottom: '0px solid #222', }}>
 
@@ -171,7 +169,9 @@ const Layout = ({ children }) => {
                 <Theme style={{}} />
               </div>
 
-              {showSwipe ? (
+
+
+              {showSwipe === true || socialMenuPages.some(page => currentPage.startsWith(page)) || showSwipe !== false ? (
                 <Switch />
               ) : (
                 ""
@@ -189,6 +189,10 @@ const Layout = ({ children }) => {
 
 
       <main id="top" name="top" style={{height:'',}}>
+
+      
+
+      
         {children}
 
       <div className={`upbar button ${showBackToTop ? 'visible' : ''}`}
@@ -240,7 +244,7 @@ const Layout = ({ children }) => {
 ''
 )}
       </main>
-
+    
       
       {showfooter ? (
     <Footer />
@@ -323,7 +327,7 @@ const Layout = ({ children }) => {
               </li>
 
               {/* <Menu id="sidechick" /> */}
-              {socialMenuPages.some(page => currentPage.startsWith(page)) ? <SocialMenu id="sidechick" /> : <Menu id="sidechick" />}
+              <Menu id="sidechick" />
 
               <li>
                 <ul className="missioncontrol sitecontrols" style={{ display: 'flex', justifyContent: 'space-around', fontSize: 'clamp(.8rem, 2.3vw, 2.5rem)', gap: '', textAlign: 'center', maxHeight: '', alignItems: 'center', paddingTop: '5px' }}>

@@ -6,7 +6,7 @@ import useSiteMetadata from "../hooks/SiteMetadata";
 import ReactPlayer from 'react-player/lazy';
 import SignUp from './newssign'
 import TimeAgo from 'react-timeago';
-import { MdArrowForwardIos } from 'react-icons/md';
+// import { MdArrowForwardIos } from 'react-icons/md';
 import { ImPlay } from "react-icons/im";
 import { FaImage } from "react-icons/fa";
 import { AiOutlinePicLeft } from "react-icons/ai";
@@ -66,13 +66,13 @@ const BlogPosts = ({ isSliderVisible }) => {
     
 
 
-    const { showMagicCat, showMagicTag } = magicOptions;
+const { showMagic, showMagicCat, showMagicTag, showMagicSearch } = magicOptions;
   
     const { showModals, showPopup } = proOptions
-    const { showDates, showArchive, showTitles } = featureOptions
+    const { showDates, showTitles } = featureOptions
 
     
-    const { dicLoadMore, dicViewArchive, dicCategory, dicKeyword, dicSearch, dicClear, dicResults, dicPlayVideo, dicPlayMultimedia  } = language;
+    const { dicLoadMore, dicCategory, dicKeyword, dicSearch, dicClear, dicResults, dicPlayVideo, dicPlayMultimedia  } = language;
 
 
 
@@ -416,13 +416,13 @@ const [playingIndex, setPlayingIndex] = useState(null);
           
         )}
 
-{showArchive ? (
+{/* {showArchive ? (
       
       <Link state={showModals ? { modal: true } : {}} to="/archive" className="font" style={{ background: 'var(--theme-ui-colors-headerColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)', color: 'var(--theme-ui-colors-headerColorText)', display: 'flex', padding: '8px', margin: '0 auto', justifyContent:'center', maxWidth:'300px', alignItems:'center', }}>{dicViewArchive} &nbsp;<MdArrowForwardIos style={{ marginTop: '' }} /></Link>
 
   ) : (
     ""
-  )}
+  )} */}
 </div>
 
 {showPopup ? (
@@ -456,8 +456,9 @@ const [playingIndex, setPlayingIndex] = useState(null);
         }}
       >
 
-
-          <div className="magicisland" style={{padding:'1.5vh 1vw 0 1vw',}}>
+{showMagic ? (
+        <>
+          <div className="magicisland" style={{position:'absolute', padding:'1.5vh 1vw 0 1vw',}}>
             <div className="cattags font panel" >
               {showMagicCat ? (
                 <>
@@ -465,18 +466,22 @@ const [playingIndex, setPlayingIndex] = useState(null);
                     <select
                       value={selectedCategory}
                       onChange={handleCategoryChange}
-                      style={{
-                        background: 'var(--theme-ui-colors-siteColor)',
-                        color: 'var(--theme-ui-colors-siteColorText)',
-                        borderRadius: 'var(--theme-ui-colors-borderRadius)',
-                        minWidth: '100px',
-                        maxWidth: '20%',
-                        overflow: 'hidden',
-                        height: '',
-                        lineHeight: '100%',
-                        padding: '5px 2px',
-                      }}
+                      style={{ padding: '.5vh .2vw', minWidth:'75px', width: '100%', maxWidth: '500px', textAlign:'center', fontSize: 'clamp(.6rem,1vw,1rem)', transition: 'all .4s ease-in-out', background:'rgba(0,0,0,.2)', outline:'1px solid #999', border:'0px solid var(--theme-ui-colors-siteColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)'
+                      // color:'var(--theme-ui-colors-siteColor)' 
+                    }}
+                      // style={{
+                      //   background: 'var(--theme-ui-colors-siteColor)',
+                      //   color: 'var(--theme-ui-colors-siteColorText)',
+                      //   borderRadius: 'var(--theme-ui-colors-borderRadius)',
+                      //   minWidth: '85px',
+                      //   maxWidth: '20%',
+                      //   overflow: 'hidden',
+                      //   height: '',
+                      //   lineHeight: '100%',
+                      //   padding: '5px 2px',
+                      // }}
                       aria-label="Select Category"
+                      id="categoryselect"
                     >
                       <option value="">{dicCategory}</option>
                       {allCategories.filter(category => category).map((category, index) => (
@@ -493,19 +498,23 @@ const [playingIndex, setPlayingIndex] = useState(null);
 
 {showMagicTag && allTags.length > 0 && (
   <select
+    id="tagselect"
     value={selectedTag}
     onChange={handleTagChange}
-    style={{
-      background: 'var(--theme-ui-colors-siteColor)',
-      color: 'var(--theme-ui-colors-siteColorText)',
-      borderRadius: 'var(--theme-ui-colors-borderRadius)',
-      minWidth: '100px',
-      maxWidth: '30%',
-      overflow: 'hidden',
-      height: '',
-      lineHeight: '100%',
-      padding: '5px 2px',
-    }}
+    style={{ padding: '.5vh .2vw', minWidth:'75px', width: '100%', maxWidth: '500px', textAlign:'center', fontSize: 'clamp(.6rem,1vw,1rem)', transition: 'all .4s ease-in-out', background:'rgba(0,0,0,.2)', outline:'1px solid #999', border:'0px solid var(--theme-ui-colors-siteColor)', borderRadius: 'var(--theme-ui-colors-borderRadius)' 
+    // color:'var(--theme-ui-colors-siteColor)' 
+  }}
+    // style={{
+    //   background: 'var(--theme-ui-colors-siteColor)',
+    //   color: 'var(--theme-ui-colors-siteColorText)',
+    //   borderRadius: 'var(--theme-ui-colors-borderRadius)',
+    //   minWidth: '85px',
+    //   maxWidth: '30%',
+    //   overflow: 'hidden',
+    //   height: '',
+    //   lineHeight: '100%',
+    //   padding: '5px 2px',
+    // }}
     aria-label="Select Keyword"
   >
     <option value="">{dicKeyword}</option>
@@ -520,7 +529,7 @@ const [playingIndex, setPlayingIndex] = useState(null);
 
 
 
-
+              {showMagicSearch ? (
                 <>
                 
                     <input
@@ -528,25 +537,42 @@ const [playingIndex, setPlayingIndex] = useState(null);
                       type="text"
                       placeholder={dicSearch + ":"}
                       onChange={handleSearch}
+                      style={{ padding: '.2vh .2vw', minWidth:'75px', width: '100%', maxWidth: '500px', textAlign:'center', fontSize: 'clamp(.6rem,1vw,1rem)', transition: 'all .4s ease-in-out', background:'rgba(0,0,0,.1)', outline:'1px solid #999', border:'0px solid var(--theme-ui-colors-siteColor)',  borderRadius: 'var(--theme-ui-colors-borderRadius)', color:'inherit' }}
+                      aria-label="Search"
+                      className="youtubelinker"
+                    />
+                  
+                </>
+              ) : (
+                <input
+                      id="clearme"
+                      type="text"
+                      placeholder={dicSearch + ":"}
+                      onChange={handleSearch}
                       style={{
                         width: '',
                         background: 'var(--theme-ui-colors-siteColor)',
-                        color: 'var(--theme-ui-colors-siteColorText)',
+                        // color: 'var(--theme-ui-colors-siteColorText)',
                         marginRight: '',
                         borderRadius: 'var(--theme-ui-colors-borderRadius)',
                         height: '',
                         lineHeight: '100%',
-                        padding: '6px 6px',
-                        minWidth: '100px',
-                        maxWidth: '80%',
+                        padding: '0',
+                        minWidth: '0',
+                        maxWidth: '0',
+                        visibility: 'hidden'
                       }}
                       aria-label="Search"
                     />
-                  
-                </>
-            
+              )}
+
+<div style={{ display:'block', minWidth:'40px', position: '', right: '', top: '', textAlign: 'center', fontSize: '9px', color: 'var(--theme-ui-colors-headerColorText)', borderRadius: 'var(--theme-ui-colors-borderRadius)', }}>
+                {filteredPosts.length} <br />
+                {dicResults}{filteredPosts.length !== 1 && 's'}
+              </div>
 
               <button
+                id="clearbutton"
                 type="reset"
                 value="reset"
                 className="muted"
@@ -555,8 +581,8 @@ const [playingIndex, setPlayingIndex] = useState(null);
                   position: '',
                   right: '',
                   top: '',
-                  background: 'var(--theme-ui-colors-siteColor)',
-                  color: 'var(--theme-ui-colors-siteColorText)',
+                  // background: 'var(--theme-ui-colors-siteColor)',
+                  // color: 'var(--theme-ui-colors-siteColorText)',
                   textAlign: 'center',
                   fontSize: '10px',
                   maxWidth: '',
@@ -571,14 +597,15 @@ const [playingIndex, setPlayingIndex] = useState(null);
                 {dicClear}
               </button>
 
-              <div style={{ position: '', right: '', top: '', textAlign: 'center', fontSize: '9px', color: 'var(--theme-ui-colors-headerColorText)', maxWidth: '' }}>
-                {filteredPosts.length} <br />
-                {dicResults}{filteredPosts.length !== 1 && 's'}
-              </div>
+              
             </div>
           </div>
+        </>
+      ) : (
+        ""
+      )}
 
-
+      
         {renderContent()}
       </div>
     </>

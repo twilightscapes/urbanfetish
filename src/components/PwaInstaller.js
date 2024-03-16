@@ -42,7 +42,7 @@ const PWAInstaller = () => {
           fontSize: "clamp(3rem, 3vw, 3rem)",
           position: "absolute",
           top: "24px",
-          right: "-10px",
+          right: "10px",
           width: "",
           height: isInstalled ? "60px" : "60px",
           zIndex: "4",
@@ -83,7 +83,7 @@ const PWAInstaller = () => {
 
                   <span style={{display:'block'}}>Install the {companyname} Web app</span>
 
-                  <span style={{display:'block'}}>"Save to your Home Screen"</span>
+                  <span style={{display:'block'}}>"Add To Home Screen"</span>
 
                 
 

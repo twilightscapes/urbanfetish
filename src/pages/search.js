@@ -1,20 +1,15 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import AuthenticatedTimeline from "../components/AuthenticatedTimeline";
-import { useStaticQuery, graphql } from "gatsby";
-import useSiteMetadata from "../hooks/SiteMetadata";
+import React, { useState, useEffect } from "react";
+import Seo from "../components/seo";
+import Layout from "../components/siteLayout";
+import SearchPosts from "../components/SearchPosts";
 
-const TimeLine = () => {
-
-  const { featureOptions } = useSiteMetadata();
-  const { showDefault } = featureOptions;
-
+const Search = () => {
   // Check if localStorage is available
   const isLocalStorageAvailable = typeof window !== "undefined" && window.localStorage;
 
   // Set the initial state directly from localStorage if available, otherwise set to true
   const storedValue = isLocalStorageAvailable ? localStorage.getItem("isSliderVisible") : null;
-  const initialSliderVisible = storedValue ? JSON.parse(storedValue) : showDefault;
+  const initialSliderVisible = storedValue ? JSON.parse(storedValue) : true;
 
   const [isSliderVisible, setIsSliderVisible] = useState(initialSliderVisible);
 
@@ -40,17 +35,16 @@ const TimeLine = () => {
     }
   }, [isLocalStorageAvailable]);
 
-  useStaticQuery(graphql`
-    query {
-      markdownRemark(fileAbsolutePath: { regex: "/static/content/pages/index.md$/" }) {
-        frontmatter {
-          pagePW
-        }
-      }
-    }
-  `);
+  return (
+    <Layout className="search">
+      <Seo title="Search" />
 
-  return <AuthenticatedTimeline isSliderVisible={isSliderVisible} />;
+      <div className="post-container" id="posttop">
+        {/* Pass isSliderVisible as a prop to BlogPosts */}
+        <SearchPosts isSliderVisible={isSliderVisible} />
+      </div>
+    </Layout>
+  );
 };
 
-export default TimeLine;
+export default Search;

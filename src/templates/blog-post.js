@@ -189,18 +189,7 @@ const Post = ({ data, pageContext }) => {
 
     
 
-    // const categoryList = categories && categories.length > 1 && (
-    //   <div style={{ maxWidth: '300px', margin: '3vh auto', paddingBottom: '2vh', borderBottom: '1px solid' }}>
-    //     <h4>Category:</h4>
-    //     {categories.map((category, index) => (
-          
-    //       <React.Fragment key={category}>
-    //         {index > 0 && ', '}
-    //         <Link to={`/category/${category}`}>{category}</Link>
-    //       </React.Fragment>
-    //     ))}
-    //   </div>
-    // )
+
 
 
 
@@ -592,12 +581,6 @@ const YouTube = frontmatter.youtube.youtuber
 
 
 
-
-
-
-          {/* // <div style={{position:'absolute', background:'#111', height:'100vh', width:'100vw', zIndex:'3', top:'0', right:'0', textAlign:'center', display:'grid', placeContent:'start', justifyContent:'center', color:'#fff', fontFamily:'Verdana, Sans-Serif, System' }}> */}
-
-          {/* <img className="homepage-bg" src={iconimage} width="250px" height="150px" alt="UrbanFetish" style={{ width:'', margin:'120px auto 0 auto', filter:'drop-shadow(2px 2px 2px #000)', background:'transparent !important', position:'relative', top:''}} /> */}
 {frontmatter.mediawarnings.marate ? (
 <>
 <div className="flex-items" style={{fontSize:'clamp(.6rem, 1.4vw, 2rem)', fontWeight:'bold', margin:'0 auto 0 auto', textTransform:'uppercase',}}>The following is rated: <strong>{frontmatter.mediawarnings.marate}</strong></div>
@@ -816,23 +799,7 @@ const YouTube = frontmatter.youtube.youtuber
 
 
 
-  // const Completionist = () => <div style={{}}>
-  //  {FrontImage ? (
-  //           <GatsbyImage
-  //             image={FrontImage}
-  //             alt={frontmatter.title + " - Featured image"}
-  //             className="featured-image1 layer1"
-  //             placeholder="blurred"
-  //             loading="eager"
-  //             // layout="constrained"
-  //             style={{}}
-  //           />
 
-  //         ) : (
-  //           <StaticImage className="featured-image1 layer1" src="../../static/assets/default-og-image.webp" alt="Default Image" style={{position:'relative', zIndex:'',}} />
-  //         )}
-
-  // </div>
 
 
 
@@ -873,18 +840,7 @@ const YouTube = frontmatter.youtube.youtuber
 
 
 
-{/* {showNav ? (
-  <div className="spacer" style={{height:'70px', border:'0px solid yellow'}}></div>
-      ) : (
-        ""
-      )} */}
 
-
-  {/* { showModals ? (
-    ""
-    ) : (
-      <div id="gobacker" style={{position:'fixed', top:'60px', right:'3vw', zIndex:'5'}}><GoBack /></div>
-      )}  */}
 
 
 
@@ -903,7 +859,7 @@ const YouTube = frontmatter.youtube.youtuber
             display: "flex",
             justifyContent: "center",
             width: "auto",
-            maxWidth: "75vw",
+            maxWidth: "95vw",
             margin: "0 auto",
             gap: "5vw",
             background: "rgba(0, 0, 0, .5)",
@@ -961,13 +917,16 @@ const YouTube = frontmatter.youtube.youtuber
 
         
 
-{/* {frontmatter.scrollable ? (
-<div style={{width:'100vw', height:'10vh', position:'fixed', zIndex:'2', top:'82vh', border:'0px solid yellow', textAlign:'center', animation:'poof 1.4s forwards', animationDelay:'4s'}}>
-  <div style={{marginTop:'', background:'rgba(9, 9, 10, 0.866)', width:'20vw', padding:'1vh 2vw', margin:'0 auto', borderRadius:'10px', color:'#fff',}}>SCROLL DOWN</div>
-</div>
+{frontmatter.externalLink ? (
+
+<iframe loading="lazy" id="" style={{width:'100%', minWidth:'', maxHeight:'', margin:'0 auto', }} title="iFrame" className="iframe boom" width="980" height="550" src={frontmatter.externalLink} frameBorder="0" allowFullScreen></iframe>
+
+
 ) : (
-""
-  )} */}
+
+  ""
+
+)}
 
 
 <div className="wrap-element effects" style={hasYoutubeFrontmatter ? {aspectRatio:'16/9'} : {}}>
@@ -998,12 +957,13 @@ const YouTube = frontmatter.youtube.youtuber
           // className="featured-image1"
             src={getSrc(FrontImage)}
             loading="eager"
+            alt={frontmatter.title + " - Featured image"}
             // zoomSrc={getSrc(FrontImage)}
             // fullscreenOnMobile={true}
             // moveType="drag"
             zoomScale={0.9}
             zoomPreload={true}
-            style={{  maxHeight:'75vh', objectFit:'scale-down'}}
+            style={{  maxHeight:'75vh', objectFit:'scale-down', margin:'0 auto'}}
             
             // height={300}
           />
@@ -1032,15 +992,6 @@ const YouTube = frontmatter.youtube.youtuber
 
 
 
-{/* { NftDrop ? (
-  
-<div style={{ width:'100vw', height:'',  top:'0', zIndex:'-2', border:'0px solid red', paddingBottom:'', margin:'0 auto', display:'flex', flexDirection:'column', justifyContent:'center'}}>
-
-<div className="countdown" style={{display:'flex', alignSelf:'center', fontSize:'540%', textAlign:'center', filter: 'drop-shadow(10px 0px 10px #000)', textShadow:'1px 1px 0px #000', border:'0px solid', width:'100%', height:'', padding:'0 0', borderRadius:'12px', flexDirection:'column' }}>
-<Countdown date={NftDrop} >
-<Completionist />
-</Countdown>
-</div> */}
 
 
 
@@ -1305,103 +1256,10 @@ zindex:'1'
 {/* ((((((((((body content)))))))))) */}
 
 
-{frontmatter.scrollable ? (
 
-<div>
-
-{ShareThis ? (
-<div style={{ height:'', display:'grid', placeContent:'center'}}>
-
-  <div id="sharethis1" style={{width:'auto', height:'', padding:'0', display:'grid', placeContent:'center', border:'0px solid'}}>
-  <ShareSocial />
-  </div>
-
-  <div className="article-header" style={{textAlign:'center', paddingTop:'1rem', height:'auto', color:'', borderRadius:'12px'}}>
-    
-  {showTitles ? (   
-    <>
-            <h1 className="headline" style={{color:'', borderRadius:''}}>{frontmatter.title}</h1>
-            <time sx={{color: ""}}>{frontmatter.date}</time>
-            Posted: <TimeAgo date={frontmatter.date} style={{color:''}} />
-    </> 
-      ) : (
-      ""
-)}
-
-
-           {/* <Link to={`/category/${frontmatter.category}`}>Category:{frontmatter.category}</Link>
-
-           <p>Tags: {frontmatter.tags.join(", ")}</p> */}
-           {/* {categoryList} */}
-      {/* {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <>
-  
-          <div style={{ position: 'relative', zindex: '2', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>xx
-            {frontmatter.tags.map((tag) => (
-              <Link state={showModals ? { modal: true } : {}} to={`/tag/${tag}`} key={tag}>{tag}</Link>
-            ))}
-          </div>
-        </>
-      )} */}
-
-  </div>
-</div>
-            ) : (
-              <div style={{ height:'', display:'grid', placeContent:'center'}}>
-                <div className="article-header" style={{textAlign:'center', paddingTop:'', height:'auto', color:'', borderRadius:'', marginTop:'0'}}>
-
-                {showTitles ? (   
-    <>
-            <h1 className="headline" style={{color:'', borderRadius:''}}>{frontmatter.title}</h1>
-            <time sx={{color: ""}}>{frontmatter.date}</time>
-            Posted: <TimeAgo date={frontmatter.date} style={{color:''}} />
-    </> 
-      ) : (
-      ""
-)}
-           
-
-           {/* {categoryList} */}
-      {/* {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <>
-  
-          <div style={{ position: 'relative', zindex: '2', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>
-            {frontmatter.tags.map((tag) => (
-              <Link state={showModals ? { modal: true } : {}} to={`/tag/${tag}`} key={tag}>{tag}</Link>
-            ))}
-          </div>
-        </>
-      )} */}
-
-
-
-        
-
-          
-          
-          </div>
-                </div>
-            )}
-
-
-
-
-  <div className="panel" style={{padding:'0 0', border:'0px solid red', margin:'0 0', textAlign:'center', fontSize:'1.5rem', minWidth:'50%', width:'100%'}}>
-      <div
-        className="blog-post-content bodycontent" style={{ fontSize:'clamp(1.2rem, 2.8vw, 1.8rem)', textAlign:'center', width:'100%', maxWidth:'', padding:'2vh 6% 0 6%', margin:'0 auto', border:'1px solid red', color:'inherit'}}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />    
-</div>
-</div>
-
-
-) : (
 
   <div>
   {ShareThis ? (
-
-
-
 
 <div style={{ height:'', display:'grid', placeContent:'center'}}>
 <div style={{width:'auto', height:'', padding:'0', display:'grid', placeContent:'center', border:'0px solid'}}>
@@ -1409,7 +1267,7 @@ zindex:'1'
     </div>
 <div className="article-header" style={{textAlign:'center', paddingTop:'', height:'auto', color:'', borderRadius:'', marginTop:'0'}}>
 
-
+<br />
 {showTitles ? (   
     <>
             <h1 className="headline" style={{color:'', borderRadius:''}}>{frontmatter.title}</h1>
@@ -1434,17 +1292,6 @@ zindex:'1'
 
 
 
-{/* {categoryList} */}
-      {/* {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <>
-  
-          <div style={{ position: 'relative', zindex: '', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>
-            {frontmatter.tags.map((tag) => (
-              <Link state={showModals ? { modal: true } : {}} to={`/tag/${tag}`} key={tag}>{tag}</Link>
-            ))}
-          </div>
-        </>
-      )} */}
 
 
 
@@ -1477,17 +1324,7 @@ zindex:'1'
                 {/* <time sx={{color: "muted"}}>{frontmatter.date}</time> */}
                {/* Posted: <TimeAgo date={frontmatter.date} style={{color:''}} /> */}
               </div>
-              {/* {categoryList} */}
-      {/* {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <>
-  
-          <div style={{ position: 'relative', zindex: '', margin: '1vh auto', width: '100%', display: 'flex', justifyContent: 'center', gap: '1vw' }}>
-            {frontmatter.tags.map((tag) => (
-              <Link state={showModals ? { modal: true } : {}} to={`/tag/${tag}`} key={tag}>{tag}</Link>
-            ))}
-          </div>
-        </>
-      )} */}
+
 
       </div>
               )}
@@ -1504,7 +1341,7 @@ zindex:'1'
 
 
 
-          )}
+        
 
  </article>
 
@@ -1519,17 +1356,6 @@ zindex:'1'
 
 
 
-{/* <AnchorLink className="" to="#sharethis" style={{position:'absolute', top:'0', zIndex:'60'}}>
-                About Us 
-              </AnchorLink> */}
-
-{/* <div style={{position:'fixed', bottom:'20px', zIndex:'5',  left:'', right:'', display:'flex', justifyContent:'center', width:'', margin:'0 auto', gap:'20px',
-textShadow:'2px 2px 0 #222', filter:'drop-shadow(0px 0px 5px rgba(155,155,155,1))', color:'#fff', padding:'5px 10px', borderRadius:'12px',
-
- }}>
-  
-      {(previous || next) && <Pagination {...props} />}
-      </div> */}
 
 
 
@@ -1709,6 +1535,7 @@ query BlogPostQuery($id: String!) {
       description
       showZoom
       showPageNav
+      externalLink
       youtube {
         youtuber
         youtuber2

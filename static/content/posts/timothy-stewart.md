@@ -24,7 +24,7 @@ svgzindex: "0"
 comments: false
 shareable: true
 underlayImage: 
-featuredImage: /assets/urbanfetish/favorites/favorites-abandoned3.jpg
+featuredImage: /assets/favorites/favorites-abandoned3.jpg
 svgImage: 
 scrollable: false
 nftdrop: ""

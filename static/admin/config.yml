@@ -592,10 +592,6 @@ collections:
                     default: false
 
 
-
-
-
-
               
 
               - widget: image
@@ -656,6 +652,29 @@ collections:
                 hint: "Paste the 'URL' of your Social media"
 
 
+
+      - label: RSS Feeds
+        name: rssFeeder
+        editor:
+          preview: false
+        file: "static/data/userRss.json"
+        fields:
+          - label: RSS Urls
+            name: rssFeeds
+            widget: list
+            collapsed: true
+            hint: "Here you can add menu items, Click on 'Add menu item'"
+            fields:
+              - widget: string
+                name: name
+                label: Feed Name
+                required: true
+                hint: "The title for the Feed"
+              - widget: string
+                name: rssFeedUrl
+                label: RSS Feed Url
+                required: true
+                hint: "add the url of the Feed item"
 
     
 
