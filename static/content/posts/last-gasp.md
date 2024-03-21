@@ -24,7 +24,7 @@ svgzindex: "0"
 comments: false
 shareable: true
 underlayImage: 
-featuredImage: /assets/favorites/favorites-abandoned14.jpg
+featuredImage: /assets/favorites/favorites-abandoned14.webp
 svgImage: 
 scrollable: false
 nftdrop: ""

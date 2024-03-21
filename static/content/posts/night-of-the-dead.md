@@ -25,7 +25,7 @@ comments: false
 shareable: true
 showZoom: true
 underlayImage: 
-featuredImage: /assets/favorites/favorites-abandoned29.jpg
+featuredImage: /assets/favorites/favorites-abandoned29.webp
 svgImage: 
 scrollable: false
 nftdrop: ""
