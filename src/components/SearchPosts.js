@@ -46,7 +46,12 @@ const BlogPosts = ({ isSliderVisible }) => {
             }
             featuredImage {
               childImageSharp {
-                gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
+                gatsbyImageData(
+                  placeholder: BLURRED
+                  layout: CONSTRAINED
+                  width: 1600
+                  formats: [AUTO, WEBP, AVIF]
+                )
               }
             }
             category

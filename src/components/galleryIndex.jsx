@@ -28,7 +28,12 @@ const GalleryIndex = ({ isSliderVisible }) => {
             id
             relativePath
             childImageSharp {
-              gatsbyImageData(placeholder: BLURRED, layout: CONSTRAINED)
+              gatsbyImageData(
+                placeholder: BLURRED
+                layout: CONSTRAINED
+                width: 1600
+                formats: [AUTO, WEBP, AVIF]
+              )
             }
             publicURL # Add this to handle non-image files
           }
