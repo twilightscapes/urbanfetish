@@ -37,7 +37,6 @@ const GalleryIndex = ({ isSliderVisible }) => {
               placeholder: BLURRED
               layout: CONSTRAINED
               width: 1600
-              formats: [AUTO, WEBP, AVIF]
             )
           }
           publicURL # Add this to handle non-image files
