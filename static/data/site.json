@@ -84,7 +84,8 @@
       "dicPhone": "Your Phone Number",
       "dicConfirmation": "Message Received",
       "dicProfileAudioText": "I'm grooving to:",
-      "dicProfileAudioActionText": "Listen Now!"
+      "dicProfileAudioActionText": "Listen Now!",
+      "dicGallery": "Choose Collection"
     }
   }
 }
