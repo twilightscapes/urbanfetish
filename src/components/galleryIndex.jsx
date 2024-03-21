@@ -120,11 +120,19 @@ const GalleryIndex = ({ isSliderVisible }) => {
                 return (
                   <div key={index} className="post-card1">
                     
-                      <GatsbyImage
+                      {/* <GatsbyImage
                         image={imageData}
                         alt={title}
                         className="featured-image1 galleryimage"
-                      />
+                      /> */}
+
+<GatsbyImage
+  image={imageData}
+  alt={title}
+  className="featured-image1 galleryimage"
+  loading="lazy" // Add lazy loading
+  fadeIn={true} // Add fade-in effect
+/>
                     
                     <div className="post-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', height: '', position: 'relative', background: '', padding: '', margin: '0 auto 0 auto', textAlign: 'center', overFlow: 'hidden' }}>
                       <div className="panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', alignContent:'center', margin: '10px auto', maxWidth: '', gap: '.4vw', maxHeight: '74px', textAlign: 'left', padding: '10px 5%', fontSize: 'clamp(.7rem,.8vh,12px)', outline:'0px solid #444', overFlow:'hidden', lineHeight:'2.5vh', borderRadius:'var(--theme-ui-colors-borderRadius)', background: showTitles ? 'var(--theme-ui-colors-headerColor)' : 'transparent', color:'var(--theme-ui-colors-headerColorText)' }}>
