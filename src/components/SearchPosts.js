@@ -50,7 +50,7 @@ const BlogPosts = ({ isSliderVisible }) => {
                   placeholder: BLURRED
                   layout: CONSTRAINED
                   width: 1600
-                  formats: [AUTO, WEBP, AVIF]
+                  formats: [AUTO, WEBP]
                 )
               }
             }
