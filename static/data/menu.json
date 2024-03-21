@@ -1,5 +1,8 @@
 {
   "menuItems": [
-
+    {
+      "menutitle": "Collections",
+      "url": "/photo"
+    }
   ]
 }
