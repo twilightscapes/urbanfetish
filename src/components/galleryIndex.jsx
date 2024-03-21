@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useStaticQuery, graphql } from "gatsby";
 import { GatsbyImage } from "gatsby-plugin-image";
-import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
+
 import useSiteMetadata from "../hooks/SiteMetadata";
 const GalleryIndex = ({ isSliderVisible }) => {
 
@@ -99,11 +99,11 @@ const GalleryIndex = ({ isSliderVisible }) => {
 
   const renderContent = () => {
     return (
-      <SimpleReactLightbox>
-        <SRLWrapper options={options}>
+      
       <div
         id="posttop"
         className={sliderVisible ? "slider" : "grid-container contentpanel"}
+        style={{width:'100vw'}}
         ref={scrollRef}
       >
         
@@ -157,8 +157,7 @@ const GalleryIndex = ({ isSliderVisible }) => {
             })}
             
       </div>
-      </SRLWrapper>
-  </SimpleReactLightbox>
+      
     );
   };
 
@@ -201,64 +200,6 @@ const GalleryIndex = ({ isSliderVisible }) => {
   );
 };
 
-const options = {
-  settings: {
-    autoplaySpeed: 4000,
-    boxShadow: "0px 0px 20px #000",
-    disableKeyboardControls: false,
-    disablePanzoom: false,
-    disableWheelControls: false,
-    hideControlsAfter: false,
-    lightboxTransitionSpeed: 0.3,
-    lightboxTransitionTimingFunction: "linear",
-    overlayColor: "rgba(0, 0, 0, 0.9)",
-    slideAnimationType: "slide",
-    slideSpringValues: [300, 50],
-    slideTransitionSpeed: 0.6,
-    slideTransitionTimingFunction: "linear",
-    usingPreact: false,
-  },
-  buttons: {
-    backgroundColor: "var(--theme-ui-colors-siteColor)",
-    iconColor: "rgba(255, 255, 255, 0.8)",
-    iconPadding: "10px",
-    showAutoplayButton: true,
-    showCloseButton: true,
-    showDownloadButton: false,
-    showFullscreenButton: true,
-    showNextButton: true,
-    showPrevButton: true,
-    showThumbnailsButton: true,
-    size: "40px",
-  },
-  caption: {
-    captionAlignment: "start",
-    captionColor: "#FFFFFF",
-    captionContainerPadding: "20px 12% 30px 12%",
-    captionFontFamily: "inherit",
-    captionFontSize: "inherit",
-    captionFontStyle: "inherit",
-    captionFontWeight: "inherit",
-    captionTextTransform: "inherit",
-    showCaption: true,
-  },
-  thumbnails: {
-    showThumbnails: true,
-    thumbnailsAlignment: "center",
-    thumbnailsContainerBackgroundColor: "#111",
-    thumbnailsContainerPadding: "0",
-    thumbnailsGap: "0 2px",
-    thumbnailsIconColor: "#ffffff",
-    thumbnailsOpacity: 0.4,
-    thumbnailsPosition: "bottom",
-    thumbnailsSize: ["100px", "80px"],
-  },
-  progressBar: {
-    backgroundColor: "var(--theme-ui-colors-siteColor)",
-    fillColor: "#fff",
-    height: "3px",
-    showProgressBar: true,
-  },
-};
+
 
 export default GalleryIndex;
