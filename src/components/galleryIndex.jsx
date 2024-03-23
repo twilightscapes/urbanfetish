@@ -5,18 +5,25 @@ import { GatsbyImage } from "gatsby-plugin-image";
 import useSiteMetadata from "../hooks/SiteMetadata";
 const GalleryIndex = ({ isSliderVisible }) => {
 
-  const { featureOptions, language  } = useSiteMetadata();
-  const { showTitles } = featureOptions
+
+
+  const { featureOptions, language, defaultCollection } = useSiteMetadata();
+  const { showTitles } = featureOptions;
   const { dicGallery } = language;
+  
+  // Ensure defaultCollection is valid and fallback to "Favorites" if not set
+  const initialSelectedDirectory = defaultCollection || "Favorites";
+  const [selectedDirectory, setSelectedDirectory] = useState(initialSelectedDirectory);
+  
 
-
-
-  const [selectedDirectory, setSelectedDirectory] = useState("favorites"); // Set the default
   const [sliderVisible, setSliderVisible] = useState(false);
   const scrollRef = useRef(null);
   const data = useStaticQuery(graphql`
   query {
-    allDirectory(filter: { sourceInstanceName: { eq: "assets" } }) {
+    allDirectory(
+      filter: { sourceInstanceName: { eq: "assets" } }
+      sort: { fields: name, order: ASC }
+    ) {
       nodes {
         name
       }
@@ -45,9 +52,7 @@ const GalleryIndex = ({ isSliderVisible }) => {
       }
     }
   }
-  
-  
-  `);
+`);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

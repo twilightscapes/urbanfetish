@@ -16,6 +16,7 @@ const useSiteMetadata = () => {
           companyname
           postcount
           homecount
+          defaultCollection
 
           featureOptions{
             showfooter
