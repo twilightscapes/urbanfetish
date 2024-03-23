@@ -7,8 +7,8 @@ const GalleryIndex = ({ isSliderVisible }) => {
 
 
 
-  const { featureOptions, language, defaultCollection } = useSiteMetadata();
-  const { showTitles } = featureOptions;
+  const { language, defaultCollection, showCollectionTitles  } = useSiteMetadata();
+
   const { dicGallery } = language;
   
   // Ensure defaultCollection is valid and fallback to "Favorites" if not set
@@ -140,7 +140,7 @@ const GalleryIndex = ({ isSliderVisible }) => {
 />
                     
                     <div className="post-content" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%', height: '', position: 'relative', background: '', padding: '', margin: '0 auto 0 auto', textAlign: 'center', overFlow: 'hidden' }}>
-                      <div className="panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', alignContent:'center', margin: '10px auto', maxWidth: '', gap: '.4vw', maxHeight: '74px', textAlign: 'left', padding: '10px 5%', fontSize: 'clamp(.7rem,.8vh,12px)', outline:'0px solid #444', overFlow:'hidden', lineHeight:'2.5vh', borderRadius:'var(--theme-ui-colors-borderRadius)', background: showTitles ? 'var(--theme-ui-colors-headerColor)' : 'transparent', color:'var(--theme-ui-colors-headerColorText)' }}>
+                      <div className="panel" style={{ display: showCollectionTitles ? 'flex' : 'none', justifyContent: 'space-between', alignItems: 'center', alignContent:'center', margin: '10px auto', maxWidth: '', gap: '.4vw', maxHeight: '74px', textAlign: 'left', padding: '10px 5%', fontSize: 'clamp(.7rem,.8vh,12px)', outline:'0px solid #444', overFlow:'hidden', lineHeight:'2.5vh', borderRadius:'var(--theme-ui-colors-borderRadius)', background: showCollectionTitles ? 'var(--theme-ui-colors-headerColor)' : 'transparent', color:'var(--theme-ui-colors-headerColorText)' }}>
                         <h2 className="title1">{title}</h2>
                       </div>
                     </div>

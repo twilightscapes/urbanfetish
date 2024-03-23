@@ -17,6 +17,7 @@ const useSiteMetadata = () => {
           postcount
           homecount
           defaultCollection
+          showCollectionTitles
 
           featureOptions{
             showfooter
