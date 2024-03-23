@@ -28,7 +28,8 @@
       "showHomePosts": true,
       "showProfile": false,
       "showDefault": true,
-      "showSwipe": true
+      "showSwipe": true,
+      "defaultCollection": "Favorites"
     },
     "proOptions": {
       "showModals": true,
