@@ -24,9 +24,9 @@
     "@gatsby-contrib/gatsby-plugin-elasticlunr-search": "^3.0.2",
     "@mdx-js/runtime": "^1.6.22",
     "@sindresorhus/slugify": "^2.2.1",
-    "@theme-ui/color": "^0.16.1",
-    "@theme-ui/mdx": "^0.16.1",
-    "decap-cms-app": "^3.1.3",
+    "@theme-ui/color": "^0.16.2",
+    "@theme-ui/mdx": "^0.16.2",
+    "decap-cms-app": "^3.1.4",
     "gatsby": "5.10.0",
     "gatsby-image": "^3.11.0",
     "gatsby-plugin-anchor-links": "^1.2.1",
@@ -44,7 +44,7 @@
     "gatsby-plugin-robots-txt": "^1.8.0",
     "gatsby-plugin-sharp": "^5.13.1",
     "gatsby-plugin-sitemap": "^6.13.1",
-    "gatsby-plugin-theme-ui": "^0.16.1",
+    "gatsby-plugin-theme-ui": "^0.16.2",
     "gatsby-remark-better-embed-video": "^2.4.0",
     "gatsby-remark-copy-linked-files": "^6.13.1",
     "gatsby-remark-images": "^7.13.1",
@@ -60,11 +60,11 @@
     "react-helmet": "^6.1.0",
     "react-icons": "^5.0.1",
     "react-inner-image-zoom": "^3.0.2",
-    "react-player": "^2.14.1",
+    "react-player": "^2.15.1",
     "react-timeago": "^7.2.0",
     "rss-parser": "^3.13.0",
     "simple-react-lightbox": "^3.6.9-0",
-    "theme-ui": "^0.16.1"
+    "theme-ui": "^0.16.2"
   },
   "devDependencies": {
     "prettier": "^3.2.5"

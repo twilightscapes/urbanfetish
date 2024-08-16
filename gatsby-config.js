@@ -373,7 +373,7 @@ module.exports = {
         enableIdentityWidget: false,
         publicPath: `admin`,
         htmlTitle: `PIRATE CMS`,
-        htmlFavicon: `static/assets/logo.svg`,
+        htmlFavicon: `src/img/logo.svg`,
         includeRobots: false,
         logo_url: 'https://pirateweb.org/assets/logo.svg'
       },

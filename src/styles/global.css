@@ -945,6 +945,9 @@ button:disabled{
 @media(max-width:48rem) {
   .mobilehide{display:none}
 
+
+  #profiletop .nameblock {order:2 !important;}
+  
   .horizontal-scroll .post-card1 .inline * {
     position:relative !important;
     border: none !important;
@@ -1920,3 +1923,4 @@ body:has(.ReactModal__Content) .upbar{ transform:translateY(0);}
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+

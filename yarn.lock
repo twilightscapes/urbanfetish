@@ -2569,74 +2569,74 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
-"@theme-ui/color-modes@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/color-modes/-/color-modes-0.16.1.tgz#9a06a29367d2e91fdb034dd84fd30b9508ee92e9"
-  integrity sha512-G2YoNEMwZroRS0DcftUG+E/8WM5/Osf8TRrQLLK+L43HJ4BmaWuBmVeyoNOaPBDlAuqMBx2203VRgoPmUaMqOg==
+"@theme-ui/color-modes@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/color-modes/-/color-modes-0.16.2.tgz#8bcfa8ea4a66743243ec9ee6d6e29c1a7e92f8f1"
+  integrity sha512-jWEWx53lxNgWCT38i/kwLV2rsvJz8lVZgi5oImnVwYba9VejXD23q1ckbNFJHosQ8KKXY87ht0KPC6BQFIiHtQ==
   dependencies:
-    "@theme-ui/core" "^0.16.1"
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/core" "^0.16.2"
+    "@theme-ui/css" "^0.16.2"
     deepmerge "^4.2.2"
 
-"@theme-ui/color@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/color/-/color-0.16.1.tgz#f62d08ead05f106f2442d58b9e14c83eaf460edf"
-  integrity sha512-oWNd1ZDCRgiqQLjE0f1YHFzWDcL+Vm3/QqyvkAU/NyD+fDsS+xcHHejqwii7yBbwbETVr2s5TzNWP8vZ5crcIw==
+"@theme-ui/color@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/color/-/color-0.16.2.tgz#6c1307806c351a69c327d44b26bc6cf0312506c3"
+  integrity sha512-rG2GfxGmBMSYzErROjNjtFGBg1wU5mrg1w4+EwbuapTGV5ztnoihcFQlJjK0o2VybpI/4YM27r3G9eaYt0yJJg==
   dependencies:
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/css" "^0.16.2"
     polished "^4.0.5"
 
-"@theme-ui/components@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/components/-/components-0.16.1.tgz#14f677313f5117876048951fd3cc915a23a11978"
-  integrity sha512-3v56xR8Rn9LgLzknt4TXLSvnxmAZ//lN8lW87J5yKqp+reJUPDWqItLCOv899sMRcOMpihyMfHUpBRhSG/Aeng==
+"@theme-ui/components@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/components/-/components-0.16.2.tgz#01f2f419bf3f3b39d59cce935d95224f2a574059"
+  integrity sha512-d9HDxLTZzVHSiNNQUJrs4k0FU9kTFZhM3KjR+lVuztoWSGhkZEjf1KrWK8OWWXPH2LxEC5okcvggx177tnfejg==
   dependencies:
     "@styled-system/color" "^5.1.2"
     "@styled-system/should-forward-prop" "^5.1.2"
     "@styled-system/space" "^5.1.2"
-    "@theme-ui/core" "^0.16.1"
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/core" "^0.16.2"
+    "@theme-ui/css" "^0.16.2"
     "@types/styled-system" "^5.1.13"
 
-"@theme-ui/core@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/core/-/core-0.16.1.tgz#3a958523a468b9521fe740c2b3231a9d59efd44d"
-  integrity sha512-9Z0Fn50zdIWre0Apz3ObwfHXZ/zjw7NUhgRrSLYn/gdkJSPZZ8fcaY7Q2rnjfcrMt9DRCg5CPfQGLJqL1NY8xw==
+"@theme-ui/core@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/core/-/core-0.16.2.tgz#0c63e18ec2d4c25d045a8f5613c2665d268eb74c"
+  integrity sha512-bBd/ltbwO9vIUjF1jtlOX6XN0IIOdf1vzBp2JCKsSOqdfn84m+XL8OogIe/zOhQ+aM94Nrq4+32tFJc8sFav4Q==
   dependencies:
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/css" "^0.16.2"
     deepmerge "^4.2.2"
 
-"@theme-ui/css@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/css/-/css-0.16.1.tgz#9c7a4f0e75b18dae3a0bb6cc9e673a03e13eed0a"
-  integrity sha512-8TO2DbiqPrRyTlGRIElDak/p0M4ykyd8LkeavyOF/sTE9s93AwyFcle6KYYMEULrJP49SyYiEvTif7J7Z50DhA==
+"@theme-ui/css@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/css/-/css-0.16.2.tgz#40347894424f7b5885d93c8676549bd2fb87f529"
+  integrity sha512-fNe+FhwKC5+7jQfxCRnm3oqYNhMFuiWiLA9OoLBEkt3b4egot29UK1+fqemwiNVjl206e2fPT5Z7uXRdb6LC2A==
   dependencies:
     csstype "^3.0.10"
 
-"@theme-ui/global@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/global/-/global-0.16.1.tgz#085f994d4d14179ccbff036862f69b8e4c2667ca"
-  integrity sha512-2GHRYAz4meF5sn3XxwdFSJMENICSJNj6ZEfQyHaioIXt3t46wXdPpZNjCStxdElQ3QVQgYxY6jR+ILUFORaR0w==
+"@theme-ui/global@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/global/-/global-0.16.2.tgz#a18f0ee658d7e7af5bb6ea08119c418e79b679c9"
+  integrity sha512-Y2CtNblERWJDxZpckR1TA0+UTH762VA82v/xTMMbufcEmJjzPasEOSZxJYH3qUOuCaJpbX5eFT49MEAujvLCzg==
   dependencies:
-    "@theme-ui/core" "^0.16.1"
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/core" "^0.16.2"
+    "@theme-ui/css" "^0.16.2"
 
-"@theme-ui/mdx@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/mdx/-/mdx-0.16.1.tgz#071ec0d71c8193f44ab97ebca99ac303513da6d0"
-  integrity sha512-7XZQOSjvgo9rzfDi6D4rv7u7dSLHwBWDwcNQa9Qu65ftoTqYngEheMzB1koPueAc8PhRWsfHLOAfthPhJ3Slbg==
+"@theme-ui/mdx@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/mdx/-/mdx-0.16.2.tgz#bac0eb01f1d620678824992f6c2470af53af5044"
+  integrity sha512-O/E71SlWLk+Af1NjzTpiUeMefeEX3oH+4TkE5IdoD3UIAsfZoh1N/BA7OeHUwG3n45/AcIQwxmTnggaXYcWnyw==
   dependencies:
-    "@theme-ui/core" "^0.16.1"
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/core" "^0.16.2"
+    "@theme-ui/css" "^0.16.2"
 
-"@theme-ui/theme-provider@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@theme-ui/theme-provider/-/theme-provider-0.16.1.tgz#2532bd10c1da7b0cf2a96f85c02466999c6d4741"
-  integrity sha512-+/3BJYLIOC2DwTS76cqNhigRQJJ+qOT845DYF7t3TaG2fXDfgh16/DGZSnVjGOGc9dYE3C/ZFAYcVDVwO94Guw==
+"@theme-ui/theme-provider@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@theme-ui/theme-provider/-/theme-provider-0.16.2.tgz#6e49fd4de8d4053ecaa7603a2a3a1f6133c38342"
+  integrity sha512-LRnVevODcGqO0JyLJ3wht+PV3ZoZcJ7XXLJAJWDoGeII4vZcPQKwVy4Lpz/juHsZppQxKcB3U+sQDGBnP25irQ==
   dependencies:
-    "@theme-ui/color-modes" "^0.16.1"
-    "@theme-ui/core" "^0.16.1"
-    "@theme-ui/css" "^0.16.1"
+    "@theme-ui/color-modes" "^0.16.2"
+    "@theme-ui/core" "^0.16.2"
+    "@theme-ui/css" "^0.16.2"
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
@@ -5126,55 +5126,55 @@ decamelize@^1.1.0, decamelize@^1.2.0:
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==
 
-decap-cms-app@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/decap-cms-app/-/decap-cms-app-3.1.3.tgz#785669f57634e171d284fc9b385d6273337b3edf"
-  integrity sha512-qj0JlghIGw7Nvwzz1eUYGrZ2N3HiNdYQ8cbbW6tyZUiw4pZ3qKlWAdOlnIoW6LCIgKlJ/RTKm98HIs0kwafNZw==
+decap-cms-app@^3.1.4:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-app/-/decap-cms-app-3.3.2.tgz#d067931f93ae8c8c343230f3be854c937db4e55e"
+  integrity sha512-dz4ap58IOgYbd4mRMfzhzE5o9x6OsEjycPzL/rKtLHgbzwi3Wl6jSlHH+1vbuQ0ETWwPSuEVbN0s8gCm82/OPQ==
   dependencies:
     "@emotion/react" "^11.11.1"
     "@emotion/styled" "^11.11.0"
     codemirror "^5.46.0"
     dayjs "^1.11.10"
-    decap-cms-backend-aws-cognito-github-proxy "^3.1.1"
-    decap-cms-backend-azure "^3.1.0"
-    decap-cms-backend-bitbucket "^3.1.0"
-    decap-cms-backend-git-gateway "^3.1.0"
-    decap-cms-backend-github "^3.1.0"
-    decap-cms-backend-gitlab "^3.1.1"
-    decap-cms-backend-proxy "^3.1.0"
-    decap-cms-backend-test "^3.1.0"
-    decap-cms-core "^3.3.3"
-    decap-cms-editor-component-image "^3.1.0"
-    decap-cms-lib-auth "^3.0.4"
-    decap-cms-lib-util "^3.0.2"
-    decap-cms-lib-widgets "^3.0.1"
-    decap-cms-locales "^3.1.3"
-    decap-cms-ui-default "^3.1.0"
-    decap-cms-widget-boolean "^3.1.0"
-    decap-cms-widget-code "^3.1.1"
-    decap-cms-widget-colorstring "^3.1.0"
-    decap-cms-widget-datetime "^3.1.0"
-    decap-cms-widget-file "^3.1.0"
-    decap-cms-widget-image "^3.1.0"
-    decap-cms-widget-list "^3.1.0"
-    decap-cms-widget-map "^3.1.0"
-    decap-cms-widget-markdown "^3.1.1"
-    decap-cms-widget-number "^3.1.0"
-    decap-cms-widget-object "^3.1.1"
-    decap-cms-widget-relation "^3.1.0"
-    decap-cms-widget-select "^3.1.0"
-    decap-cms-widget-string "^3.1.0"
-    decap-cms-widget-text "^3.1.0"
+    decap-cms-backend-aws-cognito-github-proxy "^3.2.2"
+    decap-cms-backend-azure "^3.1.3"
+    decap-cms-backend-bitbucket "^3.1.4"
+    decap-cms-backend-git-gateway "^3.2.2"
+    decap-cms-backend-github "^3.2.2"
+    decap-cms-backend-gitlab "^3.2.2"
+    decap-cms-backend-proxy "^3.1.4"
+    decap-cms-backend-test "^3.1.3"
+    decap-cms-core "^3.4.2"
+    decap-cms-editor-component-image "^3.1.3"
+    decap-cms-lib-auth "^3.0.5"
+    decap-cms-lib-util "^3.1.0"
+    decap-cms-lib-widgets "^3.0.2"
+    decap-cms-locales "^3.2.0"
+    decap-cms-ui-default "^3.1.4"
+    decap-cms-widget-boolean "^3.1.3"
+    decap-cms-widget-code "^3.1.4"
+    decap-cms-widget-colorstring "^3.1.3"
+    decap-cms-widget-datetime "^3.2.2"
+    decap-cms-widget-file "^3.1.3"
+    decap-cms-widget-image "^3.1.3"
+    decap-cms-widget-list "^3.2.2"
+    decap-cms-widget-map "^3.1.4"
+    decap-cms-widget-markdown "^3.1.6"
+    decap-cms-widget-number "^3.1.3"
+    decap-cms-widget-object "^3.1.4"
+    decap-cms-widget-relation "^3.3.2"
+    decap-cms-widget-select "^3.2.2"
+    decap-cms-widget-string "^3.1.3"
+    decap-cms-widget-text "^3.1.3"
     immutable "^3.7.6"
     lodash "^4.17.11"
     prop-types "^15.7.2"
     react-immutable-proptypes "^2.1.0"
     uuid "^8.3.2"
 
-decap-cms-backend-aws-cognito-github-proxy@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-aws-cognito-github-proxy/-/decap-cms-backend-aws-cognito-github-proxy-3.1.1.tgz#e25c5c52ca8053fdc52af7bb057f8b9e2a83f9f8"
-  integrity sha512-0kW5YHm/zkCnIZjlQUWSAKr0eMMGuayXH0k+fe0oRs+8TdUELFt194sPFrghZ33Xh502iGP0irMJfubt7quA3Q==
+decap-cms-backend-aws-cognito-github-proxy@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-aws-cognito-github-proxy/-/decap-cms-backend-aws-cognito-github-proxy-3.2.2.tgz#3081a264967545dc54c1454c55cb47e16df02920"
+  integrity sha512-4CajbaWOSd1fL2NUq/1LcFvlfQLjIPsI6mgc/05APGhJKR2Net9BQvW5G5hVc4aZRF/zLmsFwKhOstEsx4uPzw==
   dependencies:
     apollo-cache-inmemory "^1.6.2"
     apollo-client "^2.6.3"
@@ -5186,38 +5186,38 @@ decap-cms-backend-aws-cognito-github-proxy@^3.1.1:
     js-base64 "^3.0.0"
     semaphore "^1.1.0"
 
-decap-cms-backend-azure@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-azure/-/decap-cms-backend-azure-3.1.0.tgz#baf268b026ae4a0ff0b1bdd80df4ab32dd3b1d92"
-  integrity sha512-33qdqt/MQvxVTq78II8DC3zWM7G5PCGCSlSw9v9qxkCijro4o9FpvS0uJ0imrjcgJq2u/CZhelQpBTSNUVXGVQ==
+decap-cms-backend-azure@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-azure/-/decap-cms-backend-azure-3.1.3.tgz#a5a9aa112db8daf81304bd41eeeefa1d40c5c96f"
+  integrity sha512-aakOVHEzpzAbGq6JegA6roEoV0PI9TTjRIxS6oHjZ9dxmhyedFI4UEfmmWli3EPOj5fM0ZkoskggSzlzSXWP8g==
   dependencies:
     js-base64 "^3.0.0"
     semaphore "^1.1.0"
 
-decap-cms-backend-bitbucket@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-bitbucket/-/decap-cms-backend-bitbucket-3.1.0.tgz#8a3207169812f75ee81e666efbca9a26b7a37929"
-  integrity sha512-mBsKiv6Ze2/Fn82UnM6Qh7PYqVR4Q/D8I1zSD/2evbqLct5CPq0jgjKdNQkReC+iHwpzAUj0F5tsL6E7sr0ovg==
+decap-cms-backend-bitbucket@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-bitbucket/-/decap-cms-backend-bitbucket-3.1.4.tgz#e45fbf95303a7585c3bf676a03b8b5682f1073c7"
+  integrity sha512-OCV2bdRGVCaSjMr6jOaaZCz4mrfdSPnGo4ETlJ0ey1cPJGPu7norvHjQ6ZQAgSDJMxPJbQe9iOZ3tc4hVgLTBQ==
   dependencies:
     common-tags "^1.8.0"
     js-base64 "^3.0.0"
     semaphore "^1.1.0"
     what-the-diff "^0.6.0"
 
-decap-cms-backend-git-gateway@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-git-gateway/-/decap-cms-backend-git-gateway-3.1.0.tgz#d02d5f6a79d295b14b41860ec6e2af733b40317f"
-  integrity sha512-lqPGUdPYmnUhFaLGTqIGaDkpgqQ90zFeMJPzMb31+gMXZb8O7I+cdfpjwUa/6lHJR627joVKHxLv5fw9WIlBOQ==
+decap-cms-backend-git-gateway@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-git-gateway/-/decap-cms-backend-git-gateway-3.2.2.tgz#448f72cd7b2926ff8343b253aeb8c5a1049ea181"
+  integrity sha512-oEtRJSI9i+8fSoVquLsthdPEVjnJFrw8vMxcZUqf8JjGv8oKetNLH3N0CbUUGP7EVUMqo7xTG2j2je9KqCZatA==
   dependencies:
     gotrue-js "^0.9.24"
     ini "^2.0.0"
     jwt-decode "^3.0.0"
     minimatch "^3.0.4"
 
-decap-cms-backend-github@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-github/-/decap-cms-backend-github-3.1.0.tgz#17a05523e271e0c1a3770231d29b0ed7d12553ee"
-  integrity sha512-LpIvh//vRwjBoyEo3hwPJ3y8yZHnmWXXaRXmZbhQGZNbxQRPnkl6/LA0HIPNP/xWTcakNxqsfeaiJV0gGKVPFQ==
+decap-cms-backend-github@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-github/-/decap-cms-backend-github-3.2.2.tgz#e781a1236f3d266b7235850e0be3991e9fe4a943"
+  integrity sha512-8cPmjy54zPxqzc4NaXyHPk68P/eajCV+RNeYcR0QjBVMQv5DLjbYBHnW9s0z42W/T5nPqrFLC5thRqMsmuq2Lg==
   dependencies:
     apollo-cache-inmemory "^1.6.2"
     apollo-client "^2.6.3"
@@ -5229,10 +5229,10 @@ decap-cms-backend-github@^3.1.0:
     js-base64 "^3.0.0"
     semaphore "^1.1.0"
 
-decap-cms-backend-gitlab@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-gitlab/-/decap-cms-backend-gitlab-3.1.1.tgz#de1b482eb66a72bd9f7a676367049f138a04779f"
-  integrity sha512-sPdRExxPZBWrMmMDhZdFePRCSK0lGAYOpARJYIKV7gpE7PgfROZKUyGXT8BLdq+nmpD0M1C7CvISVUSWinwKJg==
+decap-cms-backend-gitlab@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-gitlab/-/decap-cms-backend-gitlab-3.2.2.tgz#d91fa66e9b55f1e38f02af751f6460b4ba4fbe10"
+  integrity sha512-VcTHoDlXMsPL5jaPaxYk8dkXiXjle9CbL92BKny4xRxkJhC3VYo6lZfVh09WpbUyAtwZfBIpX4p5dkZNKqVQ6A==
   dependencies:
     apollo-cache-inmemory "^1.6.2"
     apollo-client "^2.6.3"
@@ -5241,20 +5241,20 @@ decap-cms-backend-gitlab@^3.1.1:
     js-base64 "^3.0.0"
     semaphore "^1.1.0"
 
-decap-cms-backend-proxy@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-proxy/-/decap-cms-backend-proxy-3.1.0.tgz#d900c98758159c3c658c3571d75c1127ce1673f1"
-  integrity sha512-pV9X8pPAUYrT3Bk1Hdgq6+tyArHvbn1maooKELmwSUMVFqZvGCP2ifVE8a3McBmi1J2qe+z5QzuK+vYO8dbu8A==
+decap-cms-backend-proxy@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-proxy/-/decap-cms-backend-proxy-3.1.4.tgz#1bdfe78e6062c7474fcf41c24f155da126bab0f0"
+  integrity sha512-5gowbsVSZdKbw3GoufYxdSe/WnL5zOUR2t0oo4wpx9ogYPMSKXo6DPbKacBGUYceCAh/15Ya32J8G9fpwGgPrg==
 
-decap-cms-backend-test@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-backend-test/-/decap-cms-backend-test-3.1.0.tgz#be433d3c6d059432e778d49406917fe727b041c9"
-  integrity sha512-Ik2AjtNv0Ty3VVVvfqvJAqwNBieZL1dkR0JAxER5IKX/sPfSKN0pLagmzGksUU1krQnXm6+TGREalzrB0n5GEA==
+decap-cms-backend-test@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-backend-test/-/decap-cms-backend-test-3.1.3.tgz#093da1cada4ae81872d385a69eb9b530f5f38892"
+  integrity sha512-SsUzvljOnQYFqbFKshajKSPlzY8O8xzE0nWI4GqUAugXx5mxD1lNov0WgtO/5UPXr2zNEtxyQzF+gz6A4XhHrA==
 
-decap-cms-core@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/decap-cms-core/-/decap-cms-core-3.3.3.tgz#8d05e453a62006fe80646dcf3be2b7639055da83"
-  integrity sha512-xJJTLEVVUrPn0TwJh7O/w6JXI56zll5xu/fZZjFMVjc9CGxb+KFmvCAbJrGGNpslyhm6LIvIp5xEh0NAQFaj2A==
+decap-cms-core@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-core/-/decap-cms-core-3.4.2.tgz#8d581da79611ee2a51c31436098fccc08759d8a8"
+  integrity sha512-ngT5Zp5Vk4VlYKRJtEwRrz9bCVvjYG+wY2sXod09JCT6Is4cRCD1viwmZPVH+AJDESGCmgcC58YKduUpOr6tDQ==
   dependencies:
     "@iarna/toml" "2.2.5"
     "@reduxjs/toolkit" "^1.9.1"
@@ -5307,77 +5307,77 @@ decap-cms-core@^3.3.3:
     what-input "^5.1.4"
     yaml "^1.8.3"
 
-decap-cms-editor-component-image@^3.1.0:
+decap-cms-editor-component-image@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-editor-component-image/-/decap-cms-editor-component-image-3.1.3.tgz#17b46bb7120bde9a7512b5ff89b62d4bfc9d2123"
+  integrity sha512-XOLY+VkV42/SmpUimvYIMRY337cGFUaVA9aSvK//plBpxZSmIPhs4NzgaCHojb6GI9nPyAS0WtmA8/Jx0teVng==
+
+decap-cms-lib-auth@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/decap-cms-lib-auth/-/decap-cms-lib-auth-3.0.5.tgz#61bd78baa0c677f0803f9fc8a65c9bfcb01e07f9"
+  integrity sha512-NG+dI1Pg0UBoxRQfuI0zeRLZAtPU23R3qUOA1mDUJ4OpKmX6/lsznmvu0l+e3TzGUhCkOXyz2fl/9HctsMjTXw==
+
+decap-cms-lib-util@^3.1.0:
   version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-editor-component-image/-/decap-cms-editor-component-image-3.1.0.tgz#7321394e3083a616adbb31fd4ba50279235ae539"
-  integrity sha512-M1xhx7bxHg+mpSwSkZuo1W7oxpY+cn41WDJE9nDTvyzlg3YCICv2mEv+LXKN791wWKhhKp4SUZYa6yJUKX/eWA==
-
-decap-cms-lib-auth@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/decap-cms-lib-auth/-/decap-cms-lib-auth-3.0.4.tgz#e5e9c3e92a0c4075405a4e94ecc8065ff2ee949c"
-  integrity sha512-Ft2X+iw6PIzK1s9n32klsCN/ql9xQxnC89C4KxPCQLUIobNhLfQp3lOzsPbsaVmN3gEQfpbAPOPXPYBUjMZMYA==
-
-decap-cms-lib-util@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/decap-cms-lib-util/-/decap-cms-lib-util-3.0.2.tgz#450a6b47f34902f02293a74bbc4f80c26e509f45"
-  integrity sha512-Zw2u0B9RxFd3PDdUFr0FJdlQDFACrweu1jnpG/IJUmgciqTGTM0uAOb1TCONOJUoblMJig/fKYu+4lpt2eiNnA==
+  resolved "https://registry.yarnpkg.com/decap-cms-lib-util/-/decap-cms-lib-util-3.1.0.tgz#6cc7a2d9d7ef1d9a7a11886284d7aac513159400"
+  integrity sha512-lrEwLDN46x2Jiu+bCN70P9vhd/5nvP9tL793ovJiI06SylrM0wVfVZPQGgRH/p8bDJBenaxgFwaA2E7mH7u3sQ==
   dependencies:
     js-sha256 "^0.9.0"
     localforage "^1.7.3"
     semaphore "^1.1.0"
 
-decap-cms-lib-widgets@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/decap-cms-lib-widgets/-/decap-cms-lib-widgets-3.0.1.tgz#3b6980400410a20b6875af38d2c4a24bda70cacf"
-  integrity sha512-CSKN3NJC/CD3gaIuUc5uID5ai880J7mrgKQoJp12emEzhfin+Lfd5J3OP15zlkWbZQ2n0uR/3e4jbKG8ZAwdGQ==
+decap-cms-lib-widgets@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-lib-widgets/-/decap-cms-lib-widgets-3.0.2.tgz#03c281e4d3bad3402515f8b8a1718b0903410338"
+  integrity sha512-bb53ZKh98XnmBWXhvyyc9vXn6Nw4RCcS465V1bhI3AI+ec22feGg0G5dWb61NONj0j9XPbZKaqFxL7dcO9/S8Q==
   dependencies:
     dayjs "^1.11.10"
 
-decap-cms-locales@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/decap-cms-locales/-/decap-cms-locales-3.1.3.tgz#29463483d578be50a63e9be2bac0bccad540dff7"
-  integrity sha512-mOPkna4CM01VJBbnYejBqz4fMFVY9GlujVZgek1SpWBJqV60KxqzEURYQng9uqjcQy5ogMJcr1tqw2b91XJOnA==
+decap-cms-locales@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/decap-cms-locales/-/decap-cms-locales-3.2.0.tgz#fd0a73afcb11094bd6c515f3194517b134b33eaa"
+  integrity sha512-En/jFGRK0noXVGVuZk+pTl51v1mJAO4rBK3R3BuTxR/X83Pq66C3KPtRpv/qPvNfC23Y5LztPXDYai2x8DST5A==
 
-decap-cms-ui-default@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-ui-default/-/decap-cms-ui-default-3.1.0.tgz#eece19c3b0b6f789ed6a7eb4c503e92ed8f240d5"
-  integrity sha512-apR9QsbyObHNezbaYZ0DjYzj0C47YNIaSHeGUIn5yceVaTmhcxkq4vJE6RfRWtfpcbPqkmFzKzsTe5V5JoJ/BQ==
+decap-cms-ui-default@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/decap-cms-ui-default/-/decap-cms-ui-default-3.1.4.tgz#c86e7d0dd736cde494d2b162b53d9a7e95752013"
+  integrity sha512-C034TIwUU8X+JNR6SmFhyWxHYzCArMONVMXoTaU6Y4SQr3appR+bwNesb9s0Q3SMmehTRyTMrIZ2lAd4ppymqw==
   dependencies:
     react-aria-menubutton "^7.0.0"
     react-transition-group "^4.4.5"
 
-decap-cms-widget-boolean@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-boolean/-/decap-cms-widget-boolean-3.1.0.tgz#d504a845cd70abbc6faee31eb89f4c9486e836a1"
-  integrity sha512-Hjff0UYis9Rn4wyB1oEk09LCOxq04vbVGC/c69pWtQ+XMlLEjFmcfLompzmMbYhnttDmYd6aLA35FBQJzGgQ/Q==
+decap-cms-widget-boolean@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-boolean/-/decap-cms-widget-boolean-3.1.3.tgz#216aa6c47437fdb5a0cf09b1032142f808dc6ad1"
+  integrity sha512-lQuIahHiPpGr3J0YRhqFpdUQqB8ljmE7a19+Kq2m7cgZC3biKR2BQRGkoSeAsYIjPM42n1pBCQezsaIUd32eiw==
 
-decap-cms-widget-code@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-code/-/decap-cms-widget-code-3.1.1.tgz#f0c20286872fbd72a2b7d35758a6bde94485e729"
-  integrity sha512-fUCVrrRIwFcvCM3JSYRzRmYV8z/g6Vl+kkRSXX0CJug2HrS4k1JDM3mGI1OiqQ7al4fB8N9aPVL8crE1XFHCZA==
+decap-cms-widget-code@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-code/-/decap-cms-widget-code-3.1.4.tgz#c5ef9ea21503e1211e62879ed32c146f59661b31"
+  integrity sha512-AUQL3+B3pQT9/86wMKAOpPrTkwtuUqHRDLkQjh/vIn10ZE829PpQVGe3HSDhgOQch4b/RoPoR8k0vjJK+Dubsg==
   dependencies:
     react-codemirror2 "^7.0.0"
     react-select "^4.0.0"
 
-decap-cms-widget-colorstring@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-colorstring/-/decap-cms-widget-colorstring-3.1.0.tgz#b966dd6908821469b00f81b00c5d4fda5e210cb1"
-  integrity sha512-VIP6oxovOPhG3g33vvpOrurTYTZEljm2iRDkJusQMD1PyvjCiD+jIQZ7i8/BO4ifCtba7nNrFS7024btw1LGSQ==
+decap-cms-widget-colorstring@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-colorstring/-/decap-cms-widget-colorstring-3.1.3.tgz#143d33c97c0806b1b6be6555d9de2bcac7d42a8a"
+  integrity sha512-Wk1poRQ0+OoLBmt4/4DaIr4Ap9jZRD+tnFyDgNVbOsH8YiilPKZAyhbTPdjUy72wgq3vbdr3hYUiF5Tfzskw7Q==
   dependencies:
     react-color "^2.18.1"
     tinycolor2 "^1.4.1"
 
-decap-cms-widget-datetime@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-datetime/-/decap-cms-widget-datetime-3.1.0.tgz#91c56cb6e8f0e60b34bfb1d8105236b45dd401a6"
-  integrity sha512-X7JPiNyt+jqzaU1Vt9vnjbgoNvb0Ufwn8SZMt4lHqujgZzkarrJPYqjEHnT4STUKby0Wn3HYFQwjo8qfwupvkw==
+decap-cms-widget-datetime@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-datetime/-/decap-cms-widget-datetime-3.2.2.tgz#d0bac94119bed5d01db72bae84dd1fa4b8b5a63a"
+  integrity sha512-1XnnnJ4XWDJeieOusepnyIiKcxeK89WE5rNXnMKCBOJSui3PKmURySqJHEe+f2W4g2TbI7Jf/WCz3fNlUOicqQ==
   dependencies:
     dayjs "^1.11.10"
 
-decap-cms-widget-file@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-file/-/decap-cms-widget-file-3.1.0.tgz#845e1271d7692959a0c96fc0180ab8014f028f66"
-  integrity sha512-0jiDv1JwzCW+CA++i8/E13AXs0lcud0ZQGAJ7tz0CAPhivM7entu5HFi9+8ixJ5rNPIYvpZABhde+LgQxsdlow==
+decap-cms-widget-file@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-file/-/decap-cms-widget-file-3.1.3.tgz#b22b8fc80da9ded6d3dfbce97c609c9f5145ab08"
+  integrity sha512-ldyJA3rCreYtVaakdtULCDZXxHGXtDpEls2fvWKwUAtfb29hnoYR3pOUfK6e09aPREcY2KMdrGz4ewNHL7U1Cg==
   dependencies:
     "@dnd-kit/core" "^6.0.8"
     "@dnd-kit/modifiers" "^6.0.1"
@@ -5385,31 +5385,31 @@ decap-cms-widget-file@^3.1.0:
     array-move "4.0.0"
     common-tags "^1.8.0"
 
-decap-cms-widget-image@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-image/-/decap-cms-widget-image-3.1.0.tgz#359dbb3f681716b1dd57a91e977c5b5bfb0a719d"
-  integrity sha512-IcgSdHC/Xevh4r+4TC0P8zvSJkxYi2Z8qjz6yfDq/CBA0kzPTPmiZkNgdTZlEG/lh9ZDPH/Y5kbfWDDMXZssoA==
+decap-cms-widget-image@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-image/-/decap-cms-widget-image-3.1.3.tgz#22dbf32ca74fc713a531f8f6645e3c5a17b04860"
+  integrity sha512-5wIIWP7OwbuWRljVV4XDcl3hx19Lp6KyQDZ1frlXfZXxgwu2xeOOw/D/ri2Nb5zIGZjG9DUp7bgBYBF92dXy5A==
 
-decap-cms-widget-list@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-list/-/decap-cms-widget-list-3.1.0.tgz#398b22b0a5b1cbd8baa89d04d3bab6abd302b23d"
-  integrity sha512-mEh4h++ECezjCNLL7+7SBPrYHW+fxdmpoGWjpcl5NrHkoKMLbrq4jX5M2aATWekAg1eBHkOYUFRoNX0vl3BFyw==
+decap-cms-widget-list@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-list/-/decap-cms-widget-list-3.2.2.tgz#0571024f65bcb09cbe112f4b12b126e2e8a3c7b6"
+  integrity sha512-tMb8K6aJh0vjTKbkhk8HYJfV6fkJkuUYhtLRWiPP2hhAmta+TZ8oI1Ue0bRBM7+G5WfWMB82wGLGm0psnwSkRA==
   dependencies:
     "@dnd-kit/core" "^6.0.8"
     "@dnd-kit/modifiers" "^6.0.1"
     "@dnd-kit/sortable" "^7.0.2"
 
-decap-cms-widget-map@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-map/-/decap-cms-widget-map-3.1.0.tgz#8a3bc223e3997c3a7289fbedfa2b5833452420ea"
-  integrity sha512-SyK3C/nI7/Xy6YwKg5V2un2wCWQDHL2HyJZ9JxPoLKvOkFsSQQ06XANu6PPNMz7P3sX4wxRPci66xnaZW1iSqQ==
+decap-cms-widget-map@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-map/-/decap-cms-widget-map-3.1.4.tgz#0c0045d1d3a5d76a2310d6ce8e6ba12acbbfbbee"
+  integrity sha512-fJAc0L6KSXWfO91DZ3bXuUkSgRIvszg2fyJG45Ub6L3i1BnT28dOSnyHXeUAtRj1Qm3nqyiwneFnFwV91wMhhg==
   dependencies:
     ol "^6.9.0"
 
-decap-cms-widget-markdown@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-markdown/-/decap-cms-widget-markdown-3.1.1.tgz#12f9e4dba9421a3ac31cc45b27b36f42d544273e"
-  integrity sha512-ygQWLrVdunKVHfVK0ZWY+n09uz7uBCmS2pVtH0b5q9NwiKThRMN7dPhkMhSjPXt+ZkQEh6/rK+ynDWyKDoTBew==
+decap-cms-widget-markdown@^3.1.6:
+  version "3.1.6"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-markdown/-/decap-cms-widget-markdown-3.1.6.tgz#a197630d50eae19425968000fa8a91cce3a2ed98"
+  integrity sha512-ctpDlXd/ViyNt3C2VWjqNbSwnxBl6yjXqb+8dH+AXfy4Db4LOVIqoYLhrZcHxQ+e2Am9brB/7P48QQvyM+Eeag==
   dependencies:
     dompurify "^2.2.6"
     is-hotkey "^0.2.0"
@@ -5434,20 +5434,20 @@ decap-cms-widget-markdown@^3.1.1:
     unist-builder "^1.0.3"
     unist-util-visit-parents "^2.0.1"
 
-decap-cms-widget-number@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-number/-/decap-cms-widget-number-3.1.0.tgz#68c11989ac4c92fc50eb3f83015c206a57c99f26"
-  integrity sha512-aE7P1s92J/orXG3pVsIxAcrwpSBlIMheuhLaex7pAgv0RIkLTYtCnHsmj8UorSkoCs3+7+EuPkGmb4BJ4zB36A==
+decap-cms-widget-number@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-number/-/decap-cms-widget-number-3.1.3.tgz#f859de3fa349df87b67055e1d01718162155c1bc"
+  integrity sha512-fcncjNvAjfIYDg/jnUVQSre3jwb9JTaylPRiTMZa41zhwQVvH2XL98lzkPyPQU6nXGPnlN7p/hV8wNqbklm/wg==
 
-decap-cms-widget-object@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-object/-/decap-cms-widget-object-3.1.1.tgz#cdea03819af028d34a1bd355aad401e5bd44a489"
-  integrity sha512-gvO8rm9Z542SbvMpNxHd6JD2ezPIHrqyjxGgyzwulMqENpblWzVFLWj4bin96cFxuBi7W5RgQ/6sB3WLBDUsCQ==
+decap-cms-widget-object@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-object/-/decap-cms-widget-object-3.1.4.tgz#0873e41947f25dd6ae2001c9b8e448b8778e2802"
+  integrity sha512-7nckihnmU4UNzwmX+H9+xYrlX9tZmvPLAqBQzLmkoMUcz0eMRwZ3vcvH0AfUYVawtiw4C5AxnuBh2yg4zc2guQ==
 
-decap-cms-widget-relation@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-relation/-/decap-cms-widget-relation-3.1.0.tgz#fa4c0aab24a6895d75e104945374939ee3e6cf36"
-  integrity sha512-i/NfavesyZB2WWGW4UMr7597trxBJW6gOpU3gP0wQfPq9GVkK5qR6D70vqGMbXC0931uqg8rAf75pFPqApvzCw==
+decap-cms-widget-relation@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-relation/-/decap-cms-widget-relation-3.3.2.tgz#fbc6d50a99ba8892ecf56fc78e2f4dff615b7182"
+  integrity sha512-NrOhkfSuXOt7dhhTSsjnttmYidHgqGMpjB7bQ8Cs2iT+n8Rd5aXCvVn6/8Fv9G5Obu3XZ06sjqSlNBoS0itDLQ==
   dependencies:
     "@dnd-kit/core" "^6.0.8"
     "@dnd-kit/modifiers" "^6.0.1"
@@ -5455,22 +5455,22 @@ decap-cms-widget-relation@^3.1.0:
     react-select "^4.0.0"
     react-window "^1.8.5"
 
-decap-cms-widget-select@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-select/-/decap-cms-widget-select-3.1.0.tgz#fadd18b41a7643fe11ce069215de82498ebfa1f4"
-  integrity sha512-ZnOtfrrP57+Ny9F9oxGQW41s4OQ1COF/6HBVaNm/c39dSG7UtJ15r8M3JMDDepl6cZXe5L1/0QHMPbmOwWrRPg==
+decap-cms-widget-select@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-select/-/decap-cms-widget-select-3.2.2.tgz#1edcc070e472aa774527916a1fa8e9aff3dacb46"
+  integrity sha512-D06doa3G6NUDwH4Bx7rrx8bwYxa0ZrE4QQalh7AhCBQpup5mvxu95KrlYhij1q28Fg7WqlqteEKofPzGRIQh4Q==
   dependencies:
     react-select "^4.0.0"
 
-decap-cms-widget-string@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-string/-/decap-cms-widget-string-3.1.0.tgz#dbffe8210aad3935356f9f2b1034a5ea7e865b00"
-  integrity sha512-vn2oQGqWZB7exTnNFORhnC58jZd9iaJxQTr8+ycgk0vd+VEyF7+wL93zlBfJLET9RgXy3i5WagaJTQGSPwRMdw==
+decap-cms-widget-string@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-string/-/decap-cms-widget-string-3.1.3.tgz#4b014544bd80ab463ee3e2cd03883b7337170617"
+  integrity sha512-Kx+s4smxk7pHvFecAnDN9MTFLDyIZUuY1c9yKkxzo/NdGRO1cedlUXSWoICP5N2I8cbBYwTV/6aIg+StIRjntg==
 
-decap-cms-widget-text@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/decap-cms-widget-text/-/decap-cms-widget-text-3.1.0.tgz#34470da54a3f371326641cb30abe84245d7e6aaf"
-  integrity sha512-aZM9N3w3+9qh2AGDEU62KbkHXVnCg++XXdWTOu7PBO31v8zc4bza2zY2H8CSXUHkYcvwKL441z1qL7Mzk8Jz5A==
+decap-cms-widget-text@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/decap-cms-widget-text/-/decap-cms-widget-text-3.1.3.tgz#c53844bf0ad965fef3f76bc46bd6ba7a19c258df"
+  integrity sha512-1qbKEn1oNu09CriZDirmMO3hVSHMoeYqURZvz9ynJZkgFMTsUrakkobAEMp88aqSxBu3chMCjnPJKocObWRIfA==
   dependencies:
     react-textarea-autosize "^8.0.0"
 
@@ -7247,10 +7247,10 @@ gatsby-plugin-sitemap@^6.13.1:
     minimatch "^3.1.2"
     sitemap "^7.1.1"
 
-gatsby-plugin-theme-ui@^0.16.1:
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/gatsby-plugin-theme-ui/-/gatsby-plugin-theme-ui-0.16.1.tgz#4e020eebd912dd8e40f50fd510f558447a2aac2c"
-  integrity sha512-k8WakJsjfcxb+VchrGKXAOrSa4wqyTvb6XniwqwdxphqeTsHa8kSmmUlD+bqZuY6kPDiExSgT7UlBQTABEm7EQ==
+gatsby-plugin-theme-ui@^0.16.2:
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/gatsby-plugin-theme-ui/-/gatsby-plugin-theme-ui-0.16.2.tgz#3c067666f340b6e8857033be1d99c87b51833d95"
+  integrity sha512-bSZ9lwP5nlxzBS3hVfQQA+ut1XWRW8QdLJhNw3mThEcZ86MFB4+n8sdoMQZUqYSe5U5KU26a+u215xuWnKmHBA==
 
 gatsby-plugin-typescript@^5.10.0:
   version "5.13.1"
@@ -12200,10 +12200,10 @@ react-modal@^3.12.1, react-modal@^3.8.1:
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
 
-react-player@^2.14.1:
-  version "2.14.1"
-  resolved "https://registry.yarnpkg.com/react-player/-/react-player-2.14.1.tgz#fc434c0e1e6161e76f5d5970721596c4acec52b1"
-  integrity sha512-jILj7F9o+6NHzrJ1GqZIxfJgskvGmKeJ05FNhPvgiCpvMZFmFneKEkukywHcULDO2lqITm+zcEkLSq42mX0FbA==
+react-player@^2.15.1:
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/react-player/-/react-player-2.16.0.tgz#89070700b03f5a5ded9f0b3165d4717390796481"
+  integrity sha512-mAIPHfioD7yxO0GNYVFD1303QFtI3lyyQZLY229UEAp/a10cSW+hPcakg0Keq8uWJxT2OiT/4Gt+Lc9bD6bJmQ==
   dependencies:
     deepmerge "^4.0.0"
     load-script "^1.0.0"
@@ -14344,17 +14344,17 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
-theme-ui@^0.16.1:
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/theme-ui/-/theme-ui-0.16.1.tgz#7319456de50b6a81ac5876b4e95c83abfaaed52c"
-  integrity sha512-QozvNUorEbrFBZUwO5RaaHA+YU/aJLIpeB9vplJERW+vcauldilxhnAjr8KeTv8LY2QMU4iyWWreamJ8/5KzEQ==
+theme-ui@^0.16.2:
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/theme-ui/-/theme-ui-0.16.2.tgz#83470b06ec36631f64a60e9416878f015c2f98c1"
+  integrity sha512-6+/D9ZMKlwWWLQ3idoESxcDUNPkNuGPiixKWGrTD1Fo1yAS3wSb9Je4Xt9Zu3a8f1kbrAyy4vnTVcomFZ1Meig==
   dependencies:
-    "@theme-ui/color-modes" "^0.16.1"
-    "@theme-ui/components" "^0.16.1"
-    "@theme-ui/core" "^0.16.1"
-    "@theme-ui/css" "^0.16.1"
-    "@theme-ui/global" "^0.16.1"
-    "@theme-ui/theme-provider" "^0.16.1"
+    "@theme-ui/color-modes" "^0.16.2"
+    "@theme-ui/components" "^0.16.2"
+    "@theme-ui/core" "^0.16.2"
+    "@theme-ui/css" "^0.16.2"
+    "@theme-ui/global" "^0.16.2"
+    "@theme-ui/theme-provider" "^0.16.2"
 
 throttle-debounce@^3.0.1:
   version "3.0.1"

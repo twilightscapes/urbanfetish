@@ -5,9 +5,10 @@ import Layout from "../components/siteLayout";
 import { Helmet } from "react-helmet";
 import HomePosts from "../components/HomePosts";
 import Seo from "../components/seo";
-import { getSrc } from "gatsby-plugin-image";
+// import { getSrc } from "gatsby-plugin-image";
 import useSiteMetadata from "../hooks/SiteMetadata";
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage, getSrc } from "gatsby-plugin-image"
+
 import Social from "../components/social"
 // import PropTypes from "prop-types";
 
@@ -23,14 +24,61 @@ import { ImPlay } from "react-icons/im"
 // import { IoShareOutline } from 'react-icons/io5';
 import { AiOutlineAudioMuted } from 'react-icons/ai';
 // import { StaticImage } from "gatsby-plugin-image"
+
+
+
+
+
+
+
+
+
 const HomePage = ({ data, location }) => {
 
-  const { language, proOptions, featureOptions  } = useSiteMetadata();
+  const SeoWrapper = ({ location }) => {
+    const queryParams = new URLSearchParams(location.search);
+    const videoUrlParam = queryParams.get('video');
+    const seoTitleParam = queryParams.get('seoTitle') || frontmatter.description ? frontmatter.description : excerpt;
+    const customImageParam = queryParams.get('customImage'); 
+  
+    // Function to extract video ID from YouTube URL
+    const extractVideoId = (url) => {
+      if (!url) {
+        return null;
+      }
+      /* eslint-disable no-useless-escape */
+      const regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regExp);
+      const videoId = match ? match[1] : null;
+      return videoId;
+      /* eslint-disable no-useless-escape */
+    };
+  
+    // Extract video ID
+    const videoId = extractVideoId(videoUrlParam);
+  
+  
+  
+    return (
+
+
+<Seo
+  title={seoTitleParam || frontmatter.title}
+  description={frontmatter.description || excerpt}
+  image={customImageParam || (videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : (frontmatter.featuredImage ? getSrc(frontmatter.featuredImage) : `${siteUrl}/assets/default-og-image.webp`))}
+/>
+
+
+    );
+  };
+
+  const { language, proOptions, featureOptions, siteUrl  } = useSiteMetadata();
 
   const { showFeature } = proOptions
   const { showDefault, showVideoPlayer, showNav, showProfile, showHomePosts } = featureOptions
 
   const { dicPlayVideo, dicProfileAudioText, dicProfileAudioActionText} = language;
+
 
   
   const { markdownRemark } = data;
@@ -433,14 +481,14 @@ display:'flex', justifyContent:'center', maxHeight:'80px !important', height:'15
         <body id="body" className="homepage" />
       </Helmet>
 
-      <Seo
+      {/* <Seo
         title={frontmatter.title}
         description={frontmatter.description ? frontmatter.description : excerpt}
         image={frontmatter.featuredImage ? getSrc(frontmatter.featuredImage) : null}
-      />
+      /> */}
 
 
-
+<SeoWrapper location={location} />
 
 <div className="post-container" style={{maxWidth:'100vw', overFlowY:'hidden', paddingTop: showNav ? '60px' : '',}}>
 
@@ -547,8 +595,8 @@ style={{height:'auto', width:'100dvw', maxHeight:'100dvh', position:'relative', 
 
 
   <div className=" mob print" style={{ position:'sticky', top:'0', fontSize: 'clamp(1rem, 1.5vw, 3.2rem)' }}>
-      <h1 className="title1" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.2rem)' }}>{frontmatter.profTitle}</h1>
-      <h2 className="tagline1" style={{ fontSize: 'clamp(1.2rem, 1.8vw, 3.2rem)' }}>
+      <h1 className="title1" style={{ fontSize: 'clamp(2rem, 4.5vw, 3.2rem)', textWrap:'balance' }}>{frontmatter.profTitle}</h1>
+      <h2 className="tagline1" style={{ fontSize: 'clamp(1.2rem, 1.8vw, 3.2rem)', textWrap:'balance' }}>
         {frontmatter.tagline}
       </h2>
       <div style={{ fontSize: 'clamp(1.2rem, 1.8vw, 3.2rem)' }} className="description" dangerouslySetInnerHTML={{ __html: html }} />
@@ -579,7 +627,7 @@ style={{height:'auto', width:'100dvw', maxHeight:'100dvh', position:'relative', 
   fontSize:'clamp(1rem, 1.4vw, 3.2rem)',
   background:'rgba(0,0,0,0.50)',
   backdropFilter:'blur(8px)',
-  border:'10px double var(--theme-ui-colors-buttonHoverBg)', borderRadius:'var(--theme-ui-colors-borderRadius)',
+  border:'0px double var(--theme-ui-colors-buttonHoverBg)', borderRadius:'var(--theme-ui-colors-borderRadius)',
   textShadow:'0 2px 0px #000',
   maxWidth:'70%'
 }}>

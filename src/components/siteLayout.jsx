@@ -184,7 +184,29 @@ const Layout = ({ children }) => {
         ) : (
           ""
         )}
+
+
+{(showNav === false || socialMenuPages.some(page => currentPage.startsWith(page)) || showNav !== false) ? (
+
+<div id="missioncontrol2" className="missioncontrol sitecontrols" style={{position:'fixed', top:'0', right:'2%', zIndex:'10', display: 'flex', justifyContent: 'space-around', fontSize: 'clamp(.8rem, 2.3vw, 2.5rem)', gap: '3vw', textAlign: 'center', maxHeight: '', alignItems: 'center', paddingTop: '5px' }}>
+
+<div>
+  <Theme style={{}} />
+</div>
+
+{showSwipe === true || socialMenuPages.some(page => currentPage.startsWith(page)) || showSwipe !== false ? (
+  <Switch />
+) : (
+  ""
+)}
+
+</div>
+
+) : (
+  ""
+)}
       </header>
+
 
 
 
