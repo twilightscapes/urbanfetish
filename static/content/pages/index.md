@@ -29,7 +29,7 @@ showZoom: false
 showPostContact: false
 profText: 
 tagline: Take only memories, leave nothing but footprints
-featuredImage: /assets/default-og-image.webp
+featuredImage: https://urbanfetish.com/assets/default-og-image.webp
 secondaryImage: /assets/default-user.webp
 scrollable: false
 portfolio:
