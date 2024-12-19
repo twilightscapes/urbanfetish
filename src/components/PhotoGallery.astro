@@ -138,8 +138,8 @@ img{border-radius: var(--border-radius) !important;}
   body:has(.header) #directorySelect{left:0 !important; right:0 !important; }
 }
 </style>
-<script>
-  function filterImages(selectedDir: string) {
+<script define:vars={{ defaultDirectory }}>
+  function filterImages(selectedDir) {
     const galleryContainer = document.querySelector('.contentpanel');
     if (!galleryContainer) return;
     
@@ -156,12 +156,14 @@ img{border-radius: var(--border-radius) !important;}
       }
     });
   }
+
   function initializeGallery() {
-    const defaultDir = (document.getElementById('directorySelect') as HTMLSelectElement)?.value || 'all';
-    filterImages(defaultDir);
+    // Use defaultDirectory instead of reading from select
+    filterImages(defaultDirectory);
   }
 
-  document.addEventListener('DOMContentLoaded', initializeGallery);
+  // Wait for both DOM and images to load
+  window.addEventListener('load', initializeGallery);
 
   const directorySelect = document.getElementById('directorySelect');
   directorySelect?.addEventListener('change', (event) => {
