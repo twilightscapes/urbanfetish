@@ -34,7 +34,22 @@ if (galleryMode === 'keystatic') {
   }));
 }
 
-const directories = ['all', ...new Set(allImages.map(img => img.directory))].sort();
+const directories = [
+  'all',
+  defaultDirectory,
+  ...new Set(
+    allImages
+      .map(img => img.directory)
+      .filter(dir => dir !== defaultDirectory)
+  )
+].filter(Boolean).sort((a, b) => {
+  if (a === 'all') return -1;
+  if (b === 'all') return 1;
+  if (a === defaultDirectory) return -1;
+  if (b === defaultDirectory) return 1;
+  return a.localeCompare(b);
+});
+
 const showCaptions = photoSettings?.showCaptions ?? true;
 const showGallerySelector = photoSettings?.showGallerySelector && galleryMode === 'directory';
 const showSwitch = photoSettings?.showSwitch;
