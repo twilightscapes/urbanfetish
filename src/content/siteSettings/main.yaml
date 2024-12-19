@@ -1,5 +1,5 @@
 logoImage: /images/logo/logoImage.svg
-showHeader: true
+showHeader: false
 showLogo: true
 showHome: false
 showTheme: false
