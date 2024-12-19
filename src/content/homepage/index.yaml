@@ -1,16 +1,15 @@
 showFeature: false
 featureImage:
   src: /images/homepage/featureImage/src.webp
-  alt: Become A PIRATE!
+  alt: Urban Exploration Art and Photography
 youtube:
   discriminant: false
-cta: Keystatic Cloud Sign Up
-showBioOnHome: true
+showBioOnHome: false
 showApp: false
-showHomeGallery: false
+showHomeGallery: true
 showResume: false
-showPosts: true
-showMore: true
+showPosts: false
+showMore: false
 showFaqOnHome: false
 showTestOnHome: false
 pitch: How It Works

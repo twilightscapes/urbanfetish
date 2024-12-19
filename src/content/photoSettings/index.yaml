@@ -3,5 +3,7 @@ showCaptions: true
 showBioOnPhotos: false
 showFaqsOnPhotos: false
 showTestimonialsOnPhotos: false
+defaultDirectory: Favorites
 showGallerySelector: true
+showSwitch: true
 galleryImages: []
