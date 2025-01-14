@@ -2,9 +2,6 @@
   command = "./update-theme.sh && pnpm build"
   publish = "dist"
   functions = "netlify/functions"
-
-[build.environment]
-  NODE_VERSION = "18"
   
 [functions]
   node_bundler = "esbuild"
@@ -17,15 +14,15 @@
     X-XSS-Protection = "1; mode=block"
     Content-Security-Policy = """
       default-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
-      connect-src 'self' https: wss: bsky.social *.bsky.social;
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' *.youtube.com *.twitter.com *.disqus.com;
+      connect-src 'self' https: wss: bsky.social *.bsky.social *.stripe.com *.netlify.com dev.dogpoopers.com *.dogpoopers.com;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' *.youtube.com *.twitter.com *.disqus.com *.google.com *.googleapis.com *.gstatic.com *.stripe.com *.netlify.com;
       style-src 'self' 'unsafe-inline' https: *.googleapis.com;
       img-src 'self' data: https: http: blob: *.googleapis.com *.gstatic.com *.google.com *.twitter.com *.twimg.com *.youtube.com;
       media-src 'self';
       frame-src *;
       font-src 'self' data: *.gstatic.com *.googleapis.com;
       frame-ancestors *;
-    """
+    """    
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 

@@ -21,21 +21,21 @@ const menuLinks = await getMenuLinks();
 
 
 {showHeader && (
-  <div id="menu" class="menu header" style="min-height:60px; padding: 2px 100px 2px 0;">
+  <div id="menu" class="menu header" style="min-height:60px; padding: 2px 0 2px 0;">
     {showLogo && (
-      <a href="/" aria-current={url.pathname === "/" ? "page" : false} class="relative top-1 px-1">
+      <a href="/" aria-current={url.pathname === "/" ? "page" : false} class="relative px-1">
         {logoImage ? (
           <img 
             src={logoImage}
             alt="Site Logo"
-            class="max-h-[60px] max-w-[140px]"
+            class="max-h-[60px] max-w-[140px] headerlogo"
             loading="eager"
             fetchpriority="high"
             width="90px"
             height="60"
           />
         ) : (
-          <span class="text-lg font-bold">{siteConfig.author}</span>
+          <span class="text-lg font-bold logotext" style="margin-left:10px;">{siteConfig.author}</span>
         )}
       </a>
     )}
@@ -101,7 +101,9 @@ style="flex-direction: column;"
 
 {backgroundImage && (
   <img class="backimage w-2.5 h-2.5" src={backgroundImage} alt="Default Background" width="10" height="10" />
-)}
+  )}
+
+
 
 <script lang="ts">
   function initializeBackToTopButton() {
@@ -135,3 +137,4 @@ style="flex-direction: column;"
   // Re-initialize after each page navigation
   document.addEventListener('astro:after-swap', initializeBackToTopButton);
 </script>
+

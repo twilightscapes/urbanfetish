@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the URL of your central repository
-THEME_REPO_URL="https://github.com/piratesocial/pirate"
+THEME_REPO_URL="https://github.com/piratewebsite/pirate"
 
 # Set the branch or tag you want to pull updates from
 BRANCH_OR_TAG="main"
@@ -23,10 +23,16 @@ log_change "Backed up user content and config"
 git clone --branch $BRANCH_OR_TAG --depth 1 $THEME_REPO_URL tmp_theme
 log_change "Cloned theme repository"
 
-# Replace the src folder
-rm -rf src
-mv tmp_theme/src .
-log_change "Replaced src folder"
+# Instead of replacing the entire src folder, update only existing files
+find src -type f | while read -r file; do
+    # Get the relative path from src
+    relative_path=${file#src/}
+    # If the file exists in the new theme, update it
+    if [ -f "tmp_theme/src/$relative_path" ]; then
+        cp "tmp_theme/src/$relative_path" "src/$relative_path"
+        log_change "Updated: src/$relative_path"
+    fi
+done
 
 # Remove the new content directory that came with the theme update
 rm -rf src/content

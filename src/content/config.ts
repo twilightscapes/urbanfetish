@@ -62,6 +62,7 @@ const collections = {
       ctaUrl: z.string().optional(),
       description: z.string().optional(),
       showFancy: z.boolean().optional(),
+      showTransition: z.boolean().optional(),
     }),
   }),
 
@@ -151,10 +152,9 @@ const collections = {
       isWebmention: z.boolean().optional(),
       order: z.any().transform(val => 
         (val === '.nan' || val === 'nan' || Number.isNaN(val)) ? undefined : Number(val)
-      ).optional(),
+      ).optional()
     }),
   }),
-
 
 
 
@@ -198,6 +198,7 @@ const collections = {
       display: z.enum(['standalone', 'fullscreen', 'minimal-ui', 'browser']).optional(),
       icon192: z.string().optional(),
       icon512: z.string().optional(),
+      location: z.string().optional(),
     }),
   }),
 
@@ -247,6 +248,7 @@ const collections = {
       infoblock2Order: z.number().optional(),
       infoblock3Order: z.number().optional(),
       photosectiontitle: z.string().optional(),
+      locationtitle: z.string().optional(),
       faqsectiontitle: z.string().optional(),
       testimonialtitle: z.string().optional(),
       postsectiontitle: z.string().optional(),
@@ -275,6 +277,7 @@ const collections = {
     type: 'data',
     schema: z.object({
       backgroundImage: z.string().optional(),
+      backgroundVideo: z.string().optional(),
       siteFont: z.string().optional(),
       borderRadius: z.string().optional(),
       lightBg: z.string().optional(),

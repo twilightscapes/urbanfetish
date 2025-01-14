@@ -37,7 +37,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
       useCustomPlayer={data.youtube.value.useCustomPlayer}
     />
   ) : data.coverImage && data.coverImage.src ? (
-    <div class="aspect-h-9 aspect-w-16 mb-6">
+    <div class=" mb-6">
       <Image
         alt={data.coverImage.alt || ""}
         class="object-cover"
@@ -46,6 +46,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
         src={data.coverImage.src}
         width={800}
         height={450}
+        style="margin:0 auto;"
       />
     </div>
   ) : null

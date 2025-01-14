@@ -6,18 +6,18 @@ import ThemeProvider from "@/components/ThemeProvider.astro";
 import Footer from "@/components/layout/Footer.astro";
 import Header from "@/components/layout/Header.astro";
 import { siteConfig } from "@/site-config";
-import SiteLinks from '@/components/SocialList.astro';
+// import SiteLinks from '@/components/SocialList.astro';
 import DynamicTheme from '@/components/DynamicTheme.astro';
-// import { ViewTransitions } from 'astro:transitions';
-// <ViewTransitions />
+import { ViewTransitions } from 'astro:transitions';
 
 
-function isRunningStandalone() {
-    if (typeof window !== 'undefined') {
-        return window.matchMedia('(display-mode: standalone)').matches;
-    }
-    return;
-}
+
+// function isRunningStandalone() {
+//     if (typeof window !== 'undefined') {
+//         return window.matchMedia('(display-mode: standalone)').matches;
+//     }
+//     return;
+// }
 
 interface Props {
   meta?: {
@@ -41,9 +41,13 @@ const pageTitle = title || meta?.title;
 const pageDescription = description || meta?.description;
 const pageArticleDate = articleDate || meta?.articleDate;
 const pageOgImage = ogImage || meta?.ogImage;
+
+
 ---
-<html lang={siteConfig.lang} data-theme="light">
+
+<html lang={siteConfig.lang} data-theme="light" transition:name="root" transition:animate="none">
 	<head>
+		<ViewTransitions />
 		<script>
 			function getInitialTheme() {
 				const savedTheme = localStorage.getItem('theme');
@@ -67,14 +71,13 @@ const pageOgImage = ogImage || meta?.ogImage;
 	
 	<body>
 		<SkipLink />
-				<div id="nav-container"></div>
+				<div id="nav-container">
 
-				<SiteLinks />
+				<!-- <SiteLinks /> -->
 
 				
 				  
-				  <script is:inline>
-					// Check both standalone mode and window.navigator
+				  <!-- <script is:inline>
 					const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
 								  (window.navigator.standalone) || 
 								  document.referrer.includes('android-app://');
@@ -95,73 +98,28 @@ const pageOgImage = ogImage || meta?.ogImage;
 					  background: var(--theme-surface-1);
 					  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 					}
-				  </style>
+				  </style> -->
 
 		
 			<Header transition:persist>
 
 			</Header>
-		
-				<main id="main">
-					<div id="top"></div>
-					<slot />
+		</div>
+		<div id="top"></div>
+				<main id="main" transition:animate="slide" >
+					
+					<slot/>
 				</main>
 				{ showFooter && (
 					<Footer />
 					)}
 								</body>
-								<script>
-									function initializeScrollListener() {
-										const horizontalScrollClassName = 'horizontal-slider';
-										const scrollMultiplier = .5;
+								
 
-										function applyScrollBehavior(element: HTMLElement) {
-											const handleWheel = (event: WheelEvent) => {
-												if (element.scrollWidth > element.clientWidth) {
-													event.preventDefault();
-													const scrollAmount = (event.deltaX || event.deltaY) * scrollMultiplier;
-													element.scrollLeft += scrollAmount;
-												}
-											};
 
-											element.addEventListener('wheel', handleWheel, { passive: false });
 
-											let touchStartX: number | null = null;
-											element.addEventListener('touchstart', (event: TouchEvent) => {
-												touchStartX = event.touches[0].clientX;
-											}, { passive: true });
 
-											element.addEventListener('touchmove', (event: TouchEvent) => {
-												if (touchStartX === null) return;
-												const touchEndX = event.touches[0].clientX;
-												const diff = touchStartX - touchEndX;
-												element.scrollLeft += diff;
-												touchStartX = touchEndX;
-											}, { passive: true });
-										}
 
-										function checkAndApplyScroll() {
-											document.querySelectorAll(`.${horizontalScrollClassName}`).forEach((el) => {
-												if (el instanceof HTMLElement) {
-													applyScrollBehavior(el);
-												}
-											});
-										}
-
-										// Initial application
-										checkAndApplyScroll();
-
-										// Set up a MutationObserver to watch for changes in the DOM
-										const observer = new MutationObserver(checkAndApplyScroll);
-										observer.observe(document.body, { childList: true, subtree: true });
-
-										// Also check when the custom event is fired
-										window.addEventListener('viewModeChanged', checkAndApplyScroll);
-									}
-
-									document.addEventListener('DOMContentLoaded', initializeScrollListener);
-									document.addEventListener('astro:page-load', initializeScrollListener);
-								</script>
 	<script is:inline define:vars={{ enableImageBlur }}>
 		function initializeImageLoader() {
 			const blurEnabled = typeof enableImageBlur !== 'undefined' ? enableImageBlur : true;
@@ -220,7 +178,7 @@ const pageOgImage = ogImage || meta?.ogImage;
 						}, { passive: true });
 					}
 				});
-			}, { threshold: 0.5 });
+			}, { threshold: 0.1 });
 
 			document.querySelectorAll(`.${horizontalScrollClassName}`).forEach(el => {
 				observer.observe(el);

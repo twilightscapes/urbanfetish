@@ -32,6 +32,7 @@ interface Props {
       description: string;
       ctaUrl: string;
       showFancy: boolean;
+      showTransition: boolean;
     };
   };
 }
@@ -49,6 +50,7 @@ const optimizedImage = await getImage({src: content.featureImage?.src || '/socia
       description={content.CTAs.description}
       ctaUrl={content.CTAs.ctaUrl}
       showFancy={content.CTAs.showFancy}
+      showTransition={content.CTAs.showTransition}
     /></div>
   )}
 

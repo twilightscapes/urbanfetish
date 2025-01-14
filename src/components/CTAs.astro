@@ -4,9 +4,10 @@ interface Props {
   description: string;
   ctaUrl: string;
   showFancy?: boolean;
+  showTransition?: boolean;
 }
 
-const { title, description, ctaUrl, showFancy = false } = Astro.props;
+const { title, description, ctaUrl, showTransition=false, showFancy = false } = Astro.props;
 ---
 
 {description && <p>{description}</p>}
@@ -14,8 +15,15 @@ const { title, description, ctaUrl, showFancy = false } = Astro.props;
 {title && (
   <button class="button special font mt-4 p-6">
     {showFancy && <div class="fancy"></div>}
-    <a href={ctaUrl} class="font no-underline border-none shadow-none" style="color:white; padding:2vh 0">
+
+    <a 
+      href={ctaUrl} 
+      class="font no-underline border-none shadow-none" 
+      style="color:white; padding:2vh 0"
+      {...showTransition ? {'data-astro-reload': ''} : {}}
+    >
       <span class="butttext font">{title}</span>
     </a>
+
   </button>
 )}

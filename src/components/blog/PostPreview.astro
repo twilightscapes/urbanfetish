@@ -71,11 +71,7 @@ const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
                 width={defaultImageWidth}
                 height={defaultImageHeight}
             />
-            {showTitles && (
-                        <h2 class="title" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>
-                            {post.data.title}
-                        </h2>
-                    )}
+            
             <div class="play-button" aria-label="Play video">▶</div>
             <div class="youtube-embed" style="display: none;">
                 <YouTubeEmbed
@@ -89,6 +85,11 @@ const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
                     useCustomPlayer={useCustomPlayer}
                 />
             </div>
+            {showTitles && (
+                        <h2 class="title" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>
+                            {post.data.title}
+                        </h2>
+                    )}
         </div>
     ) : (
         <a href={`/posts/${post.slug}/`} class="pirate-link" rel="prefetch">

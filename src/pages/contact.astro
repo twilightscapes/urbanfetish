@@ -4,6 +4,8 @@ const meta = {
 	description: "Contact",
 	title: "Contact",
 };
+import App from '@/components/App.astro';
+
 
 ---
 
@@ -55,22 +57,23 @@ textarea{ height:30vh; padding:.4vh 2vw !important; outline:1px solid var(--them
 
 <PageLayout meta={meta}>
 
-    <br /><br />
+    <br />
           
 
-<div class="" style={{display:'flex', flexDirection:'row', justifyContent:'center', width:'98%', zIndex:'20' }}>
-  <!-- <div style="display:grid; place-content:center; justify-content:center; width:100%;">
-	<h1 style={{textAlign:'center', fontSize: 'clamp(1.3rem, 2vw, 3rem)'}}><a href="tel:6013851781">(601) 385-1781</a></h1>
-</div> -->
+<div class="flexbutt" style="gap:4vw; padding:0 4%;">
+
+
+
         <form
-              class=""
+               class="flexcheek"
               name="contact"
               method="POST"
               data-netlify="true"
               data-netlify-honeypot="bot-field"
-              action="/thanks"
+              action="/thanks/"
               enc-type="multipart/form-data"
-              style="width:90%; max-width:320px;"
+
+              style="justify-content:center; width:100%; padding:5vh 0 0 0; max-width: 500px; margin:0 auto;"
       
             ><input type="hidden" name="form-name" value="contact" />
                 <p>
@@ -101,7 +104,18 @@ textarea{ height:30vh; padding:.4vh 2vw !important; outline:1px solid var(--them
               </p>
 
 
-
+              <p>
+              <label html-for="attachment1" style={{padding: '0', color: '', display:'flex', width:'100%', fontSize:'90%', gap:'15px', justifyContent:'center', alignItems:'center'}}>
+                    
+                <input
+                    class="file-input hidden button"
+                    type="file"
+                    id="attachment1"
+                    name="attachment1"
+                  />
+                  ZIP files preferred
+                  </label>
+</p>
 
               <div class="" style="display:grid; place-items: center; margin:1vh auto; color: #fff; width:100%; border:0px solid var(--theme-accent2);">
                 <button
@@ -114,6 +128,12 @@ textarea{ height:30vh; padding:.4vh 2vw !important; outline:1px solid var(--them
               </div> 
             </form>
         
+
+
+            <div class="flexcheek" style="justify-content:center; padding:0 ">
+              <App />
+            </div>
+            
 	</div>
 
 

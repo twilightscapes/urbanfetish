@@ -279,7 +279,7 @@ button.topper{background:var(--theme-header) !important;}
 		height: 100vh;
 		width: 100vw;
 		position: fixed;
-		z-index:-1;
+		z-index:-2;
 		top:0;
 		object-fit:cover;
 	  }
@@ -295,7 +295,7 @@ button.topper{background:var(--theme-header) !important;}
 	  
 	  .sliderSpacer{display:none;}
 	  
-	  .slider .sliderSpacer{display:block; width:50%; height:50% ; }
+	  .slider .sliderSpacer{display:block; width:50%; height:50% ; margin-left: 0;}
 	  
 
 #feature .homeCTA{
@@ -340,7 +340,7 @@ button.topper{background:var(--theme-header) !important;}
 		display: flex;
 		flex-direction: row;
 		-webkit-overflow-scrolling: touch;
-		gap: 15vw;
+		gap: 5vw;
 		overscroll-behavior: contain;
 		scroll-snap-type: y mandatory;
 		transition: transform .3s;
@@ -350,15 +350,15 @@ button.topper{background:var(--theme-header) !important;}
 		z-index: 0;
 		position: relative;
 		top: 0;
-		padding:0 10vw;
+		padding:0 2%;
 	  }
 	  
 	  .horizontal-slider {
 		display: flex;
 		flex-direction: row;
 		-webkit-overflow-scrolling: touch;
-		gap: 10vw;
-		scroll-padding: 0 5vw;
+		/* gap: 10vw; */
+		/* scroll-padding: 0 5vw; */
 		overscroll-behavior: contain;
 		scroll-snap-align: center;
 		transition: transform .4s;
@@ -368,7 +368,7 @@ button.topper{background:var(--theme-header) !important;}
 		z-index: 0;
 		position: relative;
 		top: 0;
-		min-width: 100vw;
+		/* min-width: 100vw; */
 	  }
 	  
 	  .slider .post-card1 {
@@ -506,22 +506,31 @@ button.topper{background:var(--theme-header) !important;}
 		/* text-shadow: 0 1px 1px var(--theme-header); */
 	}
 
+
+	.panelblur {
+		backdrop-filter: blur(28px);
+		-webkit-backdrop-filter: blur(28px);
+		/* background:rgba(0, 0, 0, 0.6); */
+		text-shadow: 0 1px 1px var(--theme-header);
+	}
+
+
 	#directorySelect {
-		position: absolute;
+		/* position: absolute;
 		top:0;
 		left: 0;
-		right: 0;
+		right: 0; */
 	  	z-index: 2;
-		max-width: 300px;
-		margin: 0 auto;
+		max-width: 300px !important;
 		margin-top:5px;
+		margin-right:10px;
 		padding: 1vh 1vw;
 		background: var(--theme-header)
 	  }
 
 	  body:has(#homemap) {overflow-y:auto !important;}
 
-	  body:has(.header) #directorySelect{top:5px !important;}
+	  /* body:has(.header) #directorySelect{top:5px !important;} */
 
 	  body:has(.home) #footer{display: none;}
 

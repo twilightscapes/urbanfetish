@@ -19,6 +19,14 @@ interface Props {
 ---
 
 <PageLayout title={page.data.title} description={page.data.description}>
+  <div class="scroll-snap-container flex flex-col home">
+
+    <section id="profile" class="scroll-area1 w-screen panel" style="padding:5vh 4%;">
   <h1>{page.data.title}</h1>
   <Content />
+
+</section>
+
+  </div>
+
 </PageLayout>

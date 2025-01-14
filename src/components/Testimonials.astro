@@ -21,32 +21,33 @@ const siteSettings = await getEntry('siteSettings', 'main');
 if (!siteSettings) {
   throw new Error('Site settings are required but not found');
 }
-
 const { defaultView } = siteSettings.data;
-
 ---
 
 
-<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} >
+<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="padding:0;" >
   <div class="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }} />
   {sortedTestimonials.map((testimonial: Testimonial) => (
     <div class="quotecard post-card12" >
-      <div class="flex flex-col text-center">
+      <div class="flexbutt" style="justify-center:center; vertical-align:center; margin:0 auto; text-align:center;">
         {testimonial.data.image && (
+          <div class="flexcheek">
           <Image
             src={testimonial.data.image}
             loading="lazy"
             alt={`${testimonial.data.name ?? 'Testimonial'} Image`}
             width={200}
             height={100}
-            style="max-height:140px"
-            class="max-h-[140px] relative object-contain mx-auto"
+            style="max-height:140px;"
+            class="max-h-[140px] relative object-contain mx-auto flexcheek"
           />
+          {testimonial.data.name && <div>{testimonial.data.name}</div>}
+          </div>
         )}
       
-        {testimonial.data.name && <div>{testimonial.data.name}</div>}
+        
         {testimonial.data.quote && (
-          <blockquote class="w-full relative text-[clamp(.8rem,1vw,1.5rem)]">
+          <blockquote class="w-full relative text-[clamp(.8rem,1vw,1.5rem)] flexcheek">
             {testimonial.data.quote}
             {testimonial.data.location && <span>- {testimonial.data.location}</span>}
           </blockquote>

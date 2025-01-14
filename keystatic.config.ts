@@ -14,7 +14,7 @@ export default config({
       path: 'src/content/post/*/',
       format: { contentField: 'content' },
       schema: {
-        publishDate: fields.datetime({ label: 'Publish Date' }),
+        publishDate: fields.datetime({ label: 'Publish Date', validation: { isRequired: true } }),
         title: fields.slug({ name: { label: 'Title' } }),
         description: fields.text({ label: 'Description', validation: { length: { min: 50, max: 160 } } }),
         draft: fields.checkbox({ label: 'Draft', defaultValue: false }),
@@ -109,6 +109,7 @@ export default config({
         ctaUrl: fields.text({ label: 'CTA Url', description: 'The location of your CTA', defaultValue: '/', validation: { length: { min: 1 } } }),
         description: fields.text({ label: 'Description', description: 'The description for the CTA', multiline: true }),
         showFancy: fields.checkbox({ label: 'Show Fancy Button', description: 'Use the Fancy style with animated button', defaultValue: true }),
+        showTransition: fields.checkbox({ label: 'Hide page transition', description: 'Hide the view transition on page change', defaultValue: false }),
       },
       slugField: 'description'
     }),
@@ -321,20 +322,6 @@ export default config({
           publicPath: '/images/logo',
         }),
         divider: fields.empty(),
-        showHeader: fields.checkbox({ label: 'Show Header', description: 'Hide/Show the main site header', defaultValue: true }),
-        showLogo: fields.checkbox({ label: 'Show Logo', description: 'Hide/Show the logo in the header', defaultValue: true }),
-        showHome: fields.checkbox({ label: 'Show Home Link', description: 'Hide/Show the Home Link', defaultValue: true }),
-        showTheme: fields.checkbox({ label: 'Show Theme', description: 'Hide/Show the theme selector', defaultValue: true }),
-        showSwitch: fields.checkbox({ label: 'Show Switch', description: 'Hide/Show the layout selector', defaultValue: true }),
-        showSearch: fields.checkbox({ label: 'Show Search', description: 'Hide/Show the search in the header', defaultValue: true }),
-        showFooter: fields.checkbox({ label: 'Show Footer', description: 'Hide/Show the Footer', defaultValue: true }),
-        
-        divider2: fields.empty(),
-
-        
-
-
-        divider3: fields.empty(),
         defaultView: fields.select({
           label: 'Default View (sets whether to show grid mode or swipe mode by default',
           options: [
@@ -343,6 +330,21 @@ export default config({
           ],
           defaultValue: 'grid',
         }),
+        MAX_POSTS: fields.number({ label: 'Number of posts to display on home page', defaultValue: 3 }),
+        MAX_POSTS_PER_PAGE: fields.number({ label: 'Number of posts to display on other pages', defaultValue: 3 }),
+        divider2: fields.empty(),
+
+        showHeader: fields.checkbox({ label: 'Show Header', description: 'Hide/Show the main site header', defaultValue: true }),
+        showLogo: fields.checkbox({ label: 'Show Logo', description: 'Hide/Show the logo in the header', defaultValue: true }),
+        showHome: fields.checkbox({ label: 'Show Home Link', description: 'Hide/Show the Home Link', defaultValue: true }),
+        showTheme: fields.checkbox({ label: 'Show Theme', description: 'Hide/Show the theme selector', defaultValue: true }),
+        showSwitch: fields.checkbox({ label: 'Show Switch', description: 'Hide/Show the layout selector', defaultValue: true }),
+        showSearch: fields.checkbox({ label: 'Show Search', description: 'Hide/Show the search in the header', defaultValue: true }),
+        showFooter: fields.checkbox({ label: 'Show Footer', description: 'Hide/Show the Footer', defaultValue: true }),
+        showCheck: fields.checkbox({ label: 'Hide Pirate promo', description: 'Hide/Show the Pirate info', defaultValue: true }),
+
+
+  
         showTitles: fields.checkbox({ label: 'Show Post Titles', description: 'Hide/Show the post titles', defaultValue: false }),
         showDates: fields.checkbox({ label: 'Show Dates', description: 'Hide/Show the post dates', defaultValue: true }),
         enableImageBlur: fields.checkbox({ 
@@ -350,15 +352,17 @@ export default config({
           defaultValue: true 
         }),
         showSocial: fields.checkbox({ label: 'Show Social Links in Posts' }),
-        showCheck: fields.checkbox({ label: 'Show Pirate Link', description: 'Hide/Show the Pirate Link', defaultValue: true }),
+
         showTags: fields.checkbox({ label: 'Show Post Tags', description: 'Hide/Show the post tags', defaultValue: false }),
-        MAX_POSTS: fields.number({ label: 'Number of posts to display on home page', defaultValue: 3 }),
-        MAX_POSTS_PER_PAGE: fields.number({ label: 'Number of posts to display on other pages', defaultValue: 3 }),
+        showShare: fields.checkbox({ label: 'Show Share section on posts', description: 'Hide/Show the share this copy button on posts', defaultValue: false }),
+    
+  
 
         
-        divider4: fields.empty(),
-        showShare: fields.checkbox({ label: 'Show Share section on posts', description: 'Hide/Show the share this copy button on posts', defaultValue: false }),
 
+
+
+        
 
         
       },
@@ -375,6 +379,8 @@ export default config({
         siteUrl: fields.text({ label: 'Site Url', description: 'The address to your website' }),
         name: fields.text({ label: 'App Name' }),
         shortName: fields.text({ label: 'Short Name' }),
+
+        location: fields.text({ label: 'Location Map', description: 'Copy the src url from the google maps location share embed section'  }),
 
         divider: fields.empty(),
 
@@ -495,8 +501,8 @@ export default config({
         }),
 
         showApp: fields.checkbox({
-          label: 'Show App Module',
-          description: 'Hide/Show custom App section on the home page',
+          label: 'Show Map Module',
+          description: 'Hide/Show custom map section on the home page - requires the src url from an embeded google map',
           defaultValue: false,
         }),
 
@@ -565,6 +571,7 @@ export default config({
         
         
         photosectiontitle: fields.text({ label: 'Photo Section Title Header'  }),
+        locationtitle: fields.text({ label: 'Location Map Title Header'  }),
         faqsectiontitle: fields.text({ label: 'FAQ Title Header'  }),
         testimonialtitle: fields.text({ label: 'Testimonials Title Header' }),
         postsectiontitle: fields.text({ label: 'Posts Title Header'  }),
@@ -671,6 +678,8 @@ export default config({
           directory: 'public/images/styleapps',
           publicPath: '/images/styleapps'
         }),
+        backgroundVideo: fields.text({ label: 'Background Video', defaultValue: '', description: 'Copy the url of an embed from youtube and paste here - just the url' }),
+
         siteFont: fields.text({ label: 'Site Font', defaultValue: 'Bowlby One', description: 'Enter the name of any Google Font' }),
         borderRadius: fields.text({ label: 'Border Radius', description: 'Border Radius of elements on page (0) for square', validation: { isRequired: false }, defaultValue: "0px" }),
         divider5: fields.empty(),
@@ -872,7 +881,7 @@ ui: {
   navigation: {
     'Site Pages and Posts': [
       'home',
-      // 'pages',
+      'pages',
       'posts',
     ],
     'Content Modules': [

@@ -21,11 +21,19 @@ const homeContent = await getEntry('homepage', 'index');
 const language = await getEntry('language', 'index');
 
 
+
+
+const styleAppearance = await getEntry('styleapps', 'index');
+const { backgroundVideo } = styleAppearance.data;
+
 if (!siteSettings || !pwaSettings || !homeContent || !language) {
   throw new Error('Required content settings not found');
 }
 
-const { defaultView, MAX_POSTS } = siteSettings.data;
+
+
+
+const { defaultView, MAX_POSTS, showCheck } = siteSettings.data;
 import App from '@/components/App.astro';
 const reader = createReader(process.cwd(), keystaticConfig);
 
@@ -253,8 +261,23 @@ flex-direction: column;
 }
 
 </style>
+
+{backgroundVideo && (
+  <iframe
+    src={backgroundVideo}
+    title="video title"
+    width="100%"
+    height="800"
+    frameborder="0"
+    allowfullscreen
+    class="vidbox"
+    style="height:100vh !important; position:absolute; top:1; z-index: -1;"
+    loading="lazy"
+></iframe>
+)}
+
 <PageLayout title={homeContent.data.title} description={pwaSettings.data.description}>
-	<div class="scroll-snap-container flex flex-col home panel">
+	<div class="scroll-snap-container flex flex-col home">
 		{sortedSections.map(section => (
 			<section class={section.name === 'resume' ? 'resume' : ''}>
 				{(() => {
@@ -267,13 +290,16 @@ flex-direction: column;
 									title: cta.data.title,
 									description: cta.data.description || '',
 									ctaUrl: cta.data.ctaUrl,
-									showFancy: cta.data.showFancy
+									showFancy: cta.data.showFancy,
+                  showTransition: cta.data.showTransition
+                  
+                  
 								} : undefined
 							}} />;
 						case 'bio':
 							return <Bio />;
 						case 'app':
-							return <App />;
+							return (<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg" style="margin-bottom:0;">{homeContent.data.locationtitle}</h2><App />);
 						case 'gallery':
 							return (<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">{homeContent.data.photosectiontitle}</h2><PhotoSection />);
 						case 'infoblock':
@@ -298,8 +324,8 @@ flex-direction: column;
               case 'posts':
 							return (
 								<>
-									<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent" style="margin-bottom:2vh;">{homeContent.data.postsectiontitle}</h2>
-									<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider panel' : 'grid-container'}`}>
+									<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg" style="margin-bottom:2vh;">{homeContent.data.postsectiontitle}</h2>
+									<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`}>
 									
 
                     {allPostsSorted.map((p) => <PostPreview post={p} withDesc />)}
@@ -319,8 +345,8 @@ flex-direction: column;
 								</>
 							);
 						case 'testimonials':
-							return <div class="testi" style="padding:30px;">
-								<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent">{homeContent.data.testimonialtitle}</h2><Testimonials /></div>;
+							return <div class="testi" style="">
+								<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">{homeContent.data.testimonialtitle}</h2><Testimonials /></div>;
 						default:
 							return null;
 					}
@@ -336,9 +362,23 @@ flex-direction: column;
         description={homeCTA.data.description || ''}
         ctaUrl={homeCTA.data.ctaUrl}
         showFancy={homeCTA.data.showFancy}
+        showTransition={homeCTA.data.showTransition}
       />
     </section>
   )}
+
+{!showCheck && 
+
+<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">Buy This Website</h2>
+<stripe-pricing-table pricing-table-id="prctbl_1Qe7TQIbXHwBH2q3OBiMeCaf"
+publishable-key="pk_test_51Qe75VIbXHwBH2q3XjaYKRUr0AUGprwFX2ottMpaxZqAqiEoBS5nGA4GatemfTmUHs6CSPWFhBzPJjH2qv0JuLLI00421mokn9">
+</stripe-pricing-table><br /><br />
+
+}
+
+
+
 
 
 	</div>

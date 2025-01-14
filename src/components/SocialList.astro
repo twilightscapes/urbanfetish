@@ -33,11 +33,11 @@ const socialLinks = (await getCollection('socialLinks'))
 
 ---
 
-<style>
+<!-- <style>
   [data-standalone-only="true"] {
     display: none !important;
   }
-</style>
+</style> -->
 
 <div class="flex flex-wrap items-end gap-x-2 w-full" style={{justifyContent: "center"}}>
   <ul class="flex flex-wrap items-center gap-2 pwa-persistent-nav" style={{margin: "0 auto 3vh auto"}}>
@@ -60,7 +60,7 @@ const socialLinks = (await getCollection('socialLinks'))
   </ul>
 </div>
 
-<script>
+<!-- <script>
   function updateVisibility() {
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   document.referrer.includes('android-app://');
@@ -78,4 +78,4 @@ const socialLinks = (await getCollection('socialLinks'))
   updateVisibility();
   window.addEventListener('load', updateVisibility);
   document.addEventListener('astro:page-load', updateVisibility);
-</script>
+</script> -->

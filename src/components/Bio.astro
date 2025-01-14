@@ -15,7 +15,7 @@ const showSocial = bioContent.data.showSocial;
 const formattedDescription = (bioContent.data.description ?? '').replace(/\n/g, '<br>');
 ---
 
-<section id="profile" class="scroll-area1 w-screen" style="backdrop-filter: blur(8px); padding-bottom:5vh;">
+<section id="profile" class="scroll-area1 w-screen panel" style="padding-bottom:5vh;">
     <article>
       <div id="profiletop" class="flex flex-col md:flex-row justify-center items-center gap-4 py-8">
 
@@ -36,7 +36,7 @@ const formattedDescription = (bioContent.data.description ?? '').replace(/\n/g, 
           {bioContent.data.image && (
             <Image
               src={bioContent.data.image}
-              loading="lazy"
+              // loading="lazy"
               alt={`${bioContent.data.name ?? 'User Photo'} Image`}
               width={250}
               height={250}
@@ -64,6 +64,7 @@ const formattedDescription = (bioContent.data.description ?? '').replace(/\n/g, 
                   description={cta.data.description || ''}
                   ctaUrl={cta.data.ctaUrl}
                   showFancy={cta.data.showFancy}
+                  showTransition={cta.data.showTransition}
                 />
               )}
         </div>

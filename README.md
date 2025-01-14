@@ -6,9 +6,8 @@
 
 <div align="center">
 
+# You're the Captain now!
 
-
-  <strong align="center" style="font-size:30px">You're the Captain now!</strong>
 </div>
 
 
@@ -36,7 +35,7 @@
 
 # Install PIRATE &nbsp; | &nbsp; Quick Start
 
-[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/piratesocial/pirate) 
+[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/piratewebsite/pirate) 
 
 <!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftwilightscapes%2Fpirate&project-name=astro-pirate-theme) -->
 
@@ -49,6 +48,7 @@ Setup takes about 4 minutes and <strong><i>requires a valid email address</i></s
 ## 🏴‍☠️ Web Features
 
 - Next-Gen Social Media and Video Blogging Platform.
+- Custom YouTube Video Player built througout
 - User-installable and configurable PWA (Progressive Web Apps)
 - Add / Modify / Delete pages and posts - no limitations.
 - Edit website settings, seo settings, logos, etc all from within the CMS.
@@ -69,15 +69,14 @@ Setup takes about 4 minutes and <strong><i>requires a valid email address</i></s
 - Auto-generated [sitemap](https://docs.astro.build/en/guides/integrations-guide/sitemap/)
 - [Pagefind](https://pagefind.app/) static search library integration
 - [Astro Icon](https://github.com/natemoo-re/astro-icon) svg icon component
-- [Keystatic CMS](https://keystatic.com) is integrated into and controls all aspects of your site.
-- PiRATE Social features a full version of BlueSky built in
+- [Keystatic CMS](https://keystatic.com) is integrated into and controls all aspects of your site
 
 
 
 <div align="center">
 
 <br />
-<h3><strong><i>T R A K</i></strong> | Technology Stack</h3>
+<h3><em><i>T R A K</i></em> &nbsp; Technology Stack</h3>
 PIRATE is built on industry leading technologies, and is designed from the ground up, using the best, most secure and modern development technology stack available today: <h3 style="font-size:30px;"><strong><i></i></strong></h3>
 <a href=""><img alt="" role="presentation" aria-hidden="true" src="public/images/partners/typescript-logo.webp" width="24%" height="auto" /></a>
 <a href="https://react.dev"><img alt="React Logo" role="presentation" aria-hidden="true" src="public/images/partners/react-logo.webp" width="24%" height="auto" /></a>
@@ -105,8 +104,8 @@ PIRATE is built on industry leading technologies, and is designed from the groun
 - In order to to do so online, you will need to create a free account @ [KeyStatic Cloud](https://keystatic.cloud)
 - Connect your Keystatic account to your Github repo
 <!-- - Copy/paste the Keystatic project settings into your Netlify Env Variables -->
-- Copy and Paste the Keystatic Cloud project settings you are given into this file:     [https://github.com/YourGitAccount/YourRepo/edit/main/keystatic.config.ts](https://github.com/piratesocial/pirate/edit/main/keystatic.config.ts)
-Edit this file on line 7 - replace "pirate/pirate" with your project settings from Keystatic Cloud.
+- Copy and Paste the Keystatic Cloud project settings you are given into this file:     [https://github.com/YourGitAccount/YourRepo/edit/main/keystatic.config.ts](https://github.com/piratewebsite/pirate/edit/main/keystatic.config.ts)
+Edit this file on line 7 - replace "yourproject/projectid" with your project settings from Keystatic Cloud.
 - Redeploy your site on Netlify and then go to yoursite.netlify.app/admin to login to the CMS and configure the rest of your site.
 
 ## Using Local Development

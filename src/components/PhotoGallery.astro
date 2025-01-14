@@ -57,11 +57,13 @@ const showSwitch = photoSettings?.showSwitch;
 const siteSettings = await getEntry('siteSettings', 'main');
 const { defaultView } = siteSettings.data;
 ---
-<div style="position:relative;">
 
 
-{showGallerySelector && (
-  <div class="cattags" style={{ width: '100%', margin: '0px auto 0 auto', display: 'flex', justifyContent:'center', gap: '0', color: '' }}>
+
+
+  <div class="cattags" style={{ width: '', display: 'flex', justifyContent:'center', gap: '0', color: '' }}>
+    
+    {showGallerySelector && (
     <select aria-label="View Available Galleries" id="directorySelect" name="directorySelect" style={{ background: '', border: '1px solid #000', borderRadius: 'var(--border-radius)', padding: '8px', boxShadow: '0px 0px 0px 1px #000', opacity:'.9', color:'#fff' }}>
       {directories.map((dir) => (
         <option value={dir} selected={dir === defaultDirectory}>
@@ -69,16 +71,18 @@ const { defaultView } = siteSettings.data;
         </option>
       ))}
     </select>
+    )}
+    
     {showSwitch && (
     <div class="switcher" style={{marginTop:'10px'}}><Switch client:load defaultView={defaultView} /></div>
     )}
   </div>
-)}
 
 
 
 
-<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="padding-top:70px">
+
+<div class={`homegallery contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="padding-top:20px;">
   <div class="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }} />
 
 
@@ -105,16 +109,16 @@ const { defaultView } = siteSettings.data;
 <GalleryLightbox client:only="react" images={allImages} showCaptions={showCaptions} />
 
 
-</div>
+
 
 
 <style>
-.switcher{position:relative !important; margin:5px -360px 0 0;}
+
 
 .post-card1 {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; */
   border-radius: var(--border-radius);
 }
 img{border-radius: var(--border-radius) !important;}
