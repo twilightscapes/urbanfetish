@@ -8,7 +8,7 @@ import Header from "@/components/layout/Header.astro";
 import { siteConfig } from "@/site-config";
 // import SiteLinks from '@/components/SocialList.astro';
 import DynamicTheme from '@/components/DynamicTheme.astro';
-import { ViewTransitions } from 'astro:transitions';
+
 
 
 
@@ -26,6 +26,7 @@ interface Props {
     articleDate?: string;
     ogImage?: string;
   };
+  themeMode: string;
   title?: string;
   description?: string;
   articleDate?: string;
@@ -45,156 +46,113 @@ const pageOgImage = ogImage || meta?.ogImage;
 
 ---
 
-<html lang={siteConfig.lang} data-theme="light" transition:name="root" transition:animate="none">
+<html lang={siteConfig.lang} data-theme="light">
 	<head>
-		<ViewTransitions />
+		<!-- <ViewTransitions /> -->
 		<script>
-			function getInitialTheme() {
-				const savedTheme = localStorage.getItem('theme');
-				return savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-			}
-			document.documentElement.dataset.theme = getInitialTheme();
-		</script>
-		
-		<ThemeProvider />
-		<BaseHead 
-			title={pageTitle} 
-			description={pageDescription} 
-			articleDate={pageArticleDate} 
-			ogImage={pageOgImage} 
-		/>
-		<DynamicTheme />
+            function getInitialTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                return savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            }
+            document.documentElement.dataset.theme = getInitialTheme();
+        </script>
+        
+        <ThemeProvider themeMode={siteConfig.themeMode} />
+        <BaseHead 
+            title={pageTitle} 
+            description={pageDescription} 
+            articleDate={pageArticleDate} 
+            ogImage={pageOgImage} 
+        />
+        <DynamicTheme />
+    </head>
+    
+    <body>
+        <SkipLink />
+        <div id="nav-container"></div>
+        <Header></Header>
+        <div id="top"></div>
+        <main id="main">
+            <slot/>
+        </main>
+        { showFooter && (
+            <Footer />
+        )}
+    </body>
 
+    <script is:inline define:vars={{ enableImageBlur }}>
+        function initializeImageLoader() {
+            const blurEnabled = typeof enableImageBlur !== 'undefined' ? enableImageBlur : true;
+            console.log('Image loader initialized, blur enabled:', blurEnabled);
 
+            if (!blurEnabled) return;
 
-	</head>
-	
-	<body>
-		<SkipLink />
-				<div id="nav-container">
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                // Apply initial blur
+                img.style.filter = 'blur(20px)';
+                img.style.transition = 'filter 0.5s ease-in-out';
 
-				<!-- <SiteLinks /> -->
+                if (img.complete) {
+                    img.style.filter = 'blur(0px)';
+                } else {
+                    img.addEventListener('load', function() {
+                        this.style.filter = 'blur(0px)';
+                    });
+                }
+            });
+        }
 
-				
-				  
-				  <!-- <script is:inline>
-					const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-								  (window.navigator.standalone) || 
-								  document.referrer.includes('android-app://');
-								  
-					document.querySelector('.pwa-persistent-nav').style.display = isPWA ? 'flex' : 'none';
-				  </script>
-				  
-				  <style>
-					.pwa-persistent-nav {
-					  position: relative;
-					  top: 0;
-					  left: 0;
-					  right: 0;
-					  z-index: 1000;
-					  display: none;
-					  justify-content: space-around;
-					  padding: 1rem;
-					  background: var(--theme-surface-1);
-					  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-					}
-				  </style> -->
+        function initializeScrollListener() {
+            const horizontalScrollClassName = 'horizontal-slider';
+            const scrollMultiplier = 1.1;
 
-		
-			<Header transition:persist>
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
 
-			</Header>
-		</div>
-		<div id="top"></div>
-				<main id="main" transition:animate="slide" >
-					
-					<slot/>
-				</main>
-				{ showFooter && (
-					<Footer />
-					)}
-								</body>
-								
+                        const handleWheel = (event) => {
+                            if (target.scrollWidth > target.clientWidth) {
+                                event.preventDefault();
+                                const scrollAmount = (event.deltaX || event.deltaY) * scrollMultiplier;
+                                target.scrollLeft += scrollAmount;
+                            }
+                        };
 
+                        target.addEventListener('wheel', handleWheel, { passive: false });
 
+                        let touchStartX;
+                        target.addEventListener('touchstart', (event) => {
+                            touchStartX = event.touches[0].clientX;
+                        }, { passive: true });
 
+                        target.addEventListener('touchmove', (event) => {
+                            if (!touchStartX) return;
+                            const touchEndX = event.touches[0].clientX;
+                            const diff = touchStartX - touchEndX;
+                            target.scrollLeft += diff;
+                            touchStartX = touchEndX;
+                        }, { passive: true });
+                    }
+                });
+            }, { threshold: 0.1 });
 
+            document.querySelectorAll(`.${horizontalScrollClassName}`).forEach(el => {
+                observer.observe(el);
+            });
+        }
 
-	<script is:inline define:vars={{ enableImageBlur }}>
-		function initializeImageLoader() {
-			const blurEnabled = typeof enableImageBlur !== 'undefined' ? enableImageBlur : true;
-			console.log('Image loader initialized, blur enabled:', blurEnabled);
-
-			if (!blurEnabled) return;
-
-			const images = document.querySelectorAll('img');
-			images.forEach(img => {
-				// Apply initial blur
-				img.style.filter = 'blur(20px)';
-				img.style.transition = 'filter 0.5s ease-in-out';
-
-				if (img.complete) {
-					img.style.filter = 'blur(0px)';
-				} else {
-					img.addEventListener('load', function() {
-						this.style.filter = 'blur(0px)';
-					});
-				}
-			});
-		}
-
-		function initializeScrollListener() {
-			const horizontalScrollClassName = 'horizontal-slider';
-			const scrollMultiplier = .5;
-
-			
-
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						const target = entry.target;
-						
-						const handleWheel = (event) => {
-							if (target.scrollWidth > target.clientWidth) {
-								event.preventDefault();
-								const scrollAmount = (event.deltaX || event.deltaY) * scrollMultiplier;
-								target.scrollLeft += scrollAmount;
-							}
-						};
-
-						target.addEventListener('wheel', handleWheel, { passive: false });
-
-						let touchStartX;
-						target.addEventListener('touchstart', (event) => {
-							touchStartX = event.touches[0].clientX;
-						}, { passive: true });
-
-						target.addEventListener('touchmove', (event) => {
-							if (!touchStartX) return;
-							const touchEndX = event.touches[0].clientX;
-							const diff = touchStartX - touchEndX;
-							target.scrollLeft += diff;
-							touchStartX = touchEndX;
-						}, { passive: true });
-					}
-				});
-			}, { threshold: 0.1 });
-
-			document.querySelectorAll(`.${horizontalScrollClassName}`).forEach(el => {
-				observer.observe(el);
-			});
-		}
-
-		document.addEventListener('DOMContentLoaded', () => {
-			initializeImageLoader();
-			initializeScrollListener();
-		});
-		document.addEventListener('astro:page-load', () => {
-			initializeImageLoader();
-			initializeScrollListener();
-		});
-		window.addEventListener('viewModeChanged', initializeScrollListener);
-	</script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeImageLoader();
+            initializeScrollListener();
+        });
+        document.addEventListener('astro:page-load', () => {
+            initializeImageLoader();
+            initializeScrollListener();
+        });
+        window.addEventListener('viewModeChanged', initializeScrollListener);
+    </script>
 
 
 </html>		

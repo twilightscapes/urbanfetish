@@ -4,14 +4,14 @@ const language = await getEntry('language', 'index');
 const currentUrl = Astro.url.href;
 ---
 
-<div style="padding: 1vh 0 2vh 0; margin:0 auto;">
-  <p class="font pleaseshare" style="margin: 1vh auto; text-align: center; font-size: 90%; font-weight: bold;">{language.data.shareText}</p>
+<div class="" style="padding: 1vh 0 2vh 0; margin:0 auto;">
   <div style="background: transparent; border-radius: var(--border-radius); width: 400px; padding: 0; display: flex; flex-direction: row; justify-content: space-around; align-items: center; margin: 0 auto;">
-    <div style="display: flex; gap: 0; align-items: center; padding: 0;">
-      <input class="copylink" type="text" value={currentUrl} readonly style="padding:.5rem; min-width: 305px; width: 100%; max-width: 380px; font-size: clamp(.6rem,1vw,1rem); transition: all 1s ease-in-out; background: rgba(0,0,0,.2); outline: 1px solid #999; border: 0px solid var(--theme-ui-colors-siteColor); border-radius: var(--border-radius);" />
-      <button class="non" id="copyButton" aria-label="Copy Url" style="display: flex; gap: .5vw; justify-content: center; padding: .6vh .8vw; width: 100px; min-width: 30px; margin: 0 auto; text-align: center; font-size: 14px; font-weight: light; text-shadow: 0 1px 0 #444;">{language.data.copyButton}</button>
+    <div style="display: flex; gap: 1vw; align-items: center; padding: 0;">
+      <input class="copylink dark:prose-invert" type="text" value={currentUrl} readonly style="padding:.5rem; min-width: 305px; width: 100%; max-width: 380px; font-size: clamp(.6rem,1vw,1rem); transition: all 1s ease-in-out; background-color: var(--theme-header); outline: 1px solid var(--theme-accent2); border: 0px solid var(--theme-accent2); border-radius: var(--border-radius);" />
+      <button class="non" id="copyButton" aria-label="Copy Url" style="display: flex; gap: .5vw; justify-content: center; padding: .6vh .8vw; width: 100px; min-width: 30px; margin: 0 auto; text-align: center; font-size: 14px; font-weight: light; text-shadow: 0 1px 0 #444; outline: 1px solid var(--theme-accent2);">{language.data.copyButton}</button>
     </div>
   </div>
+  <p class="pleaseshare1" style="margin: 1vh auto; text-align: center; font-size: 13px; font-weight: bold;">{language.data.shareText}</p>
 </div><script>
   const copyButton = document.getElementById('copyButton');
   const urlInput = document.querySelector('.copylink') as HTMLInputElement;
@@ -27,10 +27,9 @@ const currentUrl = Astro.url.href;
 
       if (navigator.share) {
         navigator.share({
-          title: 'PIRATE',
+          title: 'SHARE',
           url: urlInput.value
         }).then(() => {
-          console.log('Thanks for being a Pirate!');
         }).catch(console.error);
       }
     });

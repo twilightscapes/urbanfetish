@@ -1,140 +1,178 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../keystatic.config';
+
 const meta = {
-	description: "Contact",
-	title: "Contact",
+  description: "Contact",
+  title: "Contact",
 };
+
+const reader = createReader(process.cwd(), keystaticConfig);
+const contactPage = await reader.singletons.contactPage.read();
+
+const showName = contactPage?.showName ?? true;
+const showPhone = contactPage?.showPhone ?? true;
+const showUpload = contactPage?.showUpload ?? true;
+const showMessage = contactPage?.showMessage ?? true;
+const showExtraField = contactPage?.showExtraField ?? false;
+const extraFieldLabel = contactPage?.extraFieldLabel ?? 'Extra Field';
+const showMap = contactPage?.showMap ?? true;
+const showExtraField2 = contactPage?.showExtraField2 ?? false;
+const extraFieldLabel2 = contactPage?.extraFieldLabel2 ?? 'Extra Field 2';
+const content = (contactPage?.content ?? '').replace(/\n/g, '<br>');
+
 import App from '@/components/App.astro';
-
-
 ---
 
-<style >
-
-
-
-
+<style>
   input, select {
     font-size: 16px !important;
   }
 
-input {
+  input {
     font-size: 16px !important;
     padding: 10px;
-    margin:1vh auto;
-    background:#000;
+    margin: 1vh auto;
+    background: #000;
     border: 1px solid var(--theme-accent2) !important;
-    color:#fff;
-      padding:.4vh 2vw !important; height:30px !important; outline:1px solid var(--theme-accent2); border-radius: 5px; background:rgba(28, 23, 23, 0.8);
+    color: #fff;
+    padding: .4vh 2vw !important;
+    height: 30px !important;
+    outline: 1px solid var(--theme-accent2);
+    border-radius: 5px;
+    background: rgba(28, 23, 23, 0.8);
   }
-  input, textarea{background-color: rgba(0, 0, 0, 0.8); color:#ddd; padding:.3vh .5vw; width:100%;}
 
-input::placeholder,textarea::placeholder{color:rgb(253, 255, 253); font-size:clamp(.8rem,1.5vw,2.2rem) !important;}
+  input, textarea {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ddd;
+    padding: .3vh .5vw;
+    width: 100%;
+  }
 
+  input::placeholder, textarea::placeholder {
+    color: rgb(253, 255, 253);
+    font-size: clamp(.8rem, 1.5vw, 2.2rem) !important;
+  }
 
-textarea{ height:30vh; padding:.4vh 2vw !important; outline:1px solid var(--theme-accent2); border-radius: 5px; background:rgba(28, 23, 23, 0.8);}
+  textarea {
+    height: 30vh;
+    padding: .4vh 2vw !important;
+    outline: 1px solid var(--theme-accent2);
+    border-radius: 5px;
+    background: rgba(28, 23, 23, 0.8);
+  }
 
-.stripe-button {
-  background-color:var(--theme-accent2);
-  color: #fff;
-  border: none;
-  padding: 10px 3vw;
-  font-size:clamp(1.1rem, 1vw, 1.4rem);
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  margin:0 auto;
-  transition: opacity 0.5s ease-in;
-}
+  .stripe-button {
+    background-color: var(--theme-accent2);
+    color: #fff;
+    border: none;
+    padding: 10px 3vw;
+    font-size: clamp(1.1rem, 1vw, 1.4rem);
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    margin: 0 auto;
+    transition: opacity 0.5s ease-in;
+  }
 
-.backimage{display:none !important;}
-
+  .backimage {
+    display: none !important;
+  }
 </style>
 
-
-
-
 <PageLayout meta={meta}>
+  <br />
+  {content && (
+    <div class="content-area contactpage" style="padding-bottom: 2vh; max-width: 500px; margin:0 auto;" set:html={content}>
+      </div>
+    )}
+  <div class="flexbutt" style={`gap: 4vw; padding: 0 4%; ${showMap ? '' : 'justify-content: center;'}`}>
+    <form
+      class="flexcheek"
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      action="/thanks/"
+      enc-type="multipart/form-data"
+      style="justify-content: center; width: 100%; padding: 5vh 0 0 0; max-width: 500px; margin: 0 auto;"
+    >
+      <input type="hidden" name="form-name" value="contact" />
 
-    <br />
-          
+      {showName && (
+        <p>
+          <label html-for="name" aria-label="Your Name">
+            <input type="text" id="name" name="name" placeholder="Your Name" />
+          </label>
+        </p>
+      )}
 
-<div class="flexbutt" style="gap:4vw; padding:0 4%;">
+      <p>
+        <label html-for="email" aria-label="Your Email">
+          <input id="email" type="email" name="email" placeholder="Your@email.com" required />
+        </label>
+      </p>
 
+      {showPhone && (
+        <p>
+          <label html-for="phone" aria-label="Your Phone">
+            <input type="tel" id="phone" name="phone" placeholder="Your Phone" />
+          </label>
+        </p>
+      )}
 
+      {showExtraField && (
+        <p>
+          <label html-for="extraField" aria-label={extraFieldLabel}>
+            <input type="text" id="extraField" name="extraField" placeholder={extraFieldLabel} />
+          </label>
+        </p>
+      )}
 
-        <form
-               class="flexcheek"
-              name="contact"
-              method="POST"
-              data-netlify="true"
-              data-netlify-honeypot="bot-field"
-              action="/thanks/"
-              enc-type="multipart/form-data"
+      {showExtraField2 && (
+        <p>
+          <label html-for="extraField2" aria-label={extraFieldLabel2}>
+            <input type="text" id="extraField2" name="extraField2" placeholder={extraFieldLabel2} />
+          </label>
+        </p>
+      )}
 
-              style="justify-content:center; width:100%; padding:5vh 0 0 0; max-width: 500px; margin:0 auto;"
-      
-            ><input type="hidden" name="form-name" value="contact" />
-                <p>
-                  <label html-for="name" aria-label="Your Name">
-                    <input type="text" id="name" name="name" placeholder="Your Name" required />
-                  </label>
-                </p>
     
 
-              <p>
-                <label html-for="email" aria-label="Your Email">
-                  <input id="email" type="email" name="email" placeholder="Your@email.com"  required />
-                </label>
-              </p>
+      {showMessage && (
+      <p>
+        <label html-for="message" aria-label="Your Message">
+          <textarea id="message" name="message" placeholder="Message"></textarea>
+        </label>
+      </p>
+      )}
 
+      {showUpload && (
+        <p>
+          <label html-for="attachment1" style={{ padding: '0', color: '', display: 'flex', width: '100%', fontSize: '90%', gap: '15px', justifyContent: 'center', alignItems: 'center' }}>
+            <input class="file-input hidden button" type="file" id="attachment1" name="attachment1" />
+            ZIP files preferred
+          </label>
+        </p>
+      )}
 
-                <p>
-                  <label html-for="phone" aria-label="Your Phone">
-                    <input type="tel" id="phone" name="phone" placeholder="Your Phone"  />
-                  </label>
-                </p>
-    <br />
+      <div class="" style="display: grid; place-items: center; margin: 1vh auto; color: #fff; width: 100%; border: 0px solid var(--theme-accent2);">
+        <button class="button stripe-button" style="margin: 0" type="submit">
+          Send Message
+        </button>
+      </div>
+    </form>
 
-              <p>
-                <label html-for="message" aria-label="Your Message">
-                  <textarea id="message" name="message" placeholder="Message"  required></textarea>
-                </label>
-              </p>
-
-
-              <p>
-              <label html-for="attachment1" style={{padding: '0', color: '', display:'flex', width:'100%', fontSize:'90%', gap:'15px', justifyContent:'center', alignItems:'center'}}>
-                    
-                <input
-                    class="file-input hidden button"
-                    type="file"
-                    id="attachment1"
-                    name="attachment1"
-                  />
-                  ZIP files preferred
-                  </label>
-</p>
-
-              <div class="" style="display:grid; place-items: center; margin:1vh auto; color: #fff; width:100%; border:0px solid var(--theme-accent2);">
-                <button
-                  class="button stripe-button"
-                  style=" margin:0"
-                  type="submit"
-                >
-                  Send Message
-                </button>
-              </div> 
-            </form>
-        
-
-
-            <div class="flexcheek" style="justify-content:center; padding:0 ">
-              <App />
-            </div>
-            
-	</div>
-
-
+    {showMap && (
+      <div class="flexcheek" style="justify-content: center; padding: 0">
+        <App />
+      </div>
+    )}
+  </div>
+  <br />
+  <br />
+  <br />
 </PageLayout>

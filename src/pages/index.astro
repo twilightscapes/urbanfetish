@@ -23,8 +23,8 @@ const language = await getEntry('language', 'index');
 
 
 
-const styleAppearance = await getEntry('styleapps', 'index');
-const { backgroundVideo } = styleAppearance.data;
+
+
 
 if (!siteSettings || !pwaSettings || !homeContent || !language) {
   throw new Error('Required content settings not found');
@@ -61,6 +61,7 @@ type PitchData = {
   showTitle: boolean;
   divider: string | null;
   divider2: string | null;
+  showTwocol: boolean; // Add this line
 }
 const selectedPitchSlug = homepage?.pitch;
 const selectedPitchSlug2 = homepage?.pitch2;
@@ -73,90 +74,47 @@ let selectedPitch3: PitchData | undefined;
 if (selectedPitchSlug) {
   const pitchData = await reader.collections.pitches.read(selectedPitchSlug);
   if (pitchData) {
-        selectedPitch = {
-          slug: selectedPitchSlug,
-          tagline: pitchData.tagline ?? '',
-          showTitle: !!pitchData.showTitle,
-          text1: pitchData.text1 ?? '',
-          text2: pitchData.text2 ?? '',
-          text3: pitchData.text3 ?? '',
-          subheading1: pitchData.subheading1 ?? '',
-          subheading2: pitchData.subheading2 ?? '',
-          subheading3: pitchData.subheading3 ?? '',
-          image: pitchData.image ?? null,
-          imageAlt: pitchData.imageAlt ?? '',
-          description: pitchData.description ?? '',
-          title: pitchData.title ?? null,
-          divider: pitchData.divider ?? null,
-          divider2: pitchData.divider2 ?? null,
-        };
-      }
+    selectedPitch = {
+      slug: selectedPitchSlug,
+      tagline: pitchData.tagline ?? '',
+      showTitle: !!pitchData.showTitle,
+      text1: pitchData.text1 ?? '',
+      text2: pitchData.text2 ?? '',
+      text3: pitchData.text3 ?? '',
+      subheading1: pitchData.subheading1 ?? '',
+      subheading2: pitchData.subheading2 ?? '',
+      subheading3: pitchData.subheading3 ?? '',
+      image: pitchData.image ?? null,
+      imageAlt: pitchData.imageAlt ?? '',
+      description: pitchData.description ?? '',
+      title: pitchData.title ?? null,
+      divider: pitchData.divider ?? null,
+      divider2: pitchData.divider2 ?? null,
+      showTwocol: !!pitchData.showTwocol, // Add this line
+    };
+  }
 }
 
-if (selectedPitchSlug2) {
-      const pitchData2 = await reader.collections.pitches.read(selectedPitchSlug2);
-      if (pitchData2) {
-        selectedPitch2 = {
-          slug: selectedPitchSlug2,
-          tagline: pitchData2.tagline ?? '',
-          showTitle: !!pitchData2.showTitle,
-          text1: pitchData2.text1 ?? '',
-          text2: pitchData2.text2 ?? '',
-          text3: pitchData2.text3 ?? '',
-          subheading1: pitchData2.subheading1 ?? '',
-          subheading2: pitchData2.subheading2 ?? '',
-          subheading3: pitchData2.subheading3 ?? '',
-          image: pitchData2.image ?? null,
-          imageAlt: pitchData2.imageAlt ?? '',
-          description: pitchData2.description ?? '',
-          title: pitchData2.title ?? null,
-          divider: pitchData2.divider ?? null,
-          divider2: pitchData2.divider2 ?? null,
-        };
-      }
-}
-
-if (selectedPitchSlug3) {
-      const pitchData3 = await reader.collections.pitches.read(selectedPitchSlug3);
-      if (pitchData3) {
-        selectedPitch3 = {
-          slug: selectedPitchSlug3,
-          tagline: pitchData3.tagline ?? '',
-          showTitle: !!pitchData3.showTitle,
-          text1: pitchData3.text1 ?? '',
-          text2: pitchData3.text2 ?? '',
-          text3: pitchData3.text3 ?? '',
-          subheading1: pitchData3.subheading1 ?? '',
-          subheading2: pitchData3.subheading2 ?? '',
-          subheading3: pitchData3.subheading3 ?? '',
-          image: pitchData3.image ?? null,
-          imageAlt: pitchData3.imageAlt ?? '',
-          description: pitchData3.description ?? '',
-          title: pitchData3.title ?? null,
-          divider: pitchData3.divider ?? null,
-          divider2: pitchData3.divider2 ?? null,
-        };
-      }
-}
 if (selectedPitchSlug2) {
   const pitchData2 = await reader.collections.pitches.read(selectedPitchSlug2);
   if (pitchData2) {
     selectedPitch2 = {
       slug: selectedPitchSlug2,
       tagline: pitchData2.tagline ?? '',
-	  showTitle: pitchData2.showTitle ?? '',
+      showTitle: !!pitchData2.showTitle,
       text1: pitchData2.text1 ?? '',
       text2: pitchData2.text2 ?? '',
-	  text3: pitchData2.text3 ?? '',
+      text3: pitchData2.text3 ?? '',
       subheading1: pitchData2.subheading1 ?? '',
       subheading2: pitchData2.subheading2 ?? '',
-	  subheading3: pitchData2.subheading3 ?? '',
+      subheading3: pitchData2.subheading3 ?? '',
       image: pitchData2.image ?? null,
       imageAlt: pitchData2.imageAlt ?? '',
       description: pitchData2.description ?? '',
       title: pitchData2.title ?? null,
       divider: pitchData2.divider ?? null,
       divider2: pitchData2.divider2 ?? null,
+      showTwocol: !!pitchData2.showTwocol, // Add this line
     };
   }
 }
@@ -167,22 +125,24 @@ if (selectedPitchSlug3) {
     selectedPitch3 = {
       slug: selectedPitchSlug3,
       tagline: pitchData3.tagline ?? '',
-	  showTitle: pitchData3.showTitle ?? '',
+      showTitle: !!pitchData3.showTitle,
       text1: pitchData3.text1 ?? '',
       text2: pitchData3.text2 ?? '',
-	  text3: pitchData3.text3 ?? '',
+      text3: pitchData3.text3 ?? '',
       subheading1: pitchData3.subheading1 ?? '',
       subheading2: pitchData3.subheading2 ?? '',
-	  subheading3: pitchData3.subheading3 ?? '',
+      subheading3: pitchData3.subheading3 ?? '',
       image: pitchData3.image ?? null,
       imageAlt: pitchData3.imageAlt ?? '',
       description: pitchData3.description ?? '',
       title: pitchData3.title ?? null,
       divider: pitchData3.divider ?? null,
       divider2: pitchData3.divider2 ?? null,
+      showTwocol: !!pitchData3.showTwocol, // Add this line
     };
   }
-}const showBioOnHome = homepage?.showBioOnHome ?? false;
+}
+const showBioOnHome = homepage?.showBioOnHome ?? false;
 const showFaqOnHome = homepage?.showFaqOnHome ?? false;
 const showTestOnHome = homepage?.showTestOnHome ?? false;
 const showFeature = homepage?.showFeature ?? false;
@@ -213,40 +173,59 @@ const createSection = (
   order: order ?? defaultOrder,
   component
 });
-const sections: Section[] = [
-  createSection('feature', homepage?.showFeature, homepage?.featureOrder, Feature, 1),
-  createSection('bio', homepage?.showBioOnHome, homepage?.bioOrder, Bio, 2),
-  createSection('app', homepage?.showApp, homepage?.appOrder, App, 3),
-  createSection('gallery', homepage?.showHomeGallery, homepage?.galleryOrder, PhotoSection, 4),
-  createSection('posts', homepage?.showPosts, homepage?.postsOrder, showPosts, 5),
-  createSection('faq', homepage?.showFaqOnHome, homepage?.faqOrder, Faqs, 6),
-  createSection('testimonials', homepage?.showTestOnHome, homepage?.testimonialsOrder, Testimonials, 7),
-  { 
-    name: 'infoblock', 
-    show: !!selectedPitch, 
-    order: homepage?.infoblockOrder ?? 8, 
-    component: InfoBlock 
-  },
-  { 
-    name: 'infoblock2', 
-    show: !!selectedPitch2, 
-    order: homepage?.infoblock2Order ?? 9, 
-    component: InfoBlock 
-  },
-  { 
-    name: 'infoblock3', 
-    show: !!selectedPitch3, 
-    order: homepage?.infoblock3Order ?? 10, 
-    component: InfoBlock 
-  },
-  createSection('resume', homepage?.showResume, homepage?.resumeOrder, Resume, 11),
+const sections: Section[] = (homeContent.data.sectionOrdering || []).map((sectionName: string, index: number) => {
+  switch (sectionName) {
+    case 'feature':
+      return createSection('feature', homepage?.showFeature, index, Feature, index);
+    case 'bio':
+      return createSection('bio', homepage?.showBioOnHome, index, Bio, index);
+    case 'app':
+      return createSection('app', homepage?.showApp, index, App, index);
+    case 'gallery':
+      return createSection('gallery', homepage?.showHomeGallery, index, PhotoSection, index);
+    case 'posts':
+      return createSection('posts', homepage?.showPosts, index, showPosts, index);
+    case 'faq':
+      return createSection('faq', homepage?.showFaqOnHome, index, Faqs, index);
+    case 'testimonials':
+      return createSection('testimonials', homepage?.showTestOnHome, index, Testimonials, index);
+    case 'resume':
+      return createSection('resume', homepage?.showResume, index, Resume, index);
+    case 'infoblock1':
+      return {
+        name: 'infoblock',
+        show: !!selectedPitch,
+        order: index,
+        component: InfoBlock
+      };
+    case 'infoblock2':
+      return {
+        name: 'infoblock2',
+        show: !!selectedPitch2,
+        order: index,
+        component: InfoBlock
+      };
+    case 'infoblock3':
+      return {
+        name: 'infoblock3',
+        show: !!selectedPitch3,
+        order: index,
+        component: InfoBlock
+      };
+    default:
+      return null;
+  }
+}).filter(Boolean) as Section[];
 
   
-];
+
 
 const sortedSections = sections  .filter(section => section.show)
   .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+
 ---
+
 <style>
 	.scroll-snap-container {
 flex-direction: column;
@@ -262,22 +241,17 @@ flex-direction: column;
 
 </style>
 
-{backgroundVideo && (
-  <iframe
-    src={backgroundVideo}
-    title="video title"
-    width="100%"
-    height="800"
-    frameborder="0"
-    allowfullscreen
-    class="vidbox"
-    style="height:100vh !important; position:absolute; top:1; z-index: -1;"
-    loading="lazy"
-></iframe>
-)}
 
-<PageLayout title={homeContent.data.title} description={pwaSettings.data.description}>
-	<div class="scroll-snap-container flex flex-col home">
+
+<PageLayout
+  title={homeContent.data.title}
+  description={pwaSettings.data.description}
+  themeMode={siteSettings.data.themeMode ?? 'user'}
+>
+
+  
+  
+	<div class="scroll-snap-container prose-pirate flex flex-col home">
 		{sortedSections.map(section => (
 			<section class={section.name === 'resume' ? 'resume' : ''}>
 				{(() => {
@@ -303,17 +277,17 @@ flex-direction: column;
 						case 'gallery':
 							return (<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">{homeContent.data.photosectiontitle}</h2><PhotoSection />);
 						case 'infoblock':
-							return selectedPitch && <InfoBlock pitch={{...selectedPitch, slug: selectedPitch.slug}} />;
+							return selectedPitch && <InfoBlock pitch={{...selectedPitch, slug: selectedPitch.slug, showTwocol: selectedPitch.showTwocol}} />;
 						case 'infoblock2':
 							return (
 								<>
-									{selectedPitch2 && <InfoBlock pitch={{...selectedPitch2, slug: selectedPitch2.slug}} />}
+									{selectedPitch2 && <InfoBlock pitch={{...selectedPitch2, slug: selectedPitch2.slug, showTwocol: selectedPitch2.showTwocol}} />}
 								</>
 							);
 						case 'infoblock3':
 							return (
 								<>
-									{selectedPitch3 && <InfoBlock pitch={{...selectedPitch3, slug: selectedPitch3.slug}} />}
+									{selectedPitch3 && <InfoBlock pitch={{...selectedPitch3, slug: selectedPitch3.slug, showTwocol: selectedPitch3.showTwocol}} />}
 								</>
 							);
 						case 'resume':
@@ -324,9 +298,15 @@ flex-direction: column;
               case 'posts':
 							return (
 								<>
-									<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg" style="margin-bottom:2vh;">{homeContent.data.postsectiontitle}</h2>
-									<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`}>
 									
+									<div style="padding:2vh 3%" class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`}>
+									
+                    
+                    {homeContent.data.postsectiontitle && (
+                      <h2 class="posties glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg" style="display:grid; place-content:center; margin-bottom:2vh; min-width:50%; width:100%;">
+                        {homeContent.data.postsectiontitle}
+                      </h2>
+                    )}
 
                     {allPostsSorted.map((p) => <PostPreview post={p} withDesc />)}
 										{ShowMore && (
@@ -366,6 +346,9 @@ flex-direction: column;
       />
     </section>
   )}
+
+
+<br /><br /><br />
 
 {!showCheck && 
 

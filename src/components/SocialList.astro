@@ -39,8 +39,8 @@ const socialLinks = (await getCollection('socialLinks'))
   }
 </style> -->
 
-<div class="flex flex-wrap items-end gap-x-2 w-full" style={{justifyContent: "center"}}>
-  <ul class="flex flex-wrap items-center gap-2 pwa-persistent-nav" style={{margin: "0 auto 3vh auto"}}>
+
+  <ul class="flex flex-wrap items-center gap-2 pwa-persistent-nav " style="max-width:none; justify-content:center; ">
     {socialLinks.map((link) => (
       <li 
         class="flex" 
@@ -58,14 +58,14 @@ const socialLinks = (await getCollection('socialLinks'))
       </li>
     ))}
   </ul>
-</div>
+
 
 <!-- <script>
   function updateVisibility() {
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   document.referrer.includes('android-app://');
     
-    console.log('PWA Status:', isPWA);
+    console.log('PWA Status:', isPWA);x
                   
     document.querySelectorAll('[data-standalone-only="true"]').forEach((el) => {
       if (el instanceof HTMLElement) {

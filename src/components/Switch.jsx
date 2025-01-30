@@ -59,6 +59,9 @@ function Switch({ defaultView }) {
         }
       }
       // Reinitialize scroll listener here if needed
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('viewModeChanged'));
+      }
     };
 
     initializeView();

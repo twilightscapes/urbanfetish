@@ -7,7 +7,7 @@ export async function getMenuItems() {
 
   return menuItems
     .map(item => ({
-      path: item.entry.path || `/${item.slug}/`,
+      path: item.entry.path || `${item.slug}`,
       title: item.entry.title,
       order: item.entry.order
     }))

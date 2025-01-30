@@ -15,6 +15,7 @@ interface Props {
     image: string | null;
     imageAlt: string;
     description: string;
+    showTwocol: boolean;
   };
 }
 
@@ -24,7 +25,7 @@ const { pitch } = Astro.props;
 
 
 
-<section id="SecondaryInfo4" class="nameblock" style="margin: 0 auto; padding: 0 4%; align-content: center; display: grid; text-align: left; justify-content: center; vertical-align: center; font-size: clamp(1rem, 1.8vw, 3.2rem); backdrop-filter: blur(8px); border-radius: 10px;">
+<section class="contentblock" style="margin: 0 auto; padding: 0 4%; align-content: center; display: grid; text-align: left; justify-content: center; vertical-align: center; font-size: clamp(1rem, 1.8vw, 3.2rem); backdrop-filter: blur(8px); border-radius: 10px;">
 
   {pitch?.showTitle && (
     <h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center backdrop-blur-lg" style="margin:2vh auto;">
@@ -32,7 +33,7 @@ const { pitch } = Astro.props;
     </h2>
   )}
 
-  <div class="flexbutt" style="display: flex; flex: 1; gap: 2vw; width: 100%;">
+  <div class="flexbutt" style={`display: flex; flex: 1; gap: 2vw; width: 100%; flex-direction: ${pitch?.showTwocol ? 'column' : ''};`}>
 
     <div class="flexcheek" style="display: flex; flex-direction: column; justify-content: center; width:100%; padding-bottom: 2vh;">
       <!-- <p>{pitch?.phone ?? ''}</p> -->
@@ -49,7 +50,7 @@ const { pitch } = Astro.props;
     </div>
     <div class="flexcheek" style="display: flex; flex-direction: column; justify-content: center; width:100%; align-content: center; align-items: center; padding-bottom: 2vh; font-size: 75%;">
       {pitch?.image && (
-        <Image src={pitch.image} alt={pitch.imageAlt ?? ''} width={800} height={600} style="height: auto; width: 100%;  max-height: 100vh; position: relative; z-index: 1; top: 0; left: 0;  object-fit:contain; margin: 0 auto; border-radius:var(--border-radius);" />
+        <Image src={pitch.image} alt={pitch.imageAlt ?? ''} width={1600} height={900} style="height: auto; width: 100%;  max-height: 100vh; position: relative; z-index: 1; top: 0; left: 0;  object-fit:contain; margin: 0 auto; border-radius:var(--border-radius);" />
       )}
       {pitch?.description ?? ''}
     </div>

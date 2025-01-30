@@ -6,57 +6,53 @@ import BaseLayout from "./Base.astro";
 import WebMentions from "@/components/blog/webmentions/index.astro";
 
 interface Props {
-	post: CollectionEntry<"post"> & { data: { youtube?: string } };
+    post: CollectionEntry<"post"> & { data: { youtube?: string } };
 }
 
 const { post } = Astro.props;
 const {
-	data: { description, ogImage, publishDate, title, updatedDate },
-	slug,
+    data: { description, coverImage, publishDate, title, updatedDate },
+    slug,
 } = post;
 
-const socialImage = ogImage ?? `/og-image/${slug}.png`;
+const socialImage = coverImage?.src ?? `/socialCard.webp`;
 const articleDate = updatedDate?.toISOString() ?? publishDate.toISOString();
 const { headings } = await post.render();
 ---
 
-<style>
-		.panel {
-		backdrop-filter: blur(54px);
-		-webkit-backdrop-filter: blur(54px);
-	}
-</style>
+
 <BaseLayout title={title} description={description} articleDate={articleDate} ogImage={socialImage}>
 
-	<div class="gap-x-10 lg:flex lg:items-start" >
-		
-		
-<article class="" data-pagefind-body style="position:relative">
-				
-	<div id="blog-hero" style="width:100vw; z-index: 0;"><BlogHero content={post} /></div>
-				{/* Render dynamic elements */}
-	
-				
-	<div class="panel" style={{ padding: "0 4%", width:'90%', margin:'0 auto', maxWidth:'1400px', display:'flex', position:'relative' }}>
-		
-					<!-- <img src={svgImage} /> -->
-	
-					<!-- {
-						additionalImage && (
-							<Fragment>
-								<img src={getImagePath(additionalImage)} alt="Additional Image" />
-							</Fragment>
-						)
-					} -->
-									<div class="prose prose-lg dark:prose-invert max-w-none">
-										<slot />
-										
-										<WebMentions />
-									</div>
-									{!!headings.length && <TOC headings={headings} />}
-				</div>
-			</article>
-		
-	</div>
+    <div class="gap-x-10 lg:flex lg:items-start blogpost" >
+        
+        
+<article class="" data-pagefind-body style="position:relative; padding-bottom: 10vh;">
+                
+    <div id="blog-hero" style="width:100vw; z-index: 0;"><BlogHero content={post} /></div>
+                {/* Render dynamic elements */}
+    
+                
+    <div class="panelblur" style={{ padding: "0 4%", width:'90%', margin:'0 auto', maxWidth:'1400px', display:'flex', position:'relative' }}>
+        
+                    <!-- <img src={svgImage} /> -->
+    
+                    <!-- {
+                        additionalImage && (
+                            <Fragment>
+                                <img src={getImagePath(additionalImage)} alt="Additional Image" />
+                            </Fragment>
+                        )
+                    } -->
+                                    <div class="prose prose-lg dark:prose-invert max-w-none">
+                                        <slot />
+                                        
+                                        <WebMentions />
+                                    </div>
+                                    {!!headings.length && <TOC headings={headings} />}
+                </div>
+            </article>
+        
+    </div>
+</BaseLayout>
 
 

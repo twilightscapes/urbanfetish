@@ -15,14 +15,13 @@ showTestOnHome: false
 pitch: How It Works
 pitch2: Social Media That YOU Control
 pitch3: High Seas Freedom
-featureOrder: .nan
-bioOrder: 2
-appOrder: .nan
-galleryOrder: .nan
-postsOrder: 1
-resumeOrder: .nan
-faqOrder: .nan
-testimonialsOrder: .nan
-infoblockOrder: .nan
-infoblock2Order: .nan
-infoblock3Order: .nan
+sectionOrdering:
+  - posts
+  - bio
+  - resume
+  - feature
+  - gallery
+  - testimonials
+  - infoblock1
+  - infoblock2
+  - infoblock3

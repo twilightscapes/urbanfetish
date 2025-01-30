@@ -62,9 +62,10 @@ const { defaultView, showTags, showDates } = siteSettings.data;
 <PageLayout meta={meta}>
 
 	
-		
-
-		<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="min-height:; padding-top:7vh;">
+		<br />
+<span class="prose prose-lg dark:prose-invert">
+		<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="">
+			
 			<div class="sliderSpacer"></div>
 				{descYearKeys.map((yearKey) => (
 					<>
@@ -79,7 +80,7 @@ const { defaultView, showTags, showDates } = siteSettings.data;
 					</>
 				))}
 
-				<div class="grid place-content-center min-w-[380px] min-h-[180px] max-h-[85%]">
+				<div class="grid place-content-center min-w-[380px] min-h-[180px] max-h-[85%] ">
 					<Pagination {...paginationProps} />
 				</div>
 			</div>
@@ -129,5 +130,7 @@ const { defaultView, showTags, showDates } = siteSettings.data;
 	</div>
 
 )}
-
+<br /><br />
+</div>
+</span>
 </PageLayout>

@@ -58,8 +58,9 @@ const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
                 loading="lazy"
                 class="exturl"
             ></iframe>
-            <h2 class="title" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>{post.data.title}</h2>
         </div>
+        <a href={post.data.externalUrl} rel="noreferrer" target="_blank"><h2 class="title ext" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>{post.data.title}</h2></a>
+        
     ) : post.data.youtube?.discriminant && post.data.youtube.value?.videoOnly && thumbnailUrl ? (
         <div class="video-container" data-video-id={videoId} data-use-custom-player={useCustomPlayer}>
             <img
@@ -72,7 +73,7 @@ const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
                 height={defaultImageHeight}
             />
             
-            <div class="play-button" aria-label="Play video">▶</div>
+            <div class="play-button" aria-label="Play video">&#x25B6;</div>
             <div class="youtube-embed" style="display: none;">
                 <YouTubeEmbed
                     url={post.data.youtube.value.url || ''}

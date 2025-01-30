@@ -18,7 +18,8 @@ const meta = {
 
 <PageLayout meta={meta}>
 	<GoBack  />
-	<div style="padding:0 4%;">
+	<span class="prose prose-lg dark:prose-invert">
+	<div class="" style="padding:0 4%;">
 	<h1 class="title my-4">{language.data.tags}</h1>
 </div>
 	<ul class="" style="padding:0 1%; margin:0 auto; width: 99%">
@@ -41,7 +42,7 @@ const meta = {
 					<span class="inline-block">
 						 ({val}) {val > 1 && ""}
 					</span></a>
-				</div>
+				</div></span>
 			))
 		}
 

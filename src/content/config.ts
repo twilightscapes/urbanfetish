@@ -38,13 +38,29 @@ const postSchema = z.object({
   }).optional(),
 });
 
+const contactPage = defineCollection({
+  type: 'data',
+  schema: z.object({
+    content: z.string().optional(),
+    showName: z.boolean().optional(),
+    showPhone: z.boolean().optional(),
+    showMessage: z.boolean().optional(),
+    showUpload: z.boolean().optional(),
+    extraFieldLabel: z.string().optional(),
+    showExtraField: z.boolean().optional(),
+    showMap: z.boolean().optional(),
+    extraFieldLabel2: z.string().optional(),
+    showExtraField2: z.boolean().optional(),
+  }),
+});
+
 const collections = {
   posts: defineCollection({
     type: 'content',
     schema: postSchema,
   }),
 
-
+  contactPage,
 
   pages: defineCollection({
     type: 'content',
@@ -66,10 +82,13 @@ const collections = {
     }),
   }),
 
+  
+
   pitches: defineCollection({
     type: 'data',
     schema: z.object({
       title: z.string().optional(),
+      showTwocol: z.boolean().optional(),
       showTitle: z.boolean().optional(),
       image: z.string().optional(),
       imageAlt: z.string().optional(),
@@ -140,9 +159,6 @@ const collections = {
     }),
   }),
 
-
-
-
   socialLinks: defineCollection({
     type: 'data',
     schema: z.object({
@@ -155,9 +171,6 @@ const collections = {
       ).optional()
     }),
   }),
-
-
-
 
   siteSettings: defineCollection({
     type: 'data',
@@ -172,6 +185,7 @@ const collections = {
       showSearch: z.boolean().optional(),
       showFooter: z.boolean().optional(),
       defaultView: z.enum(['grid', 'swipe']).optional(),
+      themeMode: z.enum(['light', 'dark', 'user']).optional(),
       showTitles: z.boolean().optional(),
       showDates: z.boolean().optional(),
       enableImageBlur: z.boolean().optional(),
@@ -302,6 +316,7 @@ const collections = {
       homelink: z.string().optional(),
       copyright: z.string().optional(),
       goback: z.string().optional(),
+      top: z.string().optional(),
       viewmore: z.string().optional(),
       allimages: z.string().optional(),
       close: z.string().optional(),
@@ -313,6 +328,7 @@ const collections = {
       viewall: z.string().optional(),
       shareText: z.string().optional(),
       copyButton: z.string().optional(),
+      siteDisclaimer: z.string().optional(),
     }),
   }),
 

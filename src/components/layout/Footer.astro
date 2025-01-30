@@ -8,6 +8,11 @@ const siteSettings = await getEntry('siteSettings', 'main');
 const { showHome } = siteSettings.data;
 const language = await getEntry('language', 'index');
 ---
+
+{language.data.siteDisclaimer && (
+<div class="" style="display:grid; place-content: center; padding:0 4%;">{language.data.siteDisclaimer}</div>
+	)}
+
 	<footer id="footer"
 		class="mt-auto flex w-full flex-col items-center justify-center gap-y-2 p-4 text-center align-top text-white-500 sm:flex-row sm:justify-between sm:text-xs"
 	>
@@ -34,13 +39,14 @@ const language = await getEntry('language', 'index');
 						>
 							{link.title}
 						</a>
-						<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/privacy" style="color:inherit">Privacy</a>
-						<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/disclaimer" style="color:inherit">Disclaimer</a>
+	
 					</>
 				))
 			}
+				<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/privacy" style="color:inherit">Privacy</a>
+				<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/disclaimer" style="color:inherit">Disclaimer</a>				
 		</nav>
 
 		
 
-	</footer>	</footer>
+	</footer>

@@ -188,7 +188,7 @@ body {
 	  }
 	  
 	  
-	  
+	 .slider h2.ext {margin-top:0 !important; z-index: 2 !important;}
 	  
 	  
 	  .quotecard {
@@ -268,6 +268,10 @@ body {
 
 /* #gobacker.button{margin:0 auto; max-width: 200px; height:60px; padding:1rem; } */
 
+
+body:has(.contactpage) #missioncontrol{display:none !important}
+
+
 #gobacker {position: absolute !important; right:60px !important; background:var(--theme-header) !important;}
 
 button.topper{background:var(--theme-header) !important;}
@@ -276,6 +280,15 @@ button.topper{background:var(--theme-header) !important;}
 	  /* #gobacker{position:fixed; display:flex;  right:10px; z-index:5; top:65px;} */
 	  
 	  .backimage{
+		height: 100vh;
+		width: 100vw;
+		position: fixed;
+		z-index:-2;
+		top:0;
+		object-fit:cover;
+	  }
+
+	  .vidbox{
 		height: 100vh;
 		width: 100vw;
 		position: fixed;
@@ -446,6 +459,8 @@ button.topper{background:var(--theme-header) !important;}
 			min-height: 40vh !important;
 		}
 		
+		.slider h2.ext {margin-top:-10px !important;}
+
 		.grid-container .video-container, .grid-container .video-container .youtube-embed iframe,  .slider .video-container .youtube-embed iframe {min-height: 30vh !important; max-height: 200px !important;}
 
 		.grid-container iframe.exturl {
@@ -508,10 +523,11 @@ button.topper{background:var(--theme-header) !important;}
 
 
 	.panelblur {
-		backdrop-filter: blur(28px);
-		-webkit-backdrop-filter: blur(28px);
+		backdrop-filter: blur(78px);
+		-webkit-backdrop-filter: blur(78px);
 		/* background:rgba(0, 0, 0, 0.6); */
 		text-shadow: 0 1px 1px var(--theme-header);
+		border-radius: var(--border-radius);
 	}
 
 
