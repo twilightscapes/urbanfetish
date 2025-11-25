@@ -1,8 +1,14 @@
 [build]
-  command = "./update-theme.sh && pnpm build"
+  command = "pnpm run build"
   publish = "dist"
-  functions = "netlify/functions"
-  
+
+[build.environment]
+  NODE_VERSION = "20.10.0"
+  NPM_FLAGS = "--version"
+  # Force specific Node.js runtime only
+  NODE_ENV = "production"
+
+
 [functions]
   node_bundler = "esbuild"
 
@@ -12,21 +18,11 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     X-Content-Type-Options = "nosniff"
     X-XSS-Protection = "1; mode=block"
-    Content-Security-Policy = """
-      default-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
-      connect-src 'self' https: wss: bsky.social *.bsky.social *.stripe.com *.netlify.com dev.dogpoopers.com *.dogpoopers.com;
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' *.youtube.com *.twitter.com *.disqus.com *.google.com *.googleapis.com *.gstatic.com *.stripe.com *.netlify.com;
-      style-src 'self' 'unsafe-inline' https: *.googleapis.com;
-      img-src 'self' data: https: http: blob: *.googleapis.com *.gstatic.com *.google.com *.twitter.com *.twimg.com *.youtube.com;
-      media-src 'self';
-      frame-src *;
-      font-src 'self' data: *.gstatic.com *.googleapis.com;
-      frame-ancestors *;
-    """    
+    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; connect-src 'self' https: wss: bsky.social *.bsky.social *.stripe.com *.netlify.com *.rss.com *.youtube.com *.youtu.be *.youtube-nocookie.com *.googlevideo.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com *.youtube.com *.youtu.be *.youtube-nocookie.com *.googlevideo.com *.twitter.com *.disqus.com *.rss.com *.google.com *.googleapis.com *.gstatic.com *.stripe.com *.netlify.com; style-src 'self' 'unsafe-inline' https: *.googleapis.com; img-src 'self' data: https: http: blob: *.googleapis.com *.gstatic.com *.google.com *.twitter.com *.x.com *.twimg.com *.rss.com *.youtube.com *.youtu.be *.youtube-nocookie.com *.ytimg.com *.googlevideo.com; media-src 'self' *.youtube.com *.youtu.be *.youtube-nocookie.com *.googlevideo.com; frame-src *.rss.com *.youtube.com *.youtu.be *.youtube-nocookie.com *; font-src 'self' data: *.gstatic.com *.googleapis.com; frame-ancestors *;"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-[[redirects]]
-  from = "/pirate/*"
-  to = "/pirate/:splat"
-  status = 200
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"

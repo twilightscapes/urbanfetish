@@ -1,18 +1,24 @@
 export interface SiteConfig {
-	author: string | undefined;
+	title: string;
+	description: string;
+	author: string;
+	siteUrl: string;
+	themeColor: string;
+	backgroundColor: string;
+	logoImage: string;
+	showRobots: boolean;
+	themeMode?: 'light' | 'dark' | 'user';
 	date: {
-		locale: string | string[] | undefined;
-		options: Intl.DateTimeFormatOptions;
+		locale: string;
+		options: {
+			day: string;
+			month: string;
+			year: string;
+		};
 	};
-	description: string | undefined;
 	lang: string;
 	ogLocale: string;
 	sortPostsByUpdatedDate: boolean;
-	title: string | undefined;
-	webmentions?: {
-		link: string;
-		pingback?: string;
-	};
 }
 
 export interface PaginationLink {
@@ -28,38 +34,6 @@ export interface SiteMeta {
 	title?: string;
 }
 
-/** Webmentions */
-export interface WebmentionsFeed {
-	children: WebmentionsChildren[];
-	name: string;
-	type: string;
-}
-
-export interface WebmentionsCache {
-	children: WebmentionsChildren[];
-	lastFetched: null | string;
-}
-
-export interface WebmentionsChildren {
-	author: Author | null;
-	content?: Content | null;
-	"mention-of": string;
-	name?: null | string;
-	photo?: null | string[];
-	published?: null | string;
-	rels?: Rels | null;
-	summary?: Summary | null;
-	syndication?: null | string[];
-	type: string;
-	url: string;
-	"wm-id": number;
-	"wm-private": boolean;
-	"wm-property": string;
-	"wm-protocol": string;
-	"wm-received": string;
-	"wm-source": string;
-	"wm-target": string;
-}
 
 export interface Author {
 	name: string;
@@ -101,3 +75,19 @@ export interface PwaSettings {
   siteUrl?: string;
   screenshot?: string;
 }
+
+export type StyleSettings = {
+  lightBg: string;
+  lightLink: string;
+  lightText: string;
+  lightAccent: string;
+  lightAccent2: string;
+  lightHeader: string;
+  darkBg: string;
+  darkLink: string;
+  darkText: string;
+  darkAccent: string;
+  darkAccent2: string;
+  darkHeader: string;
+  borderRadius: string;
+};

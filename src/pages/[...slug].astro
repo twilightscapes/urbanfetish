@@ -1,32 +1,100 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+export const prerender = true;
+import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
+import DynamicPageRenderer from "@/components/DynamicPageRenderer.astro";
+import MarkdownRenderer from "@/components/MarkdownRenderer.astro";
 
 export async function getStaticPaths() {
-  const pages = await getCollection('pages');
-  return pages.map((page: CollectionEntry<'pages'>) => ({
-    params: { slug: page.slug },
-    props: { page },
-  }));
+	try {
+		// Get pages first
+		const pages = await getCollection("pages");
+
+		// Try to get posts, but don't fail if collection doesn't exist
+		let posts = [];
+		try {
+			posts = await getCollection("post");
+		} catch (e) {
+			console.warn("Posts collection not available:", e);
+		}
+
+		const allEntries = [...pages, ...posts];
+
+		return allEntries.map((entry) => {
+			const cleanSlug =
+				entry.slug ||
+				entry.id
+					.split("/")
+					.pop()
+					?.replace(/\.(md|mdx|mdoc)$/, "");
+
+			return {
+				params: { slug: cleanSlug },
+				props: { entry },
+			};
+		});
+	} catch (e) {
+		console.error("Error in getStaticPaths:", e);
+		return [];
+	}
 }
 
-const { page } = Astro.props;
-const { Content } = await page.render();
+type Props = {
+	entry: CollectionEntry<"pages"> | CollectionEntry<"post">;
+};
 
-interface Props {
-  page: CollectionEntry<'pages'>;
+const { entry } = Astro.props as Props;
+if (!entry) return Astro.redirect("/404");
+
+let Content;
+let renderedContent = '';
+try {
+	({ Content } = await entry.render());
+	// For template system, we need to render the content to HTML
+	// The body contains raw markdown, but we need processed HTML
+	if (entry.body && entry.body.trim()) {
+		// DynamicPageRenderer will handle the markdown processing
+		renderedContent = entry.body;
+	}
+} catch (e) {
+	console.error("Error rendering content:", e);
+	return Astro.redirect("/404");
 }
+
+// Check if this page uses the template system (only available for pages, not posts)
+const useTemplateSystem = entry.collection === 'pages' ? (entry.data as any).useTemplateSystem : false;
+const sections = entry.collection === 'pages' && useTemplateSystem ? ((entry.data as any).sections || []) : [];
+
+// Debug logging
+// console.log('Page debug - entry.slug:', entry.slug);
+// console.log('Page debug - useTemplateSystem:', useTemplateSystem);
+// console.log('Page debug - sections:', sections);
+// console.log('Page debug - sections length:', sections.length);
+// console.log('Page debug - entry.data:', entry.data);
 ---
 
-<PageLayout title={page.data.title} description={page.data.description}>
-  <div class="scroll-snap-container flex flex-col home">
-
-    <section id="profile" class="scroll-area1 w-screen panel" style="padding:5vh 4%;">
-  <h1>{page.data.title}</h1>
-  <Content />
-
-</section>
-
-  </div>
-
+<PageLayout>
+	{useTemplateSystem && sections.length > 0 ? (
+		<!-- Template system rendering - no bodywrap constraint -->
+		<DynamicPageRenderer 
+			sections={sections}
+			pageContent={renderedContent}
+		/>
+	) : (
+		<!-- Traditional page rendering with bodywrap - now using enhanced markdown -->
+		<article class="bodywrap">
+			<h1>{entry.data?.title}</h1>
+			{entry.body ? (
+				<MarkdownRenderer content={entry.body} />
+			) : Content ? (
+				<div class="prose prose-lg dark:prose-invert max-w-none">
+					<Content />
+				</div>
+			) : (
+				<div class="prose prose-lg dark:prose-invert max-w-none">
+					<p>Content not available.</p>
+				</div>
+			)}
+		</article>
+	)}
 </PageLayout>

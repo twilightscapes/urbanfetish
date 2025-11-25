@@ -1,18 +1,15 @@
 ---
-import type { HTMLAttributes } from "astro/types";
+import { getFormattedDate } from '../utils/date';
 
-import { getFormattedDate } from "@/utils";
+interface Props {
+  date: Date | string;
+  class?: string;
+}
 
-type Props = HTMLAttributes<"time"> & {
-	date: Date;
-	dateTimeOptions?: Intl.DateTimeFormatOptions;
-};
-
-const { date, dateTimeOptions, ...attrs } = Astro.props;
-
-const postDate = getFormattedDate(date, dateTimeOptions);
+const { date, class: className } = Astro.props;
+const formattedDate = getFormattedDate(date);
 ---
 
-<time datetime={date.toISOString()} {...attrs}>
-	{postDate}
+<time datetime={date instanceof Date ? date.toISOString() : new Date(date).toISOString()} class={className}>
+  {formattedDate}
 </time>

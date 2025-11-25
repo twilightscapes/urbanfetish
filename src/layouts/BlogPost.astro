@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import BlogHero from "@/components/blog/Hero.astro";
 import TOC from "@/components/blog/TOC.astro";
 import BaseLayout from "./Base.astro";
-import WebMentions from "@/components/blog/webmentions/index.astro";
+
 
 interface Props {
     post: CollectionEntry<"post"> & { data: { youtube?: string } };
@@ -11,19 +11,49 @@ interface Props {
 
 const { post } = Astro.props;
 const {
-    data: { description, coverImage, publishDate, title, updatedDate },
-    slug,
+    data: { description, coverImage, publishDate, title, updatedDate, youtube }
 } = post;
 
-const socialImage = coverImage?.src ?? `/socialCard.webp`;
+// Helper function to extract YouTube video ID
+function getYouTubeId(url: string) {
+    if (!url) return null;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+}
+
+// Helper function to generate YouTube thumbnail URL
+function getYouTubeThumbnail(videoId: string) {
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+}
+
+// Determine the best social image to use
+// Priority: 1) Featured image, 2) YouTube thumbnail, 3) Default social card
+let socialImage = `/socialCard.webp`; // Default fallback
+
+if (coverImage?.src) {
+    // Use featured image if available
+    socialImage = coverImage.src;
+} else if (youtube?.discriminant && youtube.value?.url) {
+    // No featured image, but there's a YouTube video - use its thumbnail
+    const videoId = getYouTubeId(youtube.value.url);
+    if (videoId) {
+        socialImage = getYouTubeThumbnail(videoId);
+    }
+}
+
 const articleDate = updatedDate?.toISOString() ?? publishDate.toISOString();
-const { headings } = await post.render();
+const { headings = [] } = (post.rendered as { headings?: any[] } | undefined) ?? {};
 ---
 
-
-<BaseLayout title={title} description={description} articleDate={articleDate} ogImage={socialImage}>
-
-    <div class="gap-x-10 lg:flex lg:items-start blogpost" >
+<BaseLayout 
+  title={title} 
+  description={description} 
+  articleDate={articleDate} 
+  themeMode="user"
+  ogImage={socialImage}
+>
+  <div class="gap-x-10 lg:flex lg:items-start blogpost" >
         
         
 <article class="" data-pagefind-body style="position:relative; padding-bottom: 10vh;">
@@ -46,7 +76,7 @@ const { headings } = await post.render();
                                     <div class="prose prose-lg dark:prose-invert max-w-none">
                                         <slot />
                                         
-                                        <WebMentions />
+                                
                                     </div>
                                     {!!headings.length && <TOC headings={headings} />}
                 </div>

@@ -6,58 +6,85 @@ import ThemeProvider from "@/components/ThemeProvider.astro";
 import Footer from "@/components/layout/Footer.astro";
 import Header from "@/components/layout/Header.astro";
 import { siteConfig } from "@/site-config";
+import { getEntry } from 'astro:content'; // Add this import at the top
+import { getDefaultImage } from "../utils/getDefaultImage";
+// import { ViewTransitions } from 'astro:transitions';
+
 // import SiteLinks from '@/components/SocialList.astro';
 import DynamicTheme from '@/components/DynamicTheme.astro';
 
 
 
 
-// function isRunningStandalone() {
-//     if (typeof window !== 'undefined') {
-//         return window.matchMedia('(display-mode: standalone)').matches;
-//     }
-//     return;
-// }
-
 interface Props {
   meta?: {
     title?: string;
     description?: string;
-    articleDate?: string;
     ogImage?: string;
+    articleDate?: Date | string;
   };
-  themeMode: string;
   title?: string;
   description?: string;
-  articleDate?: string;
-  ogImage?: string;
+  themeMode?: 'light' | 'dark' | 'user';
+  articleDate?: Date | string;
+  ogImage?: string; 
 }
-import { getEntry } from 'astro:content';
-const siteSettings = await getEntry('siteSettings', 'main');
-const { showFooter, enableImageBlur } = siteSettings.data;
 
-const { meta, title, description, articleDate, ogImage} = Astro.props;
+
+const defaultImage = await getDefaultImage();
+
+const { 
+  meta,
+  title,
+  description,
+  themeMode = 'user',
+  articleDate,
+  ogImage = defaultImage  
+} = Astro.props;
+
+// Add error handling for content entries
+let showFooter = false;
+let enableImageBlur = true;
+let siteDisclaimer = '';
+
+try {
+  const siteSettings = await getEntry('siteSettings', 'main');
+  if (siteSettings) {
+    ({ showFooter = false, enableImageBlur = true } = siteSettings.data);
+  } else {
+    console.warn('Site settings not found, using defaults');
+  }
+
+  const language = await getEntry('language', 'index');
+  if (language) {
+    siteDisclaimer = language.data.siteDisclaimer ?? '';
+  } else {
+    console.warn('Language settings not found');
+  }
+} catch (error) {
+  console.error('Error loading settings:', error);
+}
 
 const pageTitle = title || meta?.title;
 const pageDescription = description || meta?.description;
-const pageArticleDate = articleDate || meta?.articleDate;
+const pageArticleDate = (articleDate instanceof Date)
+  ? articleDate.toISOString()
+  : (typeof articleDate === 'string'
+      ? articleDate
+      : (meta?.articleDate instanceof Date
+          ? meta.articleDate.toISOString()
+          : meta?.articleDate));
 const pageOgImage = ogImage || meta?.ogImage;
 
 
 ---
 
-<html lang={siteConfig.lang} data-theme="light">
+<html lang="en">
 	<head>
-		<!-- <ViewTransitions /> -->
-		<script>
-            function getInitialTheme() {
-                const savedTheme = localStorage.getItem('theme');
-                return savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            }
-            document.documentElement.dataset.theme = getInitialTheme();
-        </script>
+		<meta charset="utf-8" />
+
         
-        <ThemeProvider themeMode={siteConfig.themeMode} />
+        <ThemeProvider themeMode={themeMode} />
         <BaseHead 
             title={pageTitle} 
             description={pageDescription} 
@@ -72,9 +99,19 @@ const pageOgImage = ogImage || meta?.ogImage;
         <div id="nav-container"></div>
         <Header></Header>
         <div id="top"></div>
+        
+
+
+
+        
         <main id="main">
             <slot/>
         </main>
+
+        {siteDisclaimer && (
+            <div class="" style="display:grid; place-content: center; padding:0 4%;">{siteDisclaimer}</div>
+                )}
+
         { showFooter && (
             <Footer />
         )}
@@ -83,12 +120,16 @@ const pageOgImage = ogImage || meta?.ogImage;
     <script is:inline define:vars={{ enableImageBlur }}>
         function initializeImageLoader() {
             const blurEnabled = typeof enableImageBlur !== 'undefined' ? enableImageBlur : true;
-            console.log('Image loader initialized, blur enabled:', blurEnabled);
 
             if (!blurEnabled) return;
 
             const images = document.querySelectorAll('img');
             images.forEach(img => {
+                // Skip gallery images with data-src attribute - they handle their own blur
+                if (img.hasAttribute('data-src')) {
+                    return;
+                }
+                
                 // Apply initial blur
                 img.style.filter = 'blur(20px)';
                 img.style.transition = 'filter 0.5s ease-in-out';
@@ -104,55 +145,184 @@ const pageOgImage = ogImage || meta?.ogImage;
         }
 
         function initializeScrollListener() {
-            const horizontalScrollClassName = 'horizontal-slider';
-            const scrollMultiplier = 1.1;
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const target = entry.target;
-
-                        const handleWheel = (event) => {
-                            if (target.scrollWidth > target.clientWidth) {
-                                event.preventDefault();
-                                const scrollAmount = (event.deltaX || event.deltaY) * scrollMultiplier;
-                                target.scrollLeft += scrollAmount;
-                            }
-                        };
-
-                        target.addEventListener('wheel', handleWheel, { passive: false });
-
-                        let touchStartX;
-                        target.addEventListener('touchstart', (event) => {
-                            touchStartX = event.touches[0].clientX;
-                        }, { passive: true });
-
-                        target.addEventListener('touchmove', (event) => {
-                            if (!touchStartX) return;
-                            const touchEndX = event.touches[0].clientX;
-                            const diff = touchStartX - touchEndX;
-                            target.scrollLeft += diff;
-                            touchStartX = touchEndX;
-                        }, { passive: true });
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll(`.${horizontalScrollClassName}`).forEach(el => {
-                observer.observe(el);
-            });
+            // DISABLED - ViewModeSwitch component now handles all scroll functionality
+            return;
         }
+
+        // Make it globally accessible
+        window.initializeScrollListener = initializeScrollListener;
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeImageLoader();
-            initializeScrollListener();
+            // initializeScrollListener(); // Disabled - ViewModeSwitch handles scroll functionality
         });
         document.addEventListener('astro:page-load', () => {
             initializeImageLoader();
-            initializeScrollListener();
+            // initializeScrollListener(); // Disabled - ViewModeSwitch handles scroll functionality
         });
-        window.addEventListener('viewModeChanged', initializeScrollListener);
+        window.addEventListener('viewModeChanged', () => {
+            // Disabled - ViewModeSwitch handles this now
+            // setTimeout(initializeScrollListener, 100);
+        });
+    </script>
+
+    <script>
+    // Global VideoPreferences class - Available to all components
+    class VideoPreferencesManager {
+      private static STORAGE_KEY = 'video-preferences';
+      
+      static getPreferences() {
+        if (typeof window === 'undefined') {
+          return { muted: false, videoMode: 'popup' };
+        }
+        
+        try {
+          const stored = localStorage.getItem(this.STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            return parsed;
+          }
+        } catch (e) {
+          console.warn('Could not load video preferences:', e);
+        }
+        
+        return { muted: false, videoMode: 'popup' };
+      }
+      
+      static setMuted(muted: boolean) {
+        if (typeof window === 'undefined') return;
+        
+        try {
+          const preferences = this.getPreferences();
+          preferences.muted = muted;
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(preferences));
+          
+          // Update all video mute states
+          this.updateAllVideoMuteStates(muted);
+          
+          // Dispatch event for other components
+          window.dispatchEvent(new CustomEvent('video-preferences-changed', {
+            detail: preferences
+          }));
+        } catch (e) {
+          console.warn('Could not save video preferences:', e);
+        }
+      }
+      
+      static updateAllVideoMuteStates(muted: boolean) {
+        document.querySelectorAll('iframe[src*="youtube-nocookie.com/embed/"]:not([data-preserve-settings]), iframe[src*="youtube.com/embed/"]:not([data-preserve-settings])').forEach((element) => {
+          const iframe = element as HTMLIFrameElement;
+          const currentSrc = iframe.src;
+          const url = new URL(currentSrc);
+          
+          if (muted) {
+            url.searchParams.set('mute', '1');
+          } else {
+            url.searchParams.delete('mute');
+          }
+          
+          if (iframe.src !== url.toString()) {
+            iframe.src = url.toString();
+          }
+        });
+        
+        // Update all mute toggle buttons
+        document.querySelectorAll('.mute-toggle-btn').forEach((element) => {
+          const btn = element as HTMLButtonElement;
+          btn.textContent = muted ? '🔇' : '🔊';
+          btn.setAttribute('aria-label', muted ? 'Unmute videos' : 'Mute videos');
+        });
+      }
+      
+      static setVideoMode(mode: 'popup' | 'page') {
+        if (typeof window === 'undefined') return;
+        
+        try {
+          const preferences = this.getPreferences();
+          preferences.videoMode = mode;
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(preferences));
+          
+          localStorage.setItem('videoModePreference', mode);
+          
+          // Dispatch event for other components
+          window.dispatchEvent(new CustomEvent('video-mode-changed', {
+            detail: { mode }
+          }));
+        } catch (e) {
+          console.warn('Could not save video mode preference:', e);
+        }
+      }
+      
+      static getVideoMode() {
+        // Check both new and legacy storage locations
+        const newPrefs = this.getPreferences().videoMode;
+        const legacyPref = localStorage.getItem('videoModePreference');
+        return newPrefs || legacyPref || 'popup';
+      }
+      
+      static isMuted() {
+        return this.getPreferences().muted;
+      }
+    }
+    
+  
+    (window as any).VideoPreferences = VideoPreferencesManager;
     </script>
 
 
-</html>		
+    <script type="module">
+      import { MembershipUtils, FavoritesManager } from '/membershipUtils.js';
+      
+      globalThis.MembershipUtils = MembershipUtils;
+      globalThis.FavoritesManager = FavoritesManager;
+      globalThis.checkUnifiedMembershipStatus = async function() {
+        return await MembershipUtils.checkMembershipStatus();
+      };
+      
+    </script>
+
+
+    <script type="module">
+      async function checkMembershipStatus() {
+        if (typeof globalThis.MembershipUtils !== 'undefined') {
+          return await globalThis.MembershipUtils.checkMembershipStatus();
+        }
+
+        return { isValid: false, message: 'Membership utilities not yet loaded' };
+      }
+
+      function initializeMembershipIcon() {
+        const membershipIcon = document.getElementById('membership-icon');
+        if (!membershipIcon) return;
+
+        checkMembershipStatus().then(status => {
+          if (status.isValid) {
+            membershipIcon.style.display = 'flex';
+          } else {
+            membershipIcon.style.display = 'none';
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeMembershipIcon);
+      } else {
+        initializeMembershipIcon();
+      }
+
+      // Re-initialize after each page navigation
+      document.addEventListener('astro:after-swap', initializeMembershipIcon);
+
+      // Listen for membership status changes
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'membershipCode' || e.key === 'membershipStatus') {
+          initializeMembershipIcon();
+        }
+      });
+    </script>
+
+
+
+
+
+</html>

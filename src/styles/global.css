@@ -1,7 +1,9 @@
+
 /* tailwindcss */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @layer base {
 	:root {
@@ -24,61 +26,69 @@
 }
 
 
+
+.member-favorite-buttons{display:none !important;}
+
+
+/* Base styles */
 html {
-	@apply scroll-smooth;
+  		div[data-section-id*="posts-section"] .section-content.slider,
+		div[data-section-id*="youtube-feed-section"] .section-content.slider {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: scroll !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: none !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}ior: smooth;
+  overflow-x: hidden;
+  min-height: 100dvh;
 }
 
 body {
-	@apply mx-auto flex min-h-screen max-w-3xl flex-col  px-8 pt-16 text-textColor antialiased;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 4rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family);
+  line-height: 1.5;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  margin: 0 auto;
+  padding: 0;
+  min-height: 100dvh;
+  max-width: 100dvw;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 
-.kbd, kbd {
-    border: 1px solid;
-    border-radius:4px;
-    box-shadow: 1px 1px #777, 1px 1px #666;
-    font-family: monospace;
-    font-size: clamp(1.2rem, 1vw, 1rem);
-    height: 30px;
-    line-height: calc(1em + .4vw);
-    margin: 2px .25rem;
-    padding: .0625rem .5rem;
-}
-	  
-	  html, body {
-		padding: 0;
-		margin: 0;
-		overflow-x: hidden;
-		min-height: 100dvh;
-		height: 100dvh;
-		width: 100dvw;
-		max-width: 100dvw;
-		overscroll-behavior: none;
-	  }
-	  
-	  body {
-		font-family: var(--font-family);
-		line-height: 1.5;
-		background-color: var(--theme-bg);
-		color: var(--theme-text);
-		z-index: 0;
-		min-height: 100dvh;
-		max-width: 100dvw;
-		width: 100vw;
-		overflow-x: hidden;
-		overflow-y:auto;
-		margin: 0 auto;
-		padding: 0;
-	  }
 
 	  
 	  
-	  ::-webkit-scrollbar, ::-webkit-scrollbar-button {
-		height: 0px;
-		width: 0px;
-	  }
+::-webkit-scrollbar,
+::-webkit-scrollbar-button {
+	 height: 0;
+	 width: 0;
+}
+
 	
+
+	html {
+		scrollbar-width: none;
+		scrollbar-color: transparent transparent;
+	}
 	  
+
+	.bodywrap{padding:3vh 3vw;}
+
 	  .button {
 		background-color: var(--theme-accent2);
 		border: none;
@@ -95,7 +105,6 @@ body {
 	  }
 
 	  .viewmore {
-		/* background-color: var(--theme-accent2); */
 		background:var(--theme-header);
 		border: none;
 		padding: 1vh 1.5vw;
@@ -127,7 +136,6 @@ body {
 		--radius: 5px;
 		position: relative;
 		margin: 1vh auto;
-		/* padding: 1.5vh 2vw; */
 		border-radius: var(--radius);
 		background: var(--theme-accent2);
 		cursor: pointer;
@@ -137,7 +145,6 @@ body {
 		font-size: clamp(1.3rem, 2.4vw, 1rem);
 		text-shadow: 0 2px 2px #333;
 		backdrop-filter: blur(12px);
-		/* text-transform: uppercase; */
 		z-index: 0;
 		text-decoration: none;
 		border: none;
@@ -240,7 +247,7 @@ body {
 	  }
 	  
 
-	  
+	  #main section, #main article {padding:0 2%;}
 	  
 
 	  
@@ -251,33 +258,22 @@ body {
 	  #missioncontrol button{margin-top:1vh; margin-bottom:1vh;}
 
 	  .flexbutt{display:flex; }
-	  .flexcheek{
-		/* position:-webkit-sticky;position:sticky;top:0; */
-		width:50%}
+	  .flexcheek{ width:50%}
 	  
-	  /* .button {
-		display: flex;
-		align-items:center;
-		justify-content: center;
-		padding: .5vh .5vw;
-		margin-right:1vw;
-		background: var(--theme-header);
-		color:#ddd;
-		border-radius:var(--border-radius);
-	  } */
-
-/* #gobacker.button{margin:0 auto; max-width: 200px; height:60px; padding:1rem; } */
 
 
-body:has(.contactpage) #missioncontrol{display:none !important}
+
+/* body:has(.contactpage) #missioncontrol{display:none !important} */
 
 
 #gobacker {position: absolute !important; right:60px !important; background:var(--theme-header) !important;}
 
 button.topper{background:var(--theme-header) !important;}
 
-/* body.home #gobacker{display: none;} */
-	  /* #gobacker{position:fixed; display:flex;  right:10px; z-index:5; top:65px;} */
+
+
+
+
 	  
 	  .backimage{
 		height: 100vh;
@@ -321,13 +317,18 @@ button.topper{background:var(--theme-header) !important;}
 }
 
 	  .grid-container {
-		display: grid;
+		display: grid !important;
 		list-style: none;
 		column-gap: 2vw;
 		row-gap: 2vw;
 		padding: 0 2% 10vh;
 		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
 		transition: transform .2s;
+		/* Reset slider properties */
+		overflow-x: visible !important;
+		overflow-y: visible !important;
+		flex-direction: initial !important;
+		gap: 2vw !important;
 	  }
 	  
 	  .grid-container .post-card1 {
@@ -352,27 +353,23 @@ button.topper{background:var(--theme-header) !important;}
 	  .slider {
 		display: flex;
 		flex-direction: row;
-		-webkit-overflow-scrolling: touch;
 		gap: 5vw;
-		overscroll-behavior: contain;
-		scroll-snap-type: y mandatory;
+		scroll-snap-type: x mandatory;
 		transition: transform .3s;
 		margin: 0;
-		overflow-x: scroll;
+		overflow-x: scroll !important;
 		overflow-y: hidden;
 		z-index: 0;
 		position: relative;
 		top: 0;
 		padding:0 2%;
+		max-width: 100vw;
+		width: 100%;
 	  }
 	  
 	  .horizontal-slider {
 		display: flex;
 		flex-direction: row;
-		-webkit-overflow-scrolling: touch;
-		/* gap: 10vw; */
-		/* scroll-padding: 0 5vw; */
-		overscroll-behavior: contain;
 		scroll-snap-align: center;
 		transition: transform .4s;
 		margin: 0;
@@ -381,27 +378,32 @@ button.topper{background:var(--theme-header) !important;}
 		z-index: 0;
 		position: relative;
 		top: 0;
-		/* min-width: 100vw; */
 	  }
 	  
-	  .slider .post-card1 {
-		scroll-snap-align: center;
-
-	  }
-
 
 	  .grid-container .topblock, .grid-container .botblock{height:0 !important;}
 	  .grid-container .video-title{font-size: 80%;}
 
 
 
-	  .slider .video-container, .slider .post-card1, .slider .custom-youtube-player{ min-width: 80vw ;}
+	  .slider .video-container, .slider .post-card1, .slider .custom-youtube-player{ min-width: 50vw ;}
 
-	  .slider .iframe-container{ min-width: 80vw;}
+	  .slider .iframe-container{ min-width: 50vw;}
+	  
+	  /* Override prose container max-width for slider content */
+	  .prose .slider {
+	    max-width: none !important;
+	  }
+	  
+	  .prose .section-content {
+	    max-width: none !important;
+	  }
 
+.section-controls{position:relative; right: 0 !important; border:0px solid red !important;}
 
+body:has(.videopage) .youtube-video-actions{position: relative; left: 90% !important;} 
 
-
+.post-play-button{display:none !important;}
 
 	  .slider img{
 		object-fit:contain; 
@@ -426,9 +428,18 @@ button.topper{background:var(--theme-header) !important;}
 		min-height: 25vh;
     }
 
-	/* .grid-container .video-container iframe  {
-		min-height: 30vh;
-	} */
+
+.post-video-info {
+  padding: 0.75rem;
+  background: var(--theme-bg, #fff);
+  color: var(--theme-text, #333);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align:left;
+}
+
 
 
 	 @media (min-width: 1500px) {
@@ -449,9 +460,6 @@ button.topper{background:var(--theme-header) !important;}
 
 	   @media (max-width: 48rem) {
 
-		.home .slider .post-card1 {
-			min-width: 70vw;
-		  }
 
 		  .grid-container .iframe-container, .grid-container .iframe-container iframe {
 			position: relative;
@@ -464,12 +472,12 @@ button.topper{background:var(--theme-header) !important;}
 		.grid-container .video-container, .grid-container .video-container .youtube-embed iframe,  .slider .video-container .youtube-embed iframe {min-height: 30vh !important; max-height: 200px !important;}
 
 		.grid-container iframe.exturl {
-		/* border:1px solid red !important; */
+	
 		max-height: 200px !important;
 		}
 
 		.horizontal-slider iframe.exturl {
-			/* border:1px solid blue !important; */
+	
 			max-width: 300px !important;
 			margin:0 auto;
 			max-height: 200px !important;
@@ -518,24 +526,18 @@ button.topper{background:var(--theme-header) !important;}
 	.panel {
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
-		/* text-shadow: 0 1px 1px var(--theme-header); */
 	}
 
 
 	.panelblur {
 		backdrop-filter: blur(78px);
 		-webkit-backdrop-filter: blur(78px);
-		/* background:rgba(0, 0, 0, 0.6); */
 		text-shadow: 0 1px 1px var(--theme-header);
 		border-radius: var(--border-radius);
 	}
 
 
 	#directorySelect {
-		/* position: absolute;
-		top:0;
-		left: 0;
-		right: 0; */
 	  	z-index: 2;
 		max-width: 300px !important;
 		margin-top:5px;
@@ -546,9 +548,11 @@ button.topper{background:var(--theme-header) !important;}
 
 	  body:has(#homemap) {overflow-y:auto !important;}
 
-	  /* body:has(.header) #directorySelect{top:5px !important;} */
+/* body:has(.video) #missioncontrol{display: none !important;} */
 
-	  body:has(.home) #footer{display: none;}
+body:has(.video) #footer{display: none !important;}
+
+
 
 	  #footer{padding-bottom: 80px;}
 
@@ -558,6 +562,10 @@ button.topper{background:var(--theme-header) !important;}
 		--webkit-appearance: none;
 		appearance: none; 
 	}
+
+	body:has(.home) section{margin-bottom: 4% !important;}
+
+
 
 	#directorySelect {background: var(--theme-header) !important; color:#ddd !important; outline:1px solid var(--theme-accent2) !important; font-size: clamp(1rem, 1vw, 1.8rem) !important; cursor: pointer; border-radius: var(--border-radius); padding:.6rem 1vw .6rem 1vw;}
   
@@ -609,7 +617,6 @@ button.topper{background:var(--theme-header) !important;}
 	  font: 10pt;
 	  background:#ffffff !important;
 	  color:#111111 !important;
-	  /* writing-mode: tb-rl; */
 	  }
 
 
@@ -632,15 +639,6 @@ button.topper{background:var(--theme-header) !important;}
 		page-break-before: always;
 		}
 
-	  /* section.resume:before {
-	  display: block;
-	  content: "Thank you for printing my resume";
-	  margin-bottom: 10px;
-	  border: 1px solid #bbb;
-	  padding: 3px 5px;
-	  font-style: italic;
-	  text-align: center;
-	  } */
 	  
 	  section, .backimage{display:none !important;}
 	  .home section{display:none !important;}
@@ -654,3 +652,360 @@ button.topper{background:var(--theme-header) !important;}
 	  #menu, .keyboard, .resumetitle, footer{display: none !important;}
 	  
 		}
+	
+
+
+
+
+
+
+
+
+		.contentpanel a[target="_blank"]::after {
+			content: '';
+			background: no-repeat var(--icon-external-link);
+			padding-right: 3rem;
+			margin-left: .5rem;
+		}
+		
+		:root {
+			--icon-external-link: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><g style="stroke:grey;stroke-width:1"><line x1="5" y1="5" x2="5" y2="14" /><line x1="14" y1="9" x2="14" y2="14" /><line x1="5" y1="14" x2="14" y2="14" /><line x1="5" y1="5" x2="9" y2="5" /><line x1="10" y1="2" x2="17" y2="2" /><line x1="17" y1="2" x2="17" y2="9" /><line x1="10" y1="9" x2="17" y2="2" style="stroke-width:1.5" /></g></svg>');
+		}
+
+
+
+/* Posts section slider mode styles */
+		div[data-section-id*="posts-section"] .section-content.slider,
+		div[data-section-id*="youtube-feed-section"] .section-content.slider,
+		div[data-section-id*="youtube-feed-section"] .youtube-grid.slider {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: scroll !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		div[data-section-id*="posts-section"] .section-content.slider .post-card1,
+		div[data-section-id*="youtube-feed-section"] .section-content.slider .post-card1 {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: start !important;
+			display: block !important;
+			margin-bottom: 0 !important;
+			width: auto !important;
+		}
+
+		/* Force YouTube feed images to match posts exactly - override general .slider img rules */
+		div[data-section-id*="youtube-feed-section"] .grid-container .post-card1 img {
+			max-height: 40vh !important;
+			margin: 0 auto !important;
+			border-radius: var(--border-radius) !important;
+			object-fit: cover !important;
+		}
+		
+		div[data-section-id*="youtube-feed-section"] .slider .post-card1 img {
+			max-height: 40vh !important;
+			object-fit: cover !important;
+			width: 100% !important;
+			border-radius: var(--border-radius) !important;
+			min-width: unset !important; /* Override general .slider img min-width */
+		}
+
+		/* Force proper spacing for YouTube grid container in slider mode */
+		div[data-section-id*="youtube-feed-section"] .section-content.slider .youtube-grid {
+			display: flex !important;
+			gap: 5vw !important;
+			overflow-x: scroll !important;
+		}
+
+		/* Override any remaining width conflicts for YouTube videos */
+		div[data-section-id*="youtube-feed-section"] .section-content.slider .post-video-card {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			width: 50vw !important;
+		}
+		
+		/* Ensure posts and YouTube feeds grid matches */
+		div[data-section-id*="posts-section"] .section-content.grid-container,
+		div[data-section-id*="youtube-feed-section"] .section-content.grid-container,
+		div[data-section-id*="youtube-feed-section"] .youtube-grid.grid-container {
+			display: grid !important;
+			grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+			column-gap: 2vw !important;
+			row-gap: 2vw !important;
+			padding: 0 2% 0 !important;
+		}
+		
+		/* Fallback for posts and YouTube feed sections - even if slider class isn't applied correctly */
+		div[data-section-id*="posts-section"] .section-content:not(.grid-container),
+		div[data-section-id*="youtube-feed-section"] .section-content:not(.grid-container),
+		div[data-section-id*="youtube-feed-section"] .youtube-grid:not(.grid-container) {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: scroll !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		div[data-section-id*="posts-section"] .section-content:not(.grid-container) .post-card1,
+		div[data-section-id*="youtube-feed-section"] .section-content:not(.grid-container) .post-card1 {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: start !important;
+			display: block !important;
+			margin-bottom: 0 !important;
+			width: auto !important;
+		}
+		
+		div[data-section-id*="posts-section"] .section-content.slider .load-more-container,
+		div[data-section-id*="youtube-feed-section"] .section-content.slider .load-more-container {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: start !important;
+		}
+		
+		/* Testimonials section fixes */
+		[data-section-id*="testimonials-section"] .section-content.slider {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		[data-section-id*="testimonials-section"] .slider {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		[data-section-id*="testimonials-section"] .section-content.slider .post-card12,
+		[data-section-id*="testimonials-section"] .section-content.slider .quotecard,
+		[data-section-id*="testimonials-section"] .slider .post-card12,
+		[data-section-id*="testimonials-section"] .slider .quotecard {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: start !important;
+			display: block !important;
+			margin-bottom: 0 !important;
+			width: auto !important;
+		}
+		
+		/* Fallback for testimonials section */
+		[data-section-id*="testimonials-section"] .section-content:not(.grid-container) {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		[data-section-id*="testimonials-section"] .section-content:not(.grid-container) .post-card12,
+		[data-section-id*="testimonials-section"] .section-content:not(.grid-container) .quotecard {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: start !important;
+			display: block !important;
+			margin-bottom: 0 !important;
+			width: auto !important;
+		}
+		
+		/* Photo gallery section fixes */
+		[data-section-id*="gallery-section"] .grid-container {
+			display: grid !important;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+			gap: 2rem !important;
+			padding: 0 2% 0 !important;
+			flex-direction: initial !important;
+			overflow-x: visible !important;
+		}
+		
+		[data-section-id*="gallery-section"] .grid-container .post-card1 {
+			position: relative !important;
+			width: 100% !important;
+			margin-bottom: 2rem !important;
+			break-inside: avoid !important;
+			flex: initial !important;
+			min-width: initial !important;
+			max-width: initial !important;
+		}
+		
+		[data-section-id*="gallery-section"] .grid-container .post-card1 img {
+			width: 100% !important;
+			height: auto !important;
+			max-height: none !important;
+			object-fit: cover !important;
+			border-radius: var(--border-radius) !important;
+		}
+		
+		[data-section-id*="gallery-section"] .section-content.slider {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: x mandatory !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		[data-section-id*="gallery-section"] .section-content.slider .post-card1,
+		[data-section-id*="gallery-section"] .slider .post-card1 {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: center !important;
+			display: block !important;
+			margin-bottom: 0 !important;
+			width: auto !important;
+		}
+		
+		[data-section-id*="gallery-section"] .slider {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: none !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		/* Fallback for gallery section */
+		[data-section-id*="gallery-section"] .section-content:not(.grid-container) {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 5vw !important;
+			overflow-x: auto !important;
+			overflow-y: hidden !important;
+			scroll-snap-type: none !important;
+			padding: 0 2% !important;
+			width: 100% !important;
+		}
+		
+		[data-section-id*="gallery-section"] .section-content:not(.grid-container) .post-card1 {
+			flex: 0 0 auto !important;
+			min-width: 50vw !important;
+			max-width: 50vw !important;
+			scroll-snap-align: center !important;
+			display: block !important;
+			margin-bottom: 0 !important;
+			width: auto !important;
+		}
+		
+		[data-section-id*="gallery-section"] .slider img {
+			min-width: 100%;
+			max-height: 70vh;
+			object-fit: contain;
+		}
+		
+		/* Fix gallery dropdown positioning in slider mode */
+		[data-section-id*="gallery-section"] .slider .cattags {
+			position: sticky;
+			top: ;
+			z-index: 1;
+			padding: 0 0;
+		}
+		
+		/* Mobile responsive fixes */
+		@media (max-width: 768px) {
+			/* Mobile YouTube feed card sizing - override ALL desktop rules */
+			div[data-section-id*="youtube-feed-section"] .section-content.slider .post-card1,
+			div[data-section-id*="youtube-feed-section"] .slider .post-card1 {
+				min-width: 90vw !important;
+				max-width: 90vw !important;
+				width: 90vw !important;
+				flex: 0 0 90vw !important;
+			}
+			
+			/* Mobile YouTube feed image sizing - override general .slider img rules */
+			div[data-section-id*="youtube-feed-section"] .section-content.slider .post-card1 img,
+			div[data-section-id*="youtube-feed-section"] .slider .post-card1 img {
+				min-width: 100% !important;
+				max-width: 100% !important;
+				width: 100% !important;
+				height: auto !important;
+				max-height: none !important;
+				object-fit: cover !important;
+			}
+			
+			/* Override the general .slider img rule that sets min-width: 70vw */
+			div[data-section-id*="youtube-feed-section"] .slider img {
+				min-width: 100% !important;
+			}
+			
+			/* General posts section - smaller width */
+			[data-section-id*="posts-section"] .slider .post-card1 {
+				min-width: 280px;
+				max-width: 320px;
+			}
+			
+			[data-section-id*="testimonials-section"] .slider .post-card12,
+			[data-section-id*="testimonials-section"] .slider .quotecard {
+				min-width: 250px;
+				max-width: 280px;
+			}
+			
+			[data-section-id*="gallery-section"] .slider .post-card1 {
+				min-width: 80vw;
+				max-width: 85vw;
+			}
+			
+			[data-section-id*="gallery-section"] .grid-container {
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 1rem;
+			}
+		}
+
+
+		
+
+
+/* @media all and (display-mode: browser) {
+        .pwaonly {
+          position:absolute;
+          left:-9999px;
+          visibility: hidden;
+		  display:none !important;
+        }
+		.onlypwa {
+          display:block !important;
+        }
+    } */
+    
+@media (display-mode: standalone), (display-mode: minimal-ui) {
+        .pwaonly {
+          display:flex !important; flex-direction: row;
+        }
+		.onlypwa {
+          position:absolute;
+          left:-9999px;
+          visibility: hidden;
+		  display:none !important;
+        }
+    }
+
+.pwa-button{display:flex; justify-content: center;}

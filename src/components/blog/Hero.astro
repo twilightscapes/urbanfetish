@@ -6,7 +6,7 @@ import YouTubeEmbed from '../YouTubeEmbed.astro';
 import Share from "@/components/Share.astro"
 import { getEntry } from 'astro:content';
 const siteSettings = await getEntry('siteSettings', 'main');
-const { showTitles, showTags, showDates, showShare, showSocial } = siteSettings.data;
+const { showTitles, showTags, showDates, showShare, showSocial } = siteSettings?.data || {};
 import SocialList from "@/components/SocialList.astro";
 
 
@@ -19,10 +19,6 @@ interface Props {
 const {
     content: { data },
 } = Astro.props;
-
-const dateTimeOptions: Intl.DateTimeFormatOptions = {
-    month: "long",
-};
 ---
 {
   (data.youtube && data.youtube.discriminant && data.youtube.value && data.youtube.value.url) ? (
@@ -34,6 +30,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
       loop={data.youtube.value.loop}
       start={data.youtube.value.start}
       end={data.youtube.value.end}
+      clickToLoad={data.youtube.value.clickToLoad}
       useCustomPlayer={data.youtube.value.useCustomPlayer}
     />
   ) : data.coverImage && data.coverImage.src ? (
@@ -69,14 +66,13 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 {typeof showDates !== 'undefined' && showDates && (
     <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
         <p class="font-semibold">
-            <FormattedDate date={data.publishDate} dateTimeOptions={dateTimeOptions} />
+            <FormattedDate date={data.publishDate} />
         </p>
         {data.updatedDate && (
             <span class="rounded-lg bg-quote/10 p-1 text-quote">
                 Last Updated:{" "}
                 <FormattedDate
                     date={data.updatedDate}
-                    dateTimeOptions={dateTimeOptions}
                 />
             </span>
         )}

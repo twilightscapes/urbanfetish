@@ -1,0 +1,2454 @@
+---
+// Member Favorites Component - displays user's favorites and bookmarked channels
+import ViewModeSwitch from "./ViewModeSwitch.jsx";
+
+export interface Props {
+  maxVideos?: number;
+  showTitles?: boolean;
+  sectionTitle?: string;
+}
+
+const { maxVideos = 20, showTitles = true, sectionTitle = "Your Watchlist" } = Astro.props;
+const sectionId = `member-favorites-youtube-feed-section`;
+---
+
+<div id="member-favorites-section" class="favorites-section" data-section-id={sectionId} style="margin: 0 auto; padding: 0 0; background: var(--theme-bg, #000000); backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); position: relative;">
+  <div style="position: absolute; inset: 0; background: var(--theme-bg, #000000); opacity: 0.95; z-index: -1;"></div>
+  
+  <!-- Channel Management Toolbar - Now appears first -->
+  <div class="channel-toolbar" style="background: var(--theme-surface, #1a1a1a); padding: 1rem; margin: 0; position: relative; z-index: 1; width:100vw;">
+    <div class="channel-toolbar-content" style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <h3 style="margin: 0; color: white; font-size: 1.1rem; font-weight: 600; flex-shrink: 0;">Subscribe To Channel:</h3>
+      <div class="channel-controls" style="display: flex; gap: 0.5rem; flex: 1; align-items: center; min-width: 0; flex-wrap: wrap;">
+        <input 
+          type="text" 
+          id="channel-url-input" 
+          placeholder="Paste URL or @Name"
+          style="flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid var(--theme-border, #333); border-radius: 4px; background: var(--theme-bg, #000); color: var(--theme-text); font-size: 14px;"
+        />
+        <!-- <div style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+          <label for="new-channel-videos" style="color: white; font-size: 14px;">Videos:</label>
+          <select 
+            id="new-channel-videos"
+            style="padding: 6px 8px; border: 1px solid var(--theme-border, #333); border-radius: 4px; background: var(--theme-bg, #000); color: var(--theme-text); font-size: 14px;"
+          >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+          </select>
+        </div> -->
+        <button 
+          id="add-channel-btn"
+          style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: background 0.2s ease;"
+          onmouseover="this.style.background='#45a049'"
+          onmouseout="this.style.background='#4CAF50'"
+        >
+          Add
+        </button>
+        <button 
+          id="collapse-all-btn"
+          style="background: var(--theme-surface, #333); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: background 0.2s ease;"
+          onmouseover="this.style.background='var(--theme-border, #555)'"
+          onmouseout="this.style.background='var(--theme-surface, #333)'"
+        >
+          Collapse All
+        </button>
+      </div>
+    </div>
+    
+    <div id="channel-help" style="margin-top: 0.75rem; font-size: 13px; color: var(--theme-text-secondary, #888);">
+      💡 <strong>Tip:</strong> Visit any channel, copy the URL from your browser, and paste it above. Or, type in a name like "Taylor Swift" and we'll extract the Channel ID automatically. You can drag channels to reorder them.<br>
+    </div>
+  </div>
+
+  <!-- Section header with view toggle - Now appears after channel management -->
+  <div class="favorites-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding: 0 1rem; position: relative; z-index: 1;">
+    <div style="flex: 1;">
+      <h2 class="posties glow text-[clamp(1.2rem,2.5vw,2rem)] shadow-text theme-accent" style="margin: 0; font-weight: 600;">
+        Your Watchlist
+      </h2>
+      <p style="font-size: 1rem; color: var(--theme-text); opacity: 0.7; margin: 0.5rem 0 0 0;">
+        Videos you've starred and channels you've subscribed to.
+      </p>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 0;">
+      
+      {/* @ts-ignore - client:load is valid Astro directive */}
+      <ViewModeSwitch 
+        sectionId={sectionId}
+        defaultView="grid"
+        client:load
+      />
+      <button class="favorites-collapse-toggle" style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 16px; cursor: pointer;" title="Collapse/Expand Favorites">▼</button>
+    </div>
+  </div>
+  
+  <!-- Favorites content will be populated by JavaScript -->
+  <div id="favorites-content" style="position: relative; z-index: 1;">
+    <div class="favorites-content-area" style="display: block;"></div>
+  </div>
+</div>
+
+<!-- Sticky Collapse All Button - Outside the main container so it stays fixed -->
+<div id="sticky-collapse-all" style="position: fixed; top: 20px; right: 20px; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.3s ease; pointer-events: none; display: none;">
+  <button 
+    id="sticky-collapse-all-btn"
+    style="background: var(--theme-surface, #333); color: white; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); font-size: 14px; transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.1);"
+    onmouseover="this.style.background='var(--theme-border, #555)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0, 0, 0, 0.4)'"
+    onmouseout="this.style.background='var(--theme-surface, #333)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.3)'"
+  >
+    Collapse All
+  </button>
+</div>
+
+<style>
+  .member-favorites-section {
+    margin-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  /* Let global CSS handle all post-card1 styling - no custom overrides needed */
+
+  /* Channel section styles - simplified to work with new structure */
+  .channel-feed-section {
+    margin-bottom: 3rem;
+    display: block !important;
+    visibility: visible !important;
+    transition: all 0.2s ease;
+  }
+
+  .channel-feed-section[draggable="true"] {
+    cursor: move;
+  }
+
+  .channel-feed-section:hover .drag-handle {
+    color: var(--theme-text, white);
+  }
+
+  .drag-handle {
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .channel-section-header {
+    border-bottom: 1px solid var(--theme-border, #333);
+    padding-bottom: 1rem;
+    display: flex !important;
+    visibility: visible !important;
+    background:rgba(20, 20, 20, 0.8) !important;
+    color:rgb(0, 84, 125, .8)
+  }
+
+  /* Remove all custom grid styles - now handled by global.css */
+
+  /* Channel toolbar input placeholder styling */
+  #channel-url-input::placeholder {
+    /* color: rgba(255, 255, 255, 0.7); */
+  }
+
+  #channel-url-input::-webkit-input-placeholder {
+    /* color: rgba(255, 255, 255, 0.7); */
+  }
+
+  #channel-url-input::-moz-placeholder {
+    /* color: rgba(255, 255, 255, 0.7); */
+    opacity: 1;
+  }
+
+  #channel-url-input:-ms-input-placeholder {
+    /* color: rgba(255, 255, 255, 0.7); */
+  }
+
+  /* Select dropdown styling */
+  #max-videos-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  #max-videos-select option {
+    background: var(--theme-surface, #1a1a1a);
+    color: var(--theme-text);
+    padding: 8px 12px;
+  }
+
+  /* Ensure select text is visible */
+  #max-videos-select:invalid {
+    color: var(--theme-text-secondary, #888);
+  }
+
+  /* Mobile responsive toolbar layout */
+  @media (max-width: 768px) {
+    .channel-toolbar-content {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 1rem !important;
+    }
+    
+    .channel-toolbar-content h3 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .channel-controls {
+      flex-direction: column !important;
+      gap: 1rem !important;
+      align-items: stretch !important;
+    }
+    
+    .channel-controls #channel-url-input {
+      width: 100% !important;
+      min-width: unset !important;
+      flex: none !important;
+      font-size: 16px !important;
+    }
+    
+    .channel-controls > div {
+      justify-content: center;
+      flex-wrap: nowrap !important;
+    }
+    
+    .channel-controls button {
+      width: auto;
+      justify-self: center;
+    }
+    
+    .channel-controls > div:last-of-type {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    #collapse-all-btn {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    
+    /* Sticky button mobile adjustments */
+    #sticky-collapse-all {
+      top: 10px !important;
+      right: 10px !important;
+    }
+    
+    #sticky-collapse-all-btn {
+      padding: 10px 12px !important;
+      font-size: 13px !important;
+    }
+    
+    /* Simple channel header mobile fix - just wrap controls to next line */
+    .channel-section-header {
+      flex-wrap: wrap !important;
+    }
+    
+    .channel-section-header > div:last-child {
+      flex-basis: 100% !important;
+      justify-content: center !important;
+      margin-top: 1rem !important;
+    }
+  }
+
+  /* Style the default placeholder option */
+  #max-videos-select option[disabled] {
+    color: var(--theme-text-secondary, #888);
+    font-style: italic;
+  }
+
+  .channel-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--theme-surface, #1a1a1a);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .channel-info {
+    flex: 1;
+  }
+
+  .channel-name {
+    font-weight: 600;
+    color: var(--theme-text);
+    margin-bottom: 0.25rem;
+  }
+
+  .channel-date {
+    color: var(--theme-text-secondary, #888);
+    font-size: 0.8rem;
+  }
+
+  .channel-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .remove-channel-btn, .view-channel-btn {
+    background: var(--theme-accent, #4ecdc4);
+    border: none;
+    border-radius: 4px;
+    color: var(--theme-accent-text, #fff);
+    cursor: pointer;
+    padding: 6px 12px;
+    font-size: 12px;
+    transition: background 0.2s ease;
+    font-weight: 600;
+  }
+
+  .remove-channel-btn {
+    background: var(--theme-danger, #ff6b6b);
+    color: var(--theme-danger-text, #fff);
+  }
+
+  .remove-channel-btn:hover {
+    background: var(--theme-danger-hover, #ff5252);
+  }
+
+  .view-channel-btn:hover {
+    background: var(--theme-accent-dark, #45b7b8);
+  }
+
+  /* All responsive grid styling now handled by global.css - no custom overrides needed */
+
+  /* Member Video Popup Styles */
+  .member-video-popup {
+    font-family: inherit;
+  }
+
+  .member-video-popup .popup-header {
+    height: 30px !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 10px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    cursor: move !important;
+    user-select: none !important;
+  }
+
+  .member-video-popup .popup-title {
+    flex: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-right: 10px !important;
+  }
+
+  .member-video-popup .popup-close {
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-size: 1.2rem !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 2px !important;
+    transition: background 0.2s ease !important;
+  }
+
+  .member-video-popup .popup-close:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .member-video-popup .popup-content {
+    flex: 1 !important;
+    background: #000 !important;
+    position: relative !important;
+  }
+
+  .member-video-popup .popup-timer {
+    position: absolute !important;
+    top: 35px !important;
+    right: 5px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    padding: 3px 6px !important;
+    border-radius: 3px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    z-index: 10001 !important;
+    pointer-events: none !important;
+    backdrop-filter: blur(4px) !important;
+  }
+
+  /* YouTube Video Actions - Match YouTubeFeed exactly */
+  .youtube-video-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--theme-border, #f0f0f0);
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Favorite Button Styling - Match YouTubeFeed exactly */
+  .youtube-video-actions .favorite-btn {
+    background: transparent;
+    border: 1px solid var(--theme-border, #ddd);
+    border-radius: 16px;
+    color: var(--theme-text, #666);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    pointer-events: all;
+  }
+
+  .youtube-video-actions .favorite-btn:hover {
+    border-color: var(--theme-accent, #4285f4);
+    color: var(--theme-accent, #4285f4);
+    transform: translateY(-1px);
+  }
+
+  .youtube-video-actions .favorite-btn.favorited {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-color: #ffd700;
+    color: #333;
+  }
+
+  .youtube-video-actions .favorite-btn.favorited {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-color: #ffd700;
+    color: #333;
+  }
+
+  /* Dark mode adjustments */
+  [data-theme="dark"] .youtube-video-actions {
+    border-top-color: var(--theme-border, #333);
+  }
+
+  [data-theme="dark"] .youtube-video-actions .favorite-btn {
+    background: rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--theme-text, #fff);
+  }
+
+  [data-theme="dark"] .youtube-video-actions .favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: var(--theme-accent, #4285f4);
+    color: var(--theme-accent, #4285f4);
+  }
+
+  [data-theme="dark"] .youtube-video-actions .favorite-btn.favorited {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-color: #ffd700;
+    color: #333;
+  }
+</style>
+
+<script define:vars={{ sectionId, maxVideos, showTitles }}>
+  // Function to load video in main player (for video page)
+  function loadVideoInMainPlayer(videoUrlOrId) {
+    // Check if we're on the video page
+    if (window.location.pathname !== '/video') {
+      console.warn('loadVideoInMainPlayer called but not on video page');
+      return;
+    }
+    
+    // Find the video input element
+    const videoInput = document.getElementById('video-input');
+    if (!videoInput) {
+      console.error('Video input element not found');
+      return;
+    }
+    
+    // Determine if we have a URL or just an ID
+    let videoUrl = videoUrlOrId;
+    if (!videoUrlOrId.includes('://')) {
+      // It's just an ID, assume YouTube for backward compatibility
+      videoUrl = `https://www.youtube.com/watch?v=${videoUrlOrId}`;
+    }
+    
+    // Set the video URL in the input
+    videoInput.value = videoUrl;
+    
+    // Trigger the input change event to update the video
+    // This will trigger the existing event listeners on the video page
+    const changeEvent = new Event('change', { bubbles: true });
+    videoInput.dispatchEvent(changeEvent);
+    
+    // Also trigger input event as a fallback
+    const inputEvent = new Event('input', { bubbles: true });
+    videoInput.dispatchEvent(inputEvent);
+    
+    // Scroll to the top of the page to show the video player
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+  }
+
+  // Ensure handleThumbnailError is available - define it here if not already available
+  if (!window.handleThumbnailError) {
+    window.handleThumbnailError = function(img) {
+      const currentSrc = img.src;
+
+      // Extract video ID from current URL
+      const videoIdMatch = currentSrc.match(/\/vi\/([^\/]+)\//);
+      if (!videoIdMatch) {
+        // Fallback to default image for non-YouTube URLs
+        img.src = '/socialCard.webp';
+        return;
+      }
+      
+      const videoId = videoIdMatch[1];
+      
+      // Define fallback hierarchy (high-res to lower-res)
+      const fallbackSizes = [
+        'maxresdefault.jpg',    // 1280x720 (highest quality, but not always available)
+        'sddefault.jpg',        // 640x480 (high quality)
+        'hqdefault.jpg',        // 480x360 (medium quality, almost always available)
+        'mqdefault.jpg',        // 320x180 (lower quality)
+        'default.jpg'           // 120x90 (lowest quality, always available)
+      ];
+      
+      // Find current size in hierarchy
+      let currentIndex = -1;
+      for (let i = 0; i < fallbackSizes.length; i++) {
+        if (currentSrc.includes(fallbackSizes[i])) {
+          currentIndex = i;
+          break;
+        }
+      }
+      
+      // Strategy: If we're starting with hqdefault, first try to upgrade to higher quality
+      // If that fails, then fall back to lower quality
+      if (currentIndex === 2 && currentSrc.includes('hqdefault.jpg')) {
+        // First attempt: try maxresdefault (if we haven't tried it yet)
+        if (!img.dataset.triedMaxRes) {
+          img.dataset.triedMaxRes = 'true';
+          const maxResSrc = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+          
+          // Use a more reliable method to check if maxres exists
+          const testImg = new Image();
+          testImg.onload = function() {
+            img.src = maxResSrc;
+          };
+          testImg.onerror = function() {
+            // Try sddefault next
+            if (!img.dataset.triedSdDefault) {
+              img.dataset.triedSdDefault = 'true';
+              const sdDefaultSrc = `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
+              const testSdImg = new Image();
+              testSdImg.onload = function() {
+                img.src = sdDefaultSrc;
+              };
+              testSdImg.onerror = function() {
+                // Stay with hqdefault - it should work
+              };
+              testSdImg.src = sdDefaultSrc;
+            }
+          };
+          testImg.src = maxResSrc;
+          return;
+        }
+      }
+      
+      // Standard fallback: try next lower resolution
+      if (currentIndex >= 0 && currentIndex < fallbackSizes.length - 1) {
+        const nextSize = fallbackSizes[currentIndex + 1];
+        const newSrc = `https://img.youtube.com/vi/${videoId}/${nextSize}`;
+        img.src = newSrc;
+      } else {
+        // Use default placeholder image
+        img.src = '/socialCard.webp';
+      }
+    };
+  }
+
+  // Local Favorites Management (replaces FavoritesManager)
+  const FavoritesManager = {
+    getFavorites() {
+      try {
+        return JSON.parse(localStorage.getItem('memberFavorites') || '[]');
+      } catch {
+        return [];
+      }
+    },
+
+    getBookmarkedChannels() {
+      try {
+        return JSON.parse(localStorage.getItem('memberChannels') || '[]');
+      } catch {
+        return [];
+      }
+    },
+
+    addFavorite(video) {
+      const favorites = this.getFavorites();
+      
+      // Check for existing favorite using multiple methods for compatibility
+      const exists = favorites.some(fav => {
+        // New format with platform support
+        if (video.uniqueId && fav.uniqueId) {
+          return fav.uniqueId === video.uniqueId;
+        }
+        // Platform-specific comparison
+        if (video.platform && fav.platform) {
+          return fav.videoId === video.videoId && fav.platform === video.platform;
+        }
+        // Legacy format (YouTube only)
+        return fav.videoId === video.videoId;
+      });
+      
+      if (!exists) {
+        favorites.unshift({
+          uniqueId: video.uniqueId || `${video.platform || 'youtube'}:${video.videoId}`,
+          videoId: video.videoId,
+          platform: video.platform || 'youtube',
+          title: video.title,
+          thumbnail: video.thumbnail,
+          channelTitle: video.channelTitle,
+          url: video.url,
+          dateAdded: new Date().toISOString()
+        });
+        localStorage.setItem('memberFavorites', JSON.stringify(favorites));
+      }
+      return favorites;
+    },
+
+    removeFavorite(videoId, platform = null) {
+      const favorites = this.getFavorites();
+      const filtered = favorites.filter(fav => {
+        // For legacy favorites without platform, just match videoId
+        if (!fav.platform) {
+          return fav.videoId !== videoId;
+        }
+        
+        // For new favorites with platform
+        if (platform) {
+          // Match both platform and videoId
+          return !(fav.videoId === videoId && fav.platform === platform);
+        } else {
+          // No platform specified, just match videoId (for backward compatibility)
+          return fav.videoId !== videoId;
+        }
+      });
+      localStorage.setItem('memberFavorites', JSON.stringify(filtered));
+      return filtered;
+    },
+
+    addChannel(channel) {
+      const channels = this.getBookmarkedChannels();
+      
+      // Create a unique identifier for multi-platform support
+      const uniqueChannelId = `${channel.platform || 'youtube'}:${channel.channelId}`;
+      
+      // Check if channel already exists using multiple methods for compatibility
+      const exists = channels.some(ch => {
+        // New format with platform support
+        if (channel.uniqueChannelId && ch.uniqueChannelId) {
+          return ch.uniqueChannelId === channel.uniqueChannelId;
+        }
+        // Platform-specific comparison
+        if (channel.platform && ch.platform) {
+          return ch.channelId === channel.channelId && ch.platform === channel.platform;
+        }
+        // Legacy format (YouTube only)
+        return ch.channelId === channel.channelId;
+      });
+      
+      if (!exists) {
+        // Get the current order for proper insertion
+        const currentOrder = this.getChannelOrder();
+        const newOrderIndex = currentOrder.length;
+        
+        const newChannel = {
+          uniqueChannelId: uniqueChannelId,
+          channelId: channel.channelId,
+          platform: channel.platform || 'youtube',
+          channelName: channel.channelName,
+          channelUrl: channel.channelUrl || null,
+          videoCount: channel.videoCount || 3, // Default to 3 videos
+          orderIndex: newOrderIndex,
+          dateAdded: new Date().toISOString()
+        };
+        
+        channels.unshift(newChannel);
+        localStorage.setItem('memberChannels', JSON.stringify(channels));
+        
+        // Update channel order
+        currentOrder.push(uniqueChannelId);
+        localStorage.setItem('channelOrder', JSON.stringify(currentOrder));
+      }
+      return channels;
+    },
+
+    removeChannel(channelId, platform = null) {
+      const channels = this.getBookmarkedChannels();
+      const filtered = channels.filter(ch => {
+        // For legacy channels without platform, just match channelId
+        if (!ch.platform) {
+          return ch.channelId !== channelId;
+        }
+        
+        // For new channels with platform
+        if (platform) {
+          // Match both platform and channelId
+          return !(ch.channelId === channelId && ch.platform === platform);
+        } else {
+          // No platform specified, just match channelId (for backward compatibility)
+          return ch.channelId !== channelId;
+        }
+      });
+      localStorage.setItem('memberChannels', JSON.stringify(filtered));
+      
+      // Also remove from channel order
+      const order = this.getChannelOrder();
+      const newOrder = order.filter(id => {
+        // Match using same logic as above
+        if (!platform) {
+          return !id.includes(channelId);
+        }
+        return id !== `${platform}:${channelId}`;
+      });
+      localStorage.setItem('channelOrder', JSON.stringify(newOrder));
+      
+      return filtered;
+    },
+
+    // Channel ordering functions
+    getChannelOrder() {
+      try {
+        return JSON.parse(localStorage.getItem('channelOrder') || '[]');
+      } catch {
+        return [];
+      }
+    },
+
+    setChannelOrder(order) {
+      localStorage.setItem('channelOrder', JSON.stringify(order));
+    },
+
+    updateChannelVideoCount(channelId, platform, videoCount) {
+      const channels = this.getBookmarkedChannels();
+      const uniqueChannelId = `${platform || 'youtube'}:${channelId}`;
+      
+      const updatedChannels = channels.map(ch => {
+        if (ch.uniqueChannelId === uniqueChannelId || 
+            (ch.channelId === channelId && (!platform || ch.platform === platform))) {
+          return { ...ch, videoCount: parseInt(videoCount) };
+        }
+        return ch;
+      });
+      
+      localStorage.setItem('memberChannels', JSON.stringify(updatedChannels));
+      return updatedChannels;
+    },
+
+    getOrderedChannels() {
+      const channels = this.getBookmarkedChannels();
+      const order = this.getChannelOrder();
+      
+      // If no order is saved, return channels as-is
+      if (order.length === 0) {
+        return channels;
+      }
+      
+      // Sort channels according to saved order
+      const orderedChannels = [];
+      const unorderedChannels = [...channels];
+      
+      // Add channels in order
+      order.forEach(orderId => {
+        const channelIndex = unorderedChannels.findIndex(ch => 
+          ch.uniqueChannelId === orderId || 
+          ch.channelId === orderId.split(':')[1]
+        );
+        if (channelIndex !== -1) {
+          orderedChannels.push(unorderedChannels.splice(channelIndex, 1)[0]);
+        }
+      });
+      
+      // Add any remaining channels that weren't in the order
+      orderedChannels.push(...unorderedChannels);
+      
+      return orderedChannels;
+    },
+
+    isFavorited(videoId, platform = null) {
+      return this.getFavorites().some(fav => {
+        // If platform is specified, match both platform and videoId
+        if (platform) {
+          return fav.videoId === videoId && fav.platform === platform;
+        }
+        // Otherwise, just match videoId (legacy behavior)
+        return fav.videoId === videoId;
+      });
+    },
+
+    isChannelBookmarked(channelId, platform = null) {
+      return this.getBookmarkedChannels().some(ch => {
+        // If platform is specified, match both platform and channelId
+        if (platform) {
+          return ch.channelId === channelId && ch.platform === platform;
+        }
+        // Otherwise, just match channelId (legacy behavior)
+        return ch.channelId === channelId;
+      });
+    }
+  };
+
+  // Check membership and initialize
+  async function initializeMemberSection() {
+    try {
+      const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+      if (!section) {
+        console.error('❌ MemberFavorites: Section not found:', sectionId);
+        return;
+      }
+
+      // Use the global membership check from Base.astro
+      const status = await globalThis.checkUnifiedMembershipStatus();
+      // console.log('🔍 MEMBER FAVORITES: Status received:', status);
+    
+    if ((status.isValid || status.valid) && (status.tier === 'premium' || status.accessLevel === 'premium')) {
+      // console.log('✅ MEMBER FAVORITES: Premium member detected, showing features');
+      // Enable scrolling on the page
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
+        
+        section.style.display = 'block';
+        
+        // Show the header and toolbar for valid members
+        const favoritesHeader = section.querySelector('.favorites-header');
+        const channelToolbar = section.querySelector('.channel-toolbar');
+        
+        if (favoritesHeader) {
+          favoritesHeader.style.display = 'flex';
+        }
+        
+        if (channelToolbar) {
+          channelToolbar.style.display = 'block';
+        }
+        
+        // Create initial content structure with new unified layout
+        const favoritesContent = section.querySelector('#favorites-content');
+        if (favoritesContent) {
+          favoritesContent.innerHTML = `
+            <div class="favorites-content-area">
+              <div class="favorites-section-content" data-section-id="${sectionId}">
+                <div class="section-content grid-container"></div>
+                <div class="no-favorites" style="display: none; text-align: center; padding: 3rem 1rem; opacity: 0.7;">
+                  <p style="font-size: 1.2rem; margin-bottom: 1rem;">Your WatchList Is Empty!</p>
+                  <p>Star some videos to see them here</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="channels-section" style="margin-top: 3rem;">
+              <div class="no-channels" style="display: none; text-align: center; padding: 2rem 1rem; opacity: 0.7;">
+                <p>No subscribed channels yet!</p>
+                <p>Add channels using the toolbar above</p>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Initialize the favorites system
+        initializeMemberFavorites();
+        
+        // Show sticky button for premium members only
+        const stickyCollapseContainer = document.querySelector('#sticky-collapse-all');
+        if (stickyCollapseContainer) {
+          stickyCollapseContainer.style.display = 'block';
+        }
+    } else {
+        // console.log('❌ MEMBER FAVORITES: Not premium or invalid status, showing upgrade notice');
+        // console.log('❌ MEMBER FAVORITES: Status details:', { isValid: status?.isValid, tier: status?.tier });
+        
+        // Hide sticky button for non-premium users
+        const stickyCollapseContainer = document.querySelector('#sticky-collapse-all');
+        if (stickyCollapseContainer) {
+          stickyCollapseContainer.style.display = 'none';
+        }
+        
+        // Show section but make it appear deactivated with clear notice
+        section.style.display = 'block';
+        section.style.pointerEvents = 'none';
+        section.style.position = 'relative';
+        
+        // Show the header and toolbar in normal visibility but disabled
+        const favoritesHeader = section.querySelector('.favorites-header');
+        const channelToolbar = section.querySelector('.channel-toolbar');
+        
+        if (favoritesHeader) {
+          favoritesHeader.style.display = 'flex';
+        }
+        
+        if (channelToolbar) {
+          channelToolbar.style.display = 'block';
+        }
+        
+        // Show disabled state message
+        const favoritesContent = section.querySelector('#favorites-content');
+        if (favoritesContent) {
+          favoritesContent.innerHTML = `
+            <div class="favorites-content-area">
+              <div class="membership-required" style="text-align: center; padding: 3rem 1rem;">
+
+                
+                <div style="background: var(--theme-surface, #1a1a1a); border-radius: 12px; padding: 2rem; border: 1px solid var(--theme-border, #333); position: relative; overflow: hidden;">
+                  <div style="position: absolute; inset: 0; background: linear-gradient(45deg, transparent 48%, rgba(255, 107, 107, 0.1) 50%, transparent 52%); pointer-events: none;"></div>
+                  <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: white; position: relative; z-index: 1;">🔒 Premium Feature</h3>
+                  <p style="font-size: 1.1rem; margin-bottom: 1rem; color: white; position: relative; z-index: 1;">Create your own curated video portal with subscribed channels and bookmarked video watchlist.</p>
+                  <div style="background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1.5rem; position: relative; z-index: 1;">
+                    <p style="font-size: 0.95rem; color: white; margin: 0 0 1rem 0; font-weight: 500;">✨ Premium Feature - Channel subscriptions and watchlist are exclusive to Premium members</p>
+                    <a href="/membership/" style="
+                      display: inline-block;
+                      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                      color: white;
+                      padding: 0.75rem 1.5rem;
+                      border-radius: 25px;
+                      font-size: 0.9rem;
+                      font-weight: 600;
+                      text-decoration: none;
+                      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+                      border: 2px solid rgba(255, 255, 255, 0.2);
+                      backdrop-filter: blur(10px);
+                      transition: all 0.3s ease;
+                      pointer-events: auto;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 107, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255, 107, 107, 0.3)';">
+                      🚀 Upgrade to Premium
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+    }
+
+    function initializeMemberFavorites() {
+      // Initialize channel management
+      initializeChannelManagement();
+      
+      // Initialize favorites section collapse functionality
+      initializeFavoritesCollapse();
+      
+      // Load content
+      loadFavorites();
+      loadBookmarkedChannels();
+      
+      // Initialize view mode handling for the ViewModeSwitch component
+      // REMOVED: Custom view mode handling - now using standard ViewModeSwitch behavior
+      // initializeViewMode();
+      
+      // REMOVED: Custom viewModeChanged listener - ViewModeSwitch handles this directly
+      // window.addEventListener('viewModeChanged', (event) => {
+      //   if (event.detail.sectionId === sectionId) {
+      //     const viewMode = event.detail.viewMode;
+      //     applyViewMode(viewMode);
+      //     setTimeout(() => {
+      //       applyViewMode(viewMode);
+      //     }, 50);
+      //   }
+      // });
+    }
+
+    // REMOVED: Custom view mode functions - now using standard ViewModeSwitch behavior
+    // function initializeViewMode() { ... }
+    // function applyViewMode(viewMode, targetGrid = null) { ... }
+
+    function initializeFavoritesCollapse() {
+      const favoritesCollapseToggle = section.querySelector('.favorites-collapse-toggle');
+      const favoritesContentArea = section.querySelector('.favorites-section-content'); // Target only the favorites section, not the channels
+      
+      if (favoritesCollapseToggle && favoritesContentArea) {
+        // Load saved collapse state
+        const isCollapsed = localStorage.getItem('memberFavorites-collapsed') === 'true';
+        
+        if (isCollapsed) {
+          favoritesContentArea.style.display = 'none';
+          favoritesCollapseToggle.textContent = '▲';
+          favoritesCollapseToggle.title = 'Expand Favorites';
+        } else {
+          favoritesContentArea.style.display = 'block';
+          favoritesCollapseToggle.textContent = '▼';
+          favoritesCollapseToggle.title = 'Collapse Favorites';
+        }
+        
+        // Add click handler
+        favoritesCollapseToggle.addEventListener('click', () => {
+          const isCurrentlyCollapsed = favoritesContentArea.style.display === 'none';
+          
+          if (isCurrentlyCollapsed) {
+            favoritesContentArea.style.display = 'block';
+            favoritesCollapseToggle.textContent = '▼';
+            favoritesCollapseToggle.title = 'Collapse Favorites';
+            localStorage.setItem('memberFavorites-collapsed', 'false');
+          } else {
+            favoritesContentArea.style.display = 'none';
+            favoritesCollapseToggle.textContent = '▲';
+            favoritesCollapseToggle.title = 'Expand Favorites';
+            localStorage.setItem('memberFavorites-collapsed', 'true');
+          }
+        });
+      }
+    }
+
+    function initializeChannelManagement() {
+      const channelUrlInput = section.querySelector('#channel-url-input');
+      const addChannelBtn = section.querySelector('#add-channel-btn');
+      const newChannelVideosSelect = section.querySelector('#new-channel-videos');
+      const collapseAllBtn = section.querySelector('#collapse-all-btn');
+      const channelToolbar = section.querySelector('.channel-toolbar');
+      
+      if (channelToolbar) {
+        channelToolbar.style.display = 'block';
+      }
+
+      // Collapse All functionality
+      if (collapseAllBtn) {
+        const toggleAllChannels = () => {
+          const allChannelSections = section.querySelectorAll('.channel-feed-section');
+          let allCollapsed = true;
+          
+          // Check if all channels are already collapsed
+          allChannelSections.forEach(channelSection => {
+            const channelContent = channelSection.querySelector('.channel-content');
+            if (channelContent && channelContent.style.display !== 'none') {
+              allCollapsed = false;
+            }
+          });
+          
+          // Toggle all channels
+          allChannelSections.forEach(channelSection => {
+            const channelContent = channelSection.querySelector('.channel-content');
+            const collapseToggle = channelSection.querySelector('.collapse-toggle');
+            const channelId = channelSection.id.replace('channel-', '');
+            
+            if (channelContent && collapseToggle) {
+              if (allCollapsed) {
+                // Expand all
+                channelContent.style.display = 'block';
+                collapseToggle.textContent = '▼';
+                collapseToggle.title = 'Collapse';
+                localStorage.setItem(`channel-collapsed-${channelId}`, 'false');
+              } else {
+                // Collapse all
+                channelContent.style.display = 'none';
+                collapseToggle.textContent = '▲';
+                collapseToggle.title = 'Expand';
+                localStorage.setItem(`channel-collapsed-${channelId}`, 'true');
+              }
+            }
+          });
+          
+          // Update button text on both buttons
+          const newText = allCollapsed ? 'Collapse All' : 'Expand All';
+          collapseAllBtn.textContent = newText;
+          
+          // Update sticky button text as well
+          const stickyBtn = document.querySelector('#sticky-collapse-all-btn');
+          if (stickyBtn) {
+            stickyBtn.textContent = newText;
+          }
+        };
+
+        collapseAllBtn.addEventListener('click', toggleAllChannels);
+        
+        // Setup sticky collapse button - only for premium members
+        const stickyCollapseContainer = document.querySelector('#sticky-collapse-all');
+        const stickyCollapseBtn = document.querySelector('#sticky-collapse-all-btn');
+        
+        if (stickyCollapseBtn && stickyCollapseContainer) {
+          // Connect sticky button to same functionality
+          stickyCollapseBtn.addEventListener('click', toggleAllChannels);
+          
+          // Store the original toolbar position for reference
+          const channelToolbar = section.querySelector('.channel-toolbar');
+          let originalToolbarBottom = null;
+          
+          // Setup scroll listener to show/hide sticky button
+          const handleScroll = () => {
+            if (!channelToolbar) return;
+            
+            // Get toolbar position
+            const toolbarRect = channelToolbar.getBoundingClientRect();
+            
+            // Store original position on first call
+            if (originalToolbarBottom === null) {
+              originalToolbarBottom = toolbarRect.bottom + window.scrollY;
+            }
+            
+            // Calculate if we've scrolled past the original toolbar position
+            const currentScrollY = window.scrollY;
+            const hasScrolledPastToolbar = currentScrollY > (originalToolbarBottom - 50); // 50px buffer
+            
+            // Only show when scrolled down past the original toolbar position
+            if (hasScrolledPastToolbar && toolbarRect.bottom < 50) {
+              stickyCollapseContainer.style.opacity = '1';
+              stickyCollapseContainer.style.visibility = 'visible';
+              stickyCollapseContainer.style.pointerEvents = 'auto';
+            } else {
+              stickyCollapseContainer.style.opacity = '0';
+              stickyCollapseContainer.style.visibility = 'hidden';
+              stickyCollapseContainer.style.pointerEvents = 'none';
+            }
+          };
+          
+          // Add scroll listener with throttling
+          let scrollTimer = null;
+          const throttledScroll = () => {
+            if (scrollTimer) return;
+            scrollTimer = setTimeout(() => {
+              handleScroll();
+              scrollTimer = null;
+            }, 16); // ~60fps
+          };
+          
+          window.addEventListener('scroll', throttledScroll, { passive: true });
+          window.addEventListener('resize', handleScroll, { passive: true });
+          
+          // Initial check after a brief delay to ensure DOM is ready
+          setTimeout(handleScroll, 100);
+        }
+      }
+      
+      // Add channel functionality
+      if (addChannelBtn && channelUrlInput) {
+        addChannelBtn.addEventListener('click', async () => {
+          const input = channelUrlInput.value.trim();
+          if (!input) return;
+          
+          // Get the selected video count for this new channel (default to 3)
+          const videoCount = newChannelVideosSelect ? parseInt(newChannelVideosSelect.value) : 3;
+          
+          // Show loading state
+          addChannelBtn.disabled = true;
+          addChannelBtn.textContent = 'Adding...';
+          
+          try {
+            const channelId = await extractChannelId(input);
+            if (channelId) {
+              await addChannelToFavorites(channelId, input, videoCount);
+              channelUrlInput.value = '';
+            } else {
+              alert('Could not extract Channel ID. Please check the URL or paste a valid Channel ID.');
+            }
+          } catch (error) {
+            console.error('Error adding channel:', error);
+            alert('Error adding channel. Please try again.');
+          } finally {
+            // Reset button state
+            addChannelBtn.disabled = false;
+            addChannelBtn.textContent = 'Add Channel';
+          }
+        });
+        
+        channelUrlInput.addEventListener('keypress', async (e) => {
+          if (e.key === 'Enter') {
+            addChannelBtn.click();
+          }
+        });
+      }
+    }
+
+    async function extractChannelId(input) {
+      try {
+        
+        // Normalize input by removing spaces for simple text handles
+        let normalizedInput = input.trim();
+        if (!normalizedInput.startsWith('http') && !normalizedInput.includes('/') && !normalizedInput.startsWith('@')) {
+          // For simple text (like "joe rogan"), remove spaces
+          normalizedInput = normalizedInput.replace(/\s+/g, '').toLowerCase();
+        }
+        
+        // Use our enhanced POST API for channel resolution
+        const response = await fetch('/api/youtube-feed', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'resolve',
+            input: normalizedInput
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        if (data.channelId) {
+          return data.channelId;
+        } else {
+          throw new Error('No channel ID returned from API');
+        }
+        
+      } catch (error) {
+        console.error('❌ MemberFavorites: Channel resolution failed:', error);
+        
+        // Show user-friendly error instead of generic alert
+        const helpDiv = section.querySelector('#channel-help');
+        if (helpDiv) {
+          const originalText = helpDiv.innerHTML;
+          helpDiv.innerHTML = `❌ <strong>Error:</strong> ${error.message}. Please check the URL and try again.`;
+          helpDiv.style.color = 'var(--theme-danger, #ff6b6b)';
+          
+          setTimeout(() => {
+            helpDiv.innerHTML = originalText;
+            helpDiv.style.color = 'var(--theme-text-secondary, #888)';
+          }, 5000);
+        }
+        
+        return null;
+      }
+    }
+
+    async function addChannelToFavorites(channelId, originalInput, videoCount = 3) {
+      try {
+        // Get enhanced channel info using our POST API with better error handling  
+        let channelName = channelId; // fallback to channel ID
+        
+        try {
+          // Normalize input for better channel discovery (remove spaces for simple handles)
+          const normalizedInput = originalInput.trim();
+          const inputToUse = (normalizedInput.startsWith('http') || normalizedInput.startsWith('@') || normalizedInput.startsWith('/')) 
+            ? normalizedInput 
+            : normalizedInput.replace(/\s+/g, '').toLowerCase();
+          
+          const response = await fetch('/api/youtube-feed', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action: 'resolve',
+              input: inputToUse
+            })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.name && data.name !== channelId) {
+              channelName = data.name;
+            } else {
+            }
+          } else {
+            console.warn(`⚠️ MemberFavorites: Channel info API failed with status ${response.status}`);
+          }
+        } catch (apiError) {
+          console.warn(`⚠️ MemberFavorites: Channel info API error:`, apiError);
+        }
+        
+        // If we still don't have a good channel name, try to get it from RSS by fetching one video
+        if (channelName === channelId) {
+          try {
+            const videos = await fetchChannelVideos(channelId, 1);
+            if (videos.length > 0 && videos[0].channelTitle && videos[0].channelTitle !== 'Unknown Channel') {
+              channelName = videos[0].channelTitle;
+            }
+          } catch (rssError) {
+            console.warn(`⚠️ MemberFavorites: RSS fallback failed:`, rssError);
+          }
+        }
+        
+        // Final fallback: try to extract a reasonable name from input
+        if (channelName === channelId) {
+          if (originalInput.includes('@')) {
+            channelName = originalInput.split('@').pop().split('/')[0].split('?')[0];
+          } else if (originalInput.includes('/c/') || originalInput.includes('/user/')) {
+            channelName = originalInput.split('/').pop().split('?')[0];
+          }
+        }
+        
+        const channel = {
+          channelId: channelId,
+          channelName: channelName,
+          videoCount: videoCount, // Include the video count
+          addedAt: Date.now()
+        };
+        
+        FavoritesManager.addChannel(channel);
+        loadBookmarkedChannels(); // This will now only create new sections, not replace existing ones
+        
+        // Show success message
+        const helpDiv = section.querySelector('#channel-help');
+        if (helpDiv) {
+          const originalText = helpDiv.innerHTML;
+          helpDiv.innerHTML = `✅ <strong>Success!</strong> Added "${channelName}" with ${videoCount} videos to your bookmarked channels. Loading videos...`;
+          helpDiv.style.color = 'var(--theme-accent, #4CAF50)';
+          
+          setTimeout(() => {
+            helpDiv.innerHTML = originalText;
+            helpDiv.style.color = 'var(--theme-text-secondary, #888)';
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('Error adding channel:', error);
+        throw new Error('Error adding channel. Please try again.');
+      }
+    }
+
+    function loadFavorites() {
+      const favorites = FavoritesManager.getFavorites();
+      
+      const favoritesGrid = section.querySelector('.section-content');
+      const noFavorites = section.querySelector('.no-favorites');
+      const favoritesHeader = section.querySelector('.favorites-header');
+
+      if (!favoritesGrid) {
+        console.error('❌ MemberFavorites: Could not find favorites grid element');
+        return;
+      }
+
+      if (favorites.length === 0) {
+        if (noFavorites) noFavorites.style.display = 'block';
+        favoritesGrid.style.display = 'none';
+        if (favoritesHeader) favoritesHeader.style.display = 'none';
+        return;
+      }
+
+      if (noFavorites) noFavorites.style.display = 'none';
+      favoritesGrid.style.display = 'grid';
+      if (favoritesHeader) favoritesHeader.style.display = 'flex';
+      favoritesGrid.innerHTML = '';
+
+      // Show ALL favorites - dropdown only affects channel feeds, not individual favorites
+      favorites.forEach((video, index) => {
+        const videoCard = createVideoCard(video, 'favorite');
+        favoritesGrid.appendChild(videoCard);
+      });
+
+      // REMOVED: View mode is now handled automatically by ViewModeSwitch
+      // const currentViewMode = localStorage.getItem(`viewMode-${sectionId}`) || 'grid';
+      // applyViewMode(currentViewMode);
+      
+      // CRITICAL: Refresh channel button states after cards are loaded
+      setTimeout(() => {
+        // applyViewMode(currentViewMode); // REMOVED
+        // Also refresh channel button states to match the current favorites
+        refreshAllChannelButtonStates();
+      }, 100);
+      
+    }
+
+    async function refreshAllChannelSections(newMaxVideos) {
+      
+      const existingChannelSections = section.querySelectorAll('.channel-feed-section');
+      const channels = FavoritesManager.getBookmarkedChannels();
+      
+      // Refresh each existing channel section
+      for (const channelSection of existingChannelSections) {
+        const channelId = channelSection.id.replace('channel-', '');
+        const channel = channels.find(ch => ch.channelId === channelId);
+        
+        if (channel) {
+          const grid = channelSection.querySelector('.section-content');
+          
+          // Show loading state
+          grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--theme-text-secondary);">Loading videos...</div>';
+          
+          try {
+            // Fetch videos with new count
+            const videos = await fetchChannelVideos(channel, newMaxVideos);
+            renderChannelVideos(channelSection, videos, channel);
+          } catch (error) {
+            console.error(`❌ Error refreshing videos for channel ${channel.channelName}:`, error);
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--theme-danger, #ff6b6b);">Error loading videos</div>';
+          }
+        }
+      }
+    }
+
+    function loadBookmarkedChannels() {
+      const channels = FavoritesManager.getOrderedChannels(); // Use ordered channels instead
+      
+      const channelsContainer = section.querySelector('.channels-section');
+      if (!channelsContainer) return;
+
+      // Get existing channel sections to avoid recreating them
+      const existingChannelSections = section.querySelectorAll('.channel-feed-section');
+      const existingChannelIds = Array.from(existingChannelSections).map(section => 
+        section.id.replace('channel-', '')
+      );
+
+      if (channels.length === 0) {
+        // Remove all existing channel sections
+        existingChannelSections.forEach(section => section.remove());
+        const noChannels = channelsContainer.querySelector('.no-channels');
+        if (noChannels) noChannels.style.display = 'block';
+        return;
+      }
+
+      const noChannels = channelsContainer.querySelector('.no-channels');
+      if (noChannels) noChannels.style.display = 'none';
+
+      // Remove sections for channels that no longer exist in storage
+      existingChannelSections.forEach(section => {
+        const channelId = section.id.replace('channel-', '');
+        if (!channels.some(ch => ch.channelId === channelId)) {
+          section.remove();
+        }
+      });
+
+      // Create sections only for new channels that don't already have sections
+      channels.forEach((channel, index) => {
+        if (!existingChannelIds.includes(channel.channelId)) {
+          createChannelSection(channel, index);
+        } else {
+        }
+      });
+    }
+
+    async function createChannelSection(channel, index) {
+      const channelSectionId = `channel-${channel.channelId}`;
+      const maxVideosPerChannel = channel.videoCount || 3; // Default to 3 videos
+      
+      // Create the channel section HTML
+      const channelSection = document.createElement('div');
+      channelSection.className = 'channel-feed-section';
+      channelSection.id = channelSectionId;
+      channelSection.setAttribute('data-section-id', channelSectionId); // Add this for ViewModeSwitch
+      channelSection.setAttribute('draggable', 'true');
+      channelSection.setAttribute('data-channel-unique-id', channel.uniqueChannelId || `${channel.platform || 'youtube'}:${channel.channelId}`);
+      channelSection.style.display = 'block'; // Ensure channel section is always visible
+      channelSection.innerHTML = `
+        <div class="channel-section-header" style="display: flex !important; align-items: center; justify-content: space-between; margin: 2rem 2vw 1rem 2vw; padding: 0 1rem; visibility: visible !important; background: rgba(20, 20, 20, 0.8) !important; border-radius: 8px; padding: 1rem; position: relative; transition: all 0.2s ease;">
+          <!-- Drag Handle -->
+          <div class="drag-handle" style="display: flex; align-items: center; cursor: grab; margin-right: 1rem; color: #ffffff; font-size: 18px;" title="Drag to reorder">
+            ⋮⋮
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 1rem; flex: 1;">
+            <div style="display: flex; flex-direction: column; gap: 0.25rem; flex: 1;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 class="posties glow text-[clamp(1rem,2vw,1.5rem)] shadow-text theme-accent" style="margin: 0; font-weight: 600; color: #ffffff;">
+                  ${channel.channelName}
+                </h3>
+                <button class="remove-channel-btn" data-channel-id="${channel.channelId}" style="background: var(--theme-danger, #ff6b6b); border: none; border-radius: 4px; color: var(--theme-danger-text, white); padding: 6px 8px; font-size: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center;" title="Remove this channel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
+              </div>
+              <span style="font-size: 0.8rem; color: #ffffff; text-transform: uppercase; font-weight: 500;">
+                ${channel.platform || 'YouTube'}
+                ${channel.channelId ? `<span style="font-size: 0.7rem; opacity: 0.8; margin-left: 0.5rem; font-family: monospace; text-transform: none; color: #ffffff;">${channel.channelId}</span>` : ''}
+              </span>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- Video Count Selector (moved here, no label) -->
+            <select 
+              class="channel-video-count" 
+              data-channel-id="${channel.channelId}"
+              data-platform="${channel.platform || 'youtube'}"
+              style="padding: 4px 6px; border: 1px solid var(--theme-border, #333); border-radius: 4px; background: var(--theme-bg, #000); color: var(--theme-text); font-size: 13px;"
+            >
+              ${[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].map(num => 
+                `<option value="${num}" ${num === maxVideosPerChannel ? 'selected' : ''}>${num} video${num > 1 ? 's' : ''}</option>`
+              ).join('')}
+            </select>
+            
+            <!-- Plain JavaScript ViewModeSwitch for consistency -->
+            <div class="channel-viewmode-switch" data-channel-id="${channel.channelId}">
+              <button class="view-mode-toggle" data-section-id="channel-${channel.channelId}" data-view="grid" 
+                      style="display: flex; align-items: center; justify-content: center; height: 40px; width: 40px; padding: 8px; border-radius: 6px; background: rgba(128, 128, 128, 0.3); border: 1px solid transparent; color: #ffffff; cursor: pointer; transition: all 0.2s ease;" 
+                      title="Switch to swipe view">
+                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" style="color: inherit;">
+                  <path d="M1 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM1 9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
+                </svg>
+              </button>
+            </div>
+            
+            <button class="collapse-toggle" data-channel-id="${channel.channelId}" style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: #ffffff; padding: 6px 12px; font-size: 18px; cursor: pointer;" title="Collapse/Expand">▼</button>
+          </div>
+        </div>
+        <div class="channel-content" data-channel-id="${channel.channelId}" data-section-id="channel-${channel.channelId}">
+          <div class="section-content grid-container" style="margin-bottom: 2rem;">
+            <div style="text-align: center; padding: 2rem; color: var(--theme-text-secondary);">Loading videos...</div>
+          </div>
+        </div>
+      `;
+
+      // Insert the channel section
+      const channelsContainer = section.querySelector('.channels-section');
+      channelsContainer.appendChild(channelSection);
+
+      // Simple mobile fix: just move controls to their own line on mobile
+      if (window.innerWidth <= 768) {
+        const header = channelSection.querySelector('.channel-section-header');
+        if (header) {
+          // Just add flex-wrap to allow the controls to wrap to next line
+          header.style.flexWrap = 'wrap';
+          
+          // Force the controls div to take full width so it goes to next line
+          const controlsDiv = header.children[2];
+          if (controlsDiv) {
+            controlsDiv.style.flexBasis = '100%';
+            controlsDiv.style.justifyContent = 'center';
+            controlsDiv.style.marginTop = '1rem';
+          }
+        }
+      }
+
+      // Add event listeners for this channel section
+      setupChannelSectionControls(channelSection, channel);
+
+      // Load videos for this channel
+      try {
+        const videos = await fetchChannelVideos(channel, maxVideosPerChannel);
+        renderChannelVideos(channelSection, videos, channel);
+      } catch (error) {
+        console.error(`❌ MemberFavorites: Error loading videos for channel ${channel.channelName}:`, error);
+        const grid = channelSection.querySelector('.section-content');
+        grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--theme-danger, #ff6b6b);">Error loading videos</div>';
+      }
+    }
+
+    function setupChannelSectionControls(channelSection, channel) {
+      const removeBtn = channelSection.querySelector('.remove-channel-btn');
+      const collapseToggle = channelSection.querySelector('.collapse-toggle');
+      const channelContent = channelSection.querySelector('.channel-content');
+      const viewModeToggle = channelSection.querySelector('.view-mode-toggle');
+      const videoCountSelect = channelSection.querySelector('.channel-video-count');
+      const dragHandle = channelSection.querySelector('.drag-handle');
+
+      // Setup video count change handler
+      if (videoCountSelect) {
+        videoCountSelect.addEventListener('change', async (e) => {
+          const newCount = parseInt(e.target.value);
+          const platform = e.target.dataset.platform;
+          const channelId = e.target.dataset.channelId;
+          
+          // Update stored video count
+          FavoritesManager.updateChannelVideoCount(channelId, platform, newCount);
+          
+          // Refresh videos for this channel
+          const grid = channelSection.querySelector('.section-content');
+          grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--theme-text-secondary);">Loading videos...</div>';
+          
+          try {
+            const videos = await fetchChannelVideos(channel, newCount);
+            renderChannelVideos(channelSection, videos, channel);
+          } catch (error) {
+            console.error(`❌ Error updating videos for channel ${channel.channelName}:`, error);
+            grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--theme-danger, #ff6b6b);">Error loading videos</div>';
+          }
+        });
+      }
+
+      // Setup drag and drop functionality
+      if (dragHandle) {
+        channelSection.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', channelSection.dataset.channelUniqueId);
+          channelSection.style.opacity = '0.5';
+          dragHandle.style.cursor = 'grabbing';
+        });
+
+        channelSection.addEventListener('dragend', (e) => {
+          channelSection.style.opacity = '1';
+          dragHandle.style.cursor = 'grab';
+        });
+
+        channelSection.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          const header = channelSection.querySelector('.channel-section-header');
+          header.style.background = 'rgb(0, 84, 125, .8)';
+          header.style.transform = 'scale(1.02)';
+        });
+
+        channelSection.addEventListener('dragleave', (e) => {
+          const header = channelSection.querySelector('.channel-section-header');
+          header.style.background = 'var(--theme-surface, #1a1a1a)';
+          header.style.transform = 'scale(1)';
+        });
+
+        channelSection.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const header = channelSection.querySelector('.channel-section-header');
+          header.style.background = 'var(--theme-surface, #1a1a1a)';
+          header.style.transform = 'scale(1)';
+          
+          const draggedChannelId = e.dataTransfer.getData('text/plain');
+          const targetChannelId = channelSection.dataset.channelUniqueId;
+          
+          if (draggedChannelId !== targetChannelId) {
+            reorderChannels(draggedChannelId, targetChannelId);
+          }
+        });
+      }
+
+      // Setup view mode toggle functionality
+      if (viewModeToggle) {
+        const sectionId = viewModeToggle.dataset.sectionId;
+        
+        // Initialize view mode from localStorage
+        const storageKey = `viewMode-${sectionId}`;
+        let currentView = localStorage.getItem(storageKey) || 'grid';
+        updateViewModeButton(viewModeToggle, currentView);
+        applyViewMode(channelSection, currentView);
+        
+        // Add click handler
+        viewModeToggle.addEventListener('click', () => {
+          currentView = currentView === 'grid' ? 'swipe' : 'grid';
+          viewModeToggle.dataset.view = currentView;
+          localStorage.setItem(storageKey, currentView);
+          updateViewModeButton(viewModeToggle, currentView);
+          applyViewMode(channelSection, currentView);
+        });
+      }
+
+      // Load saved collapse state
+      const isCollapsed = localStorage.getItem(`channel-collapsed-${channel.channelId}`) === 'true';
+      
+      if (channelContent && collapseToggle) {
+        if (isCollapsed) {
+          channelContent.style.display = 'none';
+          collapseToggle.textContent = '▲';
+          collapseToggle.title = 'Expand';
+        } else {
+          channelContent.style.display = 'block';
+          collapseToggle.textContent = '▼';
+          collapseToggle.title = 'Collapse';
+        }
+      }
+
+      // Remove channel button
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          FavoritesManager.removeChannel(channel.channelId, channel.platform);
+          channelSection.remove();
+          // Clean up localStorage for this channel
+          localStorage.removeItem(`channel-collapsed-${channel.channelId}`);
+          localStorage.removeItem(`channelViewMode-${channel.channelId}`);
+        });
+      }
+
+      // Collapse/expand toggle
+      if (collapseToggle && channelContent) {
+        collapseToggle.addEventListener('click', () => {
+          const isCurrentlyCollapsed = channelContent.style.display === 'none';
+          
+          if (isCurrentlyCollapsed) {
+            channelContent.style.display = 'block';
+            collapseToggle.textContent = '▼';
+            collapseToggle.title = 'Collapse';
+            localStorage.setItem(`channel-collapsed-${channel.channelId}`, 'false');
+          } else {
+            channelContent.style.display = 'none';
+            collapseToggle.textContent = '▲';
+            collapseToggle.title = 'Expand';
+            localStorage.setItem(`channel-collapsed-${channel.channelId}`, 'true');
+          }
+        });
+      }
+    }
+
+    function reorderChannels(draggedChannelId, targetChannelId) {
+      const currentOrder = FavoritesManager.getChannelOrder();
+      const channels = FavoritesManager.getBookmarkedChannels();
+      
+      // Create a complete order array that includes all current channels
+      const allChannelIds = channels.map(ch => ch.uniqueChannelId || `${ch.platform || 'youtube'}:${ch.channelId}`);
+      
+      let order;
+      if (currentOrder.length === 0) {
+        // No saved order, use all channels in their current order
+        order = [...allChannelIds];
+      } else {
+        // Start with current order, then add any missing channels at the end
+        order = [...currentOrder];
+        allChannelIds.forEach(channelId => {
+          if (!order.includes(channelId)) {
+            order.push(channelId);
+          }
+        });
+        // Remove any channels that no longer exist
+        order = order.filter(channelId => allChannelIds.includes(channelId));
+      }
+      
+      const draggedIndex = order.indexOf(draggedChannelId);
+      const targetIndex = order.indexOf(targetChannelId);
+      
+      if (draggedIndex !== -1 && targetIndex !== -1) {
+        // Remove dragged item and insert at target position
+        order.splice(draggedIndex, 1);
+        order.splice(targetIndex, 0, draggedChannelId);
+        
+        // Save new order
+        FavoritesManager.setChannelOrder(order);
+        
+        // Re-render channels in new order
+        rerenderChannelsInOrder();
+      }
+    }
+
+    function rerenderChannelsInOrder() {
+      const channelsContainer = section.querySelector('.channels-section');
+      if (!channelsContainer) return;
+      
+      // Get the new ordered list of channels
+      const orderedChannels = FavoritesManager.getOrderedChannels();
+      const existingChannelSections = Array.from(section.querySelectorAll('.channel-feed-section'));
+      
+      // Create a map of channelId to DOM element for quick lookup
+      const channelElementMap = new Map();
+      existingChannelSections.forEach(element => {
+        const channelId = element.id.replace('channel-', '');
+        channelElementMap.set(channelId, element);
+      });
+      
+      // Reorder existing DOM elements to match the new order
+      orderedChannels.forEach((channel, index) => {
+        const channelElement = channelElementMap.get(channel.channelId);
+        if (channelElement) {
+          // Remove from current position and append in correct order
+          channelElement.remove();
+          channelsContainer.appendChild(channelElement);
+        }
+      });
+    }
+
+    function updateViewModeButton(button, viewMode) {
+      button.dataset.view = viewMode;
+      
+      if (viewMode === 'grid') {
+        // Show grid icon when in grid mode
+        button.innerHTML = `<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" style="color: inherit;"><path d="M1 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zM1 9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/></svg>`;
+        button.title = 'Switch to swipe view';
+      } else {
+        // Show swipe icon when in swipe mode
+        button.innerHTML = `<svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 256 256" height="24px" width="24px" xmlns="http://www.w3.org/2000/svg" style="color: inherit;"><path d="M216,128v50.93c0,25.59-8.48,39.93-8.84,40.65A8,8,0,0,1,200,224H64a8,8,0,0,1-6.9-3.95L26.15,160a16,16,0,0,1,6.53-22.23c7.66-4,17.1-.84,21.4,6.62l21,36.44a6.09,6.09,0,0,0,6,3.09l.12,0A8.19,8.19,0,0,0,88,175.74V56a16,16,0,0,1,16.77-16c8.61.4,15.23,7.82,15.23,16.43V128a8,8,0,0,0,8.53,8,8.17,8.17,0,0,0,7.47-8.25V112a16,16,0,0,1,16.77-16c8.61.4,15.23,7.82,15.23,16.43V136a8,8,0,0,0,8.53,8,8.18,8.18,0,0,0,7.47-8.25v-7.28c0-8.61,6.62-16,15.23-16.43A16,16,0,0,1,216,128Zm37.66-77.66-32-32a8,8,0,0,0-11.32,11.32L228.69,48H176a8,8,0,0,0,0,16h52.69L210.34,82.34a8,8,0,0,0,11.32,11.32l32-32A8,8,0,0,0,253.66,50.34Z"/></svg>`;
+        button.title = 'Switch to grid view';
+      }
+    }
+
+    function applyViewMode(channelSection, viewMode) {
+      const grid = channelSection.querySelector('.section-content');
+      if (!grid) return;
+
+      if (viewMode === 'grid') {
+        // Grid mode styling - same as ViewModeSwitch
+        grid.classList.remove('slider');
+        grid.classList.add('grid-container');
+        
+        // Remove wheel scroll functionality for grid mode
+        removeChannelScrollFunctionality(grid);
+      } else {
+        // Swipe mode styling - same as ViewModeSwitch  
+        grid.classList.remove('grid-container');
+        grid.classList.add('slider');
+        
+        // Add wheel scroll functionality for swipe mode
+        setTimeout(() => addChannelScrollFunctionality(grid), 10);
+      }
+    }
+
+    function addChannelScrollFunctionality(slider) {
+      // Only add scroll functionality if the element is actually in slider mode
+      const computedStyle = window.getComputedStyle(slider);
+      const isHorizontalSlider = slider.classList.contains('slider') && 
+                                computedStyle.display === 'flex' && 
+                                computedStyle.flexDirection === 'row' &&
+                                computedStyle.overflowX === 'scroll';
+      
+      if (!isHorizontalSlider) {
+        // If not in slider mode, remove any existing handlers
+        removeChannelScrollFunctionality(slider);
+        return;
+      }
+      
+      // Remove existing handlers first to prevent duplicates
+      removeChannelScrollFunctionality(slider);
+      
+      const wheelHandler = (e) => {
+        // Double-check we're still in slider mode
+        if (!slider.classList.contains('slider')) {
+          removeChannelScrollFunctionality(slider);
+          return;
+        }
+        
+        const hasHorizontalSpace = slider.scrollWidth > slider.clientWidth;
+        
+        if (hasHorizontalSpace) {
+          if (e.shiftKey) return;
+          
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            e.stopPropagation();
+            slider.scrollLeft += e.deltaY * 6; // Same multiplier as ViewModeSwitch
+          }
+        }
+      };
+      
+      slider._channelWheelHandler = wheelHandler;
+      slider.addEventListener('wheel', wheelHandler, { passive: false, capture: true });
+      
+      // Set cursor for scrollable content
+      if (slider.scrollWidth > slider.clientWidth) {
+        slider.style.cursor = 'grab';
+      }
+    }
+
+    function removeChannelScrollFunctionality(slider) {
+      // Remove wheel event listener if it exists
+      if (slider._channelWheelHandler) {
+        slider.removeEventListener('wheel', slider._channelWheelHandler);
+        slider._channelWheelHandler = null;
+      }
+      
+      // Also remove any other potential wheel handlers that might be attached
+      if (slider._viewModeSwitchWheelHandler) {
+        slider.removeEventListener('wheel', slider._viewModeSwitchWheelHandler);
+        slider._viewModeSwitchWheelHandler = null;
+      }
+      if (slider._globalWheelHandler) {
+        slider.removeEventListener('wheel', slider._globalWheelHandler);
+        slider._globalWheelHandler = null;
+      }
+      
+      // Reset cursor
+      slider.style.cursor = '';
+      
+      // Force a complete style reset to grid mode
+      if (slider.classList.contains('grid-container')) {
+        slider.style.display = 'grid';
+        slider.style.overflowX = 'visible';
+        slider.style.overflowY = 'visible';
+        slider.style.flexDirection = 'initial';
+        slider.style.gap = '2vw';
+        slider.style.touchAction = 'auto';
+        
+        // Force reflow to ensure styles are applied
+        slider.offsetHeight;
+      }
+    }
+
+    async function renderChannelVideos(channelSection, videos, channel) {
+      const grid = channelSection.querySelector('.section-content');
+      
+      if (!grid) {
+        console.error('❌ Could not find .section-content grid element');
+        return;
+      }
+      
+      if (videos.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--theme-text-secondary);">No videos found</div>';
+        return;
+      }
+
+      // Ensure handleThumbnailError is available before rendering videos
+      if (!window.handleThumbnailError) {
+        window.handleThumbnailError = function(img) {
+          const currentSrc = img.src;
+          const videoIdMatch = currentSrc.match(/\/vi\/([^\/]+)\//);
+          if (!videoIdMatch) {
+            img.src = '/socialCard.webp';
+            return;
+          }
+          const videoId = videoIdMatch[1];
+          const fallbackSizes = ['maxresdefault.jpg', 'sddefault.jpg', 'hqdefault.jpg', 'mqdefault.jpg', 'default.jpg'];
+          let currentIndex = -1;
+          for (let i = 0; i < fallbackSizes.length; i++) {
+            if (currentSrc.includes(fallbackSizes[i])) {
+              currentIndex = i;
+              break;
+            }
+          }
+          if (currentIndex >= 0 && currentIndex < fallbackSizes.length - 1) {
+            const nextSize = fallbackSizes[currentIndex + 1];
+            const newSrc = `https://img.youtube.com/vi/${videoId}/${nextSize}`;
+            img.src = newSrc;
+          } else {
+            img.src = '/socialCard.webp';
+          }
+        };
+      }
+      
+      // Clear existing content
+      grid.innerHTML = '';
+      
+      videos.forEach((video, index) => {
+        const videoCard = createChannelVideoCard(video, channel);
+        grid.appendChild(videoCard);
+      });
+
+      // REMOVED: View mode now handled by standard ViewModeSwitch
+      // const savedViewMode = localStorage.getItem(`channelViewMode-${channel.channelId}`) || 'grid';
+      // applyViewMode(savedViewMode, grid);
+      
+      // Log how many favorite buttons were created
+      setTimeout(() => {
+        const favoriteButtons = grid.querySelectorAll('.member-favorite-btn');
+      }, 100);
+    }
+
+    async function fetchChannelVideos(channelIdOrData, maxResults = 20) {
+      try {
+        // Handle both old format (just channelId) and new format (channel object)
+        let channelId, platform;
+        
+        if (typeof channelIdOrData === 'string') {
+          // Old format - assume YouTube
+          channelId = channelIdOrData;
+          platform = 'youtube';
+        } else {
+          // New format - channel object with platform info
+          channelId = channelIdOrData.channelId || channelIdOrData;
+          platform = channelIdOrData.platform || 'youtube';
+        }
+        
+        // Only YouTube has RSS feed support for now
+        if (platform === 'youtube') {
+          const response = await fetch(`/api/youtube-feed?channelId=${channelId}&maxResults=${maxResults}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch YouTube channel videos: ${response.status}`);
+          }
+          const data = await response.json();
+          
+          if (data.error) {
+            throw new Error(data.error);
+          }
+          
+          return data.videos || [];
+        } else {
+          // For other platforms, return placeholder message
+          return [{
+            id: 'placeholder',
+            title: `Visit ${platform.charAt(0).toUpperCase() + platform.slice(1)} directly`,
+            description: `This ${platform} channel/creator has been bookmarked. Visit the platform directly to see their latest content.`,
+            thumbnail: '/socialCard.webp',
+            url: channelIdOrData.channelUrl || '#',
+            channelTitle: channelIdOrData.channelName || `${platform} Channel`,
+            publishedAt: new Date().toISOString(),
+            isPlatformPlaceholder: true
+          }];
+        }
+      } catch (error) {
+        console.error('Error fetching channel videos:', error);
+        return [];
+      }
+    }
+
+    // Enhanced scroll functionality for slider mode
+    function addScrollFunctionality(slider) {
+      // DISABLED - ViewModeSwitch component handles all scroll functionality
+      return;
+    }
+
+    function removeScrollFunctionality(slider) {
+      // DISABLED - ViewModeSwitch component handles all scroll functionality  
+      return;
+    }
+
+    function createChannelVideoCard(video, channel) {
+      const card = document.createElement('div');
+      card.className = 'post-card1 post-video-card'; // Use unified card class from global.css
+      
+      // Check if this video is already favorited
+      const favorites = FavoritesManager.getFavorites();
+      const isFavorited = favorites.some(fav => fav.videoId === video.videoId);
+      
+      // Ensure video has a valid videoId
+      if (!video.videoId) {
+        // Try to extract from URL if possible
+        if (video.url && video.url.includes('youtube.com')) {
+          const match = video.url.match(/[?&]v=([^&]+)/);
+          if (match) {
+            video.videoId = match[1];
+          }
+        }
+      }
+      
+      // Force reliable thumbnail for channel videos
+      let thumbnailUrl = video.thumbnail;
+      if (video.videoId && thumbnailUrl && thumbnailUrl.includes('maxresdefault.jpg')) {
+        // Replace maxresdefault with hqdefault for more reliable loading
+        thumbnailUrl = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`;
+      }
+      
+      card.innerHTML = `
+        <a href="/video?videoId=${encodeURIComponent(video.videoId || 'missing')}" class="pirate-link" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+          <div class="post-video-container video-container" data-video-id="${video.videoId || 'missing'}">
+            <img src="${thumbnailUrl}" alt="${video.title}" class="post-thumbnail" loading="lazy" width="480" height="360" onerror="handleThumbnailError(this)">
+            <div class="post-play-button play-button" aria-label="Play video">▶</div>
+            ${video.isPlatformPlaceholder && channel.platform !== 'youtube' ? `<div class="platform-badge" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 1;">${channel.platform?.charAt(0).toUpperCase() + channel.platform?.slice(1) || 'External'}</div>` : ''}
+            <div class="youtube-video-actions" style="bottom: 48px; right: 8px; display: flex; gap: 8px; align-items: center; z-index: 10;">
+              <button class="member-favorite-btn ${isFavorited ? 'favorited' : ''}" 
+                      data-video-id="${video.videoId || 'missing'}" 
+                      title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+                      style="background: ${isFavorited ? 'linear-gradient(45deg, #ffd700, #ffed4e)' : 'rgba(0, 0, 0, 0.8)'}; border: none; border-radius: 4px; color: #fff; cursor: pointer; padding: 6px; transition: all 0.2s ease; display: flex; align-items: center; backdrop-filter: blur(4px); z-index: 10;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));">
+                  <polygon points="12,2 15,8 22,9 17,14 18,21 12,18 6,21 7,14 2,9 9,8"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+          ${showTitles ? `
+          <div class="post-video-info">
+            <h3 class="post-video-title">${video.title}</h3>
+            <div class="post-meta">
+              <span class="post-date">${video.channelTitle || channel.channelName || 'YouTube'} • ${new Date(video.publishedAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+          ` : ''}
+        </a>
+      `;
+
+      // Add favorite button handler (needs to prevent default link behavior)
+      const favoriteBtn = card.querySelector('.member-favorite-btn');
+      
+      if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          
+          const isFavorited = favoriteBtn.classList.contains('favorited');
+          
+          if (isFavorited) {
+            // Remove from favorites
+            FavoritesManager.removeFavorite(video.videoId);
+            favoriteBtn.classList.remove('favorited');
+            favoriteBtn.title = 'Add to favorites';
+            favoriteBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+          } else {
+            // Add to favorites
+            const favoriteVideo = {
+              videoId: video.videoId,
+              title: video.title,
+              thumbnail: video.thumbnail,
+              channelTitle: video.channelTitle,
+              dateAdded: Date.now()
+            };
+            FavoritesManager.addFavorite(favoriteVideo);
+            favoriteBtn.classList.add('favorited');
+            favoriteBtn.title = 'Remove from favorites';
+            favoriteBtn.style.background = 'linear-gradient(45deg, #ffd700, #ffed4e)';
+          }
+          
+          // Refresh the favorites section AND all channel sections to update button states
+          loadFavorites();
+          refreshAllChannelButtonStates();
+        });
+      }
+
+      return card;
+    }
+
+    function refreshAllChannelButtonStates() {
+      // Update button states in all channel sections when favorites change
+      const favorites = FavoritesManager.getFavorites();
+      const allChannelButtons = section.querySelectorAll('.channel-feed-section .member-favorite-btn');
+      
+      
+      allChannelButtons.forEach((btn, index) => {
+        const videoId = btn.getAttribute('data-video-id');
+        const isFavorited = favorites.some(fav => fav.videoId === videoId);
+        
+        
+        if (isFavorited) {
+          btn.classList.add('favorited');
+          btn.title = 'Remove from favorites';
+          btn.style.background = 'linear-gradient(45deg, #ffd700, #ffed4e)';
+        } else {
+          btn.classList.remove('favorited');
+          btn.title = 'Add to favorites';
+          btn.style.background = 'rgba(0, 0, 0, 0.8)';
+        }
+      });
+    }
+
+    function extractThumbnailForPlatform(videoUrl, platform) {
+      if (!videoUrl) {
+        return '/socialCard.webp'; // Fallback
+      }
+
+      try {
+        switch (platform?.toLowerCase()) {
+          case 'youtube': {
+            // Extract YouTube video ID and start with reliable quality thumbnail for fallback system
+            const videoId = extractYouTubeVideoId(videoUrl);
+            return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '/socialCard.webp';
+          }
+          
+          case 'vimeo': {
+            // For Vimeo, we'll use a fallback since their API requires authentication
+            // In a real implementation, you'd call Vimeo's API
+            return '/socialCard.webp';
+          }
+          
+          case 'twitch': {
+            // Twitch thumbnails are complex and require API calls
+            return '/socialCard.webp';
+          }
+          
+          case 'facebook': {
+            // Facebook thumbnails require API access
+            return '/socialCard.webp';
+          }
+          
+          case 'dailymotion': {
+            // Extract Dailymotion video ID and construct thumbnail URL
+            const match = videoUrl.match(/dailymotion\.com\/video\/([^_?]+)/);
+            if (match) {
+              const videoId = match[1];
+              return `https://www.dailymotion.com/thumbnail/video/${videoId}`;
+            }
+            return '/socialCard.webp';
+          }
+          
+          case 'tiktok': {
+            // TikTok thumbnails require special handling
+            return '/socialCard.webp';
+          }
+          
+          default:
+            return '/socialCard.webp';
+        }
+      } catch (error) {
+        console.error('Error extracting thumbnail:', error);
+        return '/socialCard.webp';
+      }
+    }
+
+    function extractYouTubeVideoId(url) {
+      if (!url) return null;
+      
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+        /youtube\.com\/v\/([^&\n?#]+)/,
+        /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+      ];
+      
+      for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match) return match[1];
+      }
+      
+      return null;
+    }
+
+    function createVideoCard(video, type) {
+      const card = document.createElement('div');
+      card.className = 'post-card1 post-video-card'; // Use unified card class from global.css
+      
+      // Determine platform for display
+      const platform = video.platform || 'youtube';
+      const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+      
+      // Extract proper thumbnail for the platform
+      let thumbnail = video.thumbnail;
+      if (!thumbnail || thumbnail === '/socialCard.webp') {
+        thumbnail = extractThumbnailForPlatform(video.url, platform);
+      }
+      
+      // For YouTube videos, ensure we start with hqdefault and use the smart fallback system
+      if (platform === 'youtube' && video.videoId) {
+        thumbnail = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`;
+      }
+      
+      // Determine the video URL for linking
+      const videoUrl = video.url || `https://www.youtube.com/watch?v=${video.videoId}`;
+      const linkUrl = platform === 'youtube' ? `/video?videoId=${encodeURIComponent(video.videoId)}` : `/video?video=${encodeURIComponent(videoUrl)}`;
+      
+      card.innerHTML = `
+        <a href="${linkUrl}" class="pirate-link" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+          <div class="post-video-container video-container" data-video-id="${video.videoId}" style="position: relative;">
+            <img src="${thumbnail}" alt="${video.title}" class="post-thumbnail" loading="lazy" width="480" height="360" onerror="handleThumbnailError(this)">
+            <div class="post-play-button play-button" aria-label="Play video">▶</div>
+            ${platform !== 'youtube' ? `<div class="platform-badge" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 1;">${platformName}</div>` : ''}
+            <div class="youtube-video-actions" style="bottom: 48px; right: 8px; display: flex; gap: 8px; align-items: center; z-index: 10;">
+              <button class="member-favorite-btn favorited" 
+                      data-video-id="${video.videoId}" 
+                      data-platform="${platform}" 
+                      title="Remove from favorites"
+                      style="background: linear-gradient(45deg, #ffd700, #ffed4e); border: none; border-radius: 4px; color: #fff; cursor: pointer; padding: 6px; transition: all 0.2s ease; display: flex; align-items: center; backdrop-filter: blur(4px); z-index: 10;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));">
+                  <polygon points="12,2 15,8 22,9 17,14 18,21 12,18 6,21 7,14 2,9 9,8"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+          ${showTitles ? `
+          <div class="post-video-info">
+            <h3 class="post-video-title">${video.title}</h3>
+            <div class="post-meta">
+              <span class="post-date">${video.channelTitle || `${platformName} Channel`} • ${new Date(video.dateAdded || Date.now()).toLocaleDateString()}</span>
+            </div>
+          </div>
+          ` : ''}
+        </a>
+      `;
+
+      // Add favorite button handler (this is actually a remove handler since it's already favorited)
+      const favoriteBtn = card.querySelector('.member-favorite-btn');
+      if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          
+          const platform = favoriteBtn.getAttribute('data-platform') || 'youtube';
+          FavoritesManager.removeFavorite(video.videoId, platform);
+          loadFavorites();
+          refreshAllChannelButtonStates();
+        });
+      }
+
+      return card;
+    }
+
+    // Listen for storage changes to update display
+    window.addEventListener('storage', (e) => {
+      // Only reload if the change is related to our data
+      if (e.key === 'memberFavorites') {
+        loadFavorites();
+      } else if (e.key === 'memberChannels') {
+        loadBookmarkedChannels();
+      }
+    });
+
+    // Popup video player system - similar to YouTubeFeed but for member favorites
+    let memberVideoPopupContainer = null;
+    let memberVideoScrollMonitor = null;
+    const MEMBER_VIDEO_TIME_LIMIT = 0.2; // 12 seconds like YouTubeFeed
+
+    function handleMemberVideoPopup(video) {
+      
+      // Stop any existing popup video first
+      stopMemberVideoPopup();
+      
+      // Create floating video container
+      createMemberVideoPopup(video);
+    }
+
+    function createMemberVideoPopup(video) {
+      // Create the floating video player
+      const container = document.createElement('div');
+      container.className = 'member-video-popup floating';
+      container.setAttribute('data-video-id', video.videoId);
+      container.setAttribute('data-video-title', video.title);
+      
+      container.innerHTML = `
+        <div class="popup-header">
+          <span class="popup-title">${video.title}</span>
+          <button class="popup-close">×</button>
+        </div>
+        <div class="popup-content">
+          <iframe 
+            src="https://www.youtube-nocookie.com/embed/${video.videoId}?autoplay=1&rel=0&modestbranding=1"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+            title="YouTube video player"
+            style="width: 100%; height: 100%; border: none; aspect-ratio: 16/9;">
+          </iframe>
+        </div>
+        <div class="popup-timer">0:12</div>
+      `;
+      
+      // Style the popup
+      container.style.cssText = `
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        width: 400px !important;
+        height: 255px !important;
+        z-index: 10000 !important;
+        background: #000 !important;
+        border: 4px solid #ff0000 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 4px #ff0000, 0 0 20px rgba(255, 0, 0, 0.8) !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+      `;
+      
+      // Add to body
+      document.body.appendChild(container);
+      memberVideoPopupContainer = container;
+      
+      // Setup controls
+      setupMemberVideoPopupControls(container, video);
+      
+      // Start timer
+      startMemberVideoTimer(container, video);
+      
+      // Make draggable
+      makeMemberVideoPopupDraggable(container);
+      
+    }
+
+    function setupMemberVideoPopupControls(container, video) {
+      const closeBtn = container.querySelector('.popup-close');
+      
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          stopMemberVideoPopup();
+        });
+      }
+      
+      // Close on escape key
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          stopMemberVideoPopup();
+          document.removeEventListener('keydown', escapeHandler);
+        }
+      };
+      document.addEventListener('keydown', escapeHandler);
+    }
+
+    function startMemberVideoTimer(container, video) {
+      const timerDisplay = container.querySelector('.popup-timer');
+      const startTime = Date.now();
+      const duration = MEMBER_VIDEO_TIME_LIMIT * 60000; // Convert to milliseconds
+      
+      const updateTimer = () => {
+        if (!memberVideoPopupContainer) return; // Stop if popup was closed
+        
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, duration - elapsed);
+        
+        if (remaining > 0) {
+          const minutes = Math.floor(remaining / 60000);
+          const seconds = Math.floor((remaining % 60000) / 1000);
+          const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+          timerDisplay.textContent = timeText;
+          
+          setTimeout(updateTimer, 1000);
+        } else {
+          // Time expired
+          timerDisplay.textContent = '0:00';
+          setTimeout(() => {
+            stopMemberVideoPopup();
+          }, 1000);
+        }
+      };
+      
+      updateTimer();
+    }
+
+    function makeMemberVideoPopupDraggable(container) {
+      const header = container.querySelector('.popup-header');
+      let isDragging = false;
+      let currentX;
+      let currentY;
+      let initialX;
+      let initialY;
+      let xOffset = 0;
+      let yOffset = 0;
+      
+      header.style.cursor = 'move';
+      
+      header.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+      
+      function dragStart(e) {
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+        
+        if (e.target === header || header.contains(e.target)) {
+          isDragging = true;
+        }
+      }
+      
+      function drag(e) {
+        if (isDragging) {
+          e.preventDefault();
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+          
+          xOffset = currentX;
+          yOffset = currentY;
+          
+          container.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        }
+      }
+      
+      function dragEnd() {
+        initialX = currentX;
+        initialY = currentY;
+        isDragging = false;
+      }
+    }
+
+    function stopMemberVideoPopup() {
+      if (memberVideoPopupContainer) {
+        memberVideoPopupContainer.remove();
+        memberVideoPopupContainer = null;
+      }
+      
+      if (memberVideoScrollMonitor) {
+        clearInterval(memberVideoScrollMonitor);
+        memberVideoScrollMonitor = null;
+      }
+    }
+
+    // Global close handler for clicking outside popup
+    document.addEventListener('click', (e) => {
+      if (memberVideoPopupContainer && !memberVideoPopupContainer.contains(e.target)) {
+        // Don't close if clicking on video cards in member favorites
+        const isClickingVideoCard = e.target.closest('.youtube-video-card') && e.target.closest('#member-favorites-section');
+        if (!isClickingVideoCard) {
+          stopMemberVideoPopup();
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ MemberFavorites: Error initializing:', error);
+    console.error('❌ Stack trace:', error.stack);
+    
+    // Hide the section since we can't check membership
+    const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+    if (section) {
+      section.style.display = 'none';
+    }
+  }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMemberSection);
+  } else {
+    initializeMemberSection();
+  }
+</script>

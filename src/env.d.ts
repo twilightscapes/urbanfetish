@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="astro/client" />
+/// <reference types="vite-plugin-pwa/vanillajs" />
 
 declare module "@pagefind/default-ui" {
 	declare class PagefindUI {
@@ -8,8 +9,24 @@ declare module "@pagefind/default-ui" {
 	}
 }
 
-interface ImportMetaEnv {
-	readonly WEBMENTION_API_KEY: string;
+// Global window extensions for YouTube timer functions
+declare global {
+	interface Window {
+		resetYouTubeEmbedTimer?: (videoId: string) => void;
+		youtubeEmbedTimers?: Map<string, { reset: () => void; stop: () => void }>;
+		youtubePlayersMap?: Map<string, any>;
+		pendingYouTubePlayers?: Array<{ init: () => void }>;
+		onYouTubeIframeAPIReady?: () => void;
+		YT?: any;
+	}
+	
+	interface HTMLElement {
+		dataset: DOMStringMap;
+	}
+	
+	interface Element {
+		dataset: DOMStringMap;
+	}
 }
 
 interface ImportMeta {

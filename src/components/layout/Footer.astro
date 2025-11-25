@@ -1,52 +1,78 @@
 ---
-import { getMenuLinks, siteConfig } from "@/site-config";
+import { getCollection } from "astro:content"; // Changed this line
 
-const menuLinks = await getMenuLinks();
+// Replace getMenuLinks with direct collection access (handle empty collection)
+let menuLinks: Array<any> = [];
+try {
+  menuLinks = (await getCollection("menuItems")) || [];
+} catch (error) {
+  // Collection doesn't exist or is empty
+  menuLinks = [];
+}
+
+const sortedMenuLinks = menuLinks
+	.sort((a, b) => (a.data.order || 0) - (b.data.order || 0))
+	.map((item) => ({
+		title: item.data.title || "",
+		path: item.data.path || "",
+	}));
+
 const year = new Date().getFullYear();
-import { getEntry } from 'astro:content';
-const siteSettings = await getEntry('siteSettings', 'main');
-const { showHome } = siteSettings.data;
-const language = await getEntry('language', 'index');
+import { getEntry } from "astro:content";
+const siteSettings = await getEntry("siteSettings", "main");
+const { showHome } = siteSettings?.data || { showHome: true };
+const language = await getEntry("language", "index");
+const copyright = language?.data?.copyright || "©";
+const homelink = language?.data?.homelink || "Home";
+const pwaSettings = await getEntry("pwaSettings", "index");
+const appName = pwaSettings?.data?.name || "App";
 ---
 
-{language.data.siteDisclaimer && (
-<div class="" style="display:grid; place-content: center; padding:0 4%;">{language.data.siteDisclaimer}</div>
-	)}
-
-	<footer id="footer"
-		class="mt-auto flex w-full flex-col items-center justify-center gap-y-2 p-4 text-center align-top text-white-500 sm:flex-row sm:justify-between sm:text-xs"
-	>
-		<div class="me-0 sm:me-4">
-			{language.data.copyright} © {year}{" "}
-			{siteConfig.author}
-		</div>
-		<nav
-			aria-label="Menu"
-			class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500"
+<footer
+	id="footer"
+	class="text-white-500 mt-auto flex w-full flex-col items-center justify-center gap-y-2 p-4 text-center align-top sm:flex-row sm:justify-between sm:text-xs"
+>
+	<div class="me-0 sm:me-4">
+		{copyright}
+		{year}{" "}
+		{appName}
+	</div>
+	<nav aria-label="Menu" class="flex gap-x-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500">
+		<a
+			class="px-1 py-2 sm:px-1 sm:py-0 sm:hover:text-textColor sm:hover:underline"
+			href="/"
+			style="color:inherit"
+			aria-label="Go to homepage"
 		>
-		<!-- {showHome && ( -->
-	
-			<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/" style="color:inherit">{language.data.homelink}</a>
-	
-		 <!-- )} -->
-			{
-				menuLinks.map((link: { path: string | null; title: string }) => (
-					<>
-						<a
-							href={link.path || '#'}
-							class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline"
-							style="color:inherit"
-						>
-							{link.title}
-						</a>
-	
-					</>
-				))
-			}
-				<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/privacy" style="color:inherit">Privacy</a>
-				<a class="px-4 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline" href="/disclaimer" style="color:inherit">Disclaimer</a>				
-		</nav>
-
-		
-
-	</footer>
+			{homelink || "Home"}
+		</a>
+		{
+			sortedMenuLinks.map((link: { path: string | null; title: string }) => (
+				<a
+					href={link.path + "/" || "#"}
+					class="px-1 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline"
+					style="color:inherit"
+					aria-label={link.title || "Menu link"}
+				>
+					{link.title || "Menu"}
+				</a>
+			))
+		}
+		<a
+			class="px-1 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline"
+			href="/privacy/"
+			style="color:inherit"
+			aria-label="Privacy Policy"
+		>
+			Privacy
+		</a>
+		<a
+			class="px-1 py-2 sm:px-2 sm:py-0 sm:hover:text-textColor sm:hover:underline"
+			href="/disclaimer/"
+			style="color:inherit"
+			aria-label="Disclaimer"
+		>
+			Disclaimer
+		</a>
+	</nav>
+</footer>

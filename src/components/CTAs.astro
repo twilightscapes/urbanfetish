@@ -9,7 +9,7 @@ interface Props {
 
 const { title, description, ctaUrl, showTransition=false, showFancy = false } = Astro.props;
 ---
-
+<div style="margin:2rem 0 !important;">
 {description && <p>{description}</p>}
 
 {title && (
@@ -19,7 +19,7 @@ const { title, description, ctaUrl, showTransition=false, showFancy = false } = 
     <a 
       href={ctaUrl} 
       class="font no-underline border-none shadow-none" 
-      style="color:white; padding:2vh 0"
+      style="color:white;"
       {...showTransition ? {'data-astro-reload': ''} : {}}
     >
       <span class="butttext font">{title}</span>
@@ -27,3 +27,4 @@ const { title, description, ctaUrl, showTransition=false, showFancy = false } = 
 
   </button>
 )}
+</div>

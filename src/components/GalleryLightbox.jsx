@@ -59,7 +59,7 @@ export default function GalleryLightbox({ images, showCaptions }) {
       thumbnailsIconColor: '#ffffff',
       thumbnailsOpacity: 0.4,
       thumbnailsPosition: 'bottom',
-      thumbnailsSize: ['100px', '80px']
+      thumbnailsSize: ['120px', '90px']
     },
     progressBar: {
       backgroundColor: '#f2f2f2',
@@ -70,14 +70,44 @@ export default function GalleryLightbox({ images, showCaptions }) {
   };
 
   useEffect(() => {
-    const imageElements = document.querySelectorAll('.post-card1 img');
-    imageElements.forEach((img, idx) => {
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', () => {
-        setIndex(idx);
-        setOpen(true);
+    const setupClickListeners = () => {
+      const imageElements = document.querySelectorAll('.post-card1:not(.hidden) img');
+      
+      imageElements.forEach((img) => {
+        img.style.cursor = 'pointer';
+        
+        // Get the index directly from the data attribute
+        const imageIndex = parseInt(img.getAttribute('data-image-index') || '0');
+        
+        // Remove existing listener
+        const newImg = img.cloneNode(true);
+        img.parentNode.replaceChild(newImg, img);
+        
+        // Add new listener
+        newImg.addEventListener('click', () => {
+          setIndex(imageIndex);
+          setOpen(true);
+        });
       });
+    };
+    
+    setupClickListeners();
+    
+    // Re-setup listeners when images are filtered
+    const observer = new MutationObserver(() => {
+      setTimeout(setupClickListeners, 100);
     });
+    
+    const galleryContainer = document.querySelector('[data-section-id*="gallery"] .homegallery');
+    if (galleryContainer) {
+      observer.observe(galleryContainer, { 
+        attributes: true, 
+        subtree: true, 
+        attributeFilter: ['class', 'style'] 
+      });
+    }
+    
+    return () => observer.disconnect();
   }, []);
 
   return (

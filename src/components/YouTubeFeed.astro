@@ -1,0 +1,4168 @@
+---
+// YouTubeFeed.astro - Now fully dynamic with client-side fetching
+import { getCollection } from 'astro:content';
+import ViewModeSwitch from "./ViewModeSwitch.jsx";
+
+// Get site settings for timer configuration
+const siteSettings = await getCollection('siteSettings');
+const mainSettings = siteSettings.find(item => item.id === 'main');
+
+const videoTimeLimitMinutes = mainSettings?.data?.videoTimeLimitMinutes ?? 0.2; // Default to 0.2 if not found
+
+
+interface Props {
+  channelIds?: string;
+  selectedCollections?: string[];
+  feedType?: 'channels' | 'collections' | 'mixed';
+  maxVideos?: number;
+  title?: string;
+  showTitles?: boolean;
+  showSectionTitle?: boolean;
+  useCustomPlayer?: boolean;
+  defaultView?: string;
+  sectionId?: string;
+  includeSitePosts?: boolean;
+  maxSitePosts?: number;
+  showViewModeSwitch?: boolean; // New prop to control whether to show the ViewModeSwitch
+}
+
+const {
+  channelIds,
+  selectedCollections = [],
+  feedType = 'channels',
+  maxVideos = 9,
+  title = "Latest Videos",
+  showTitles = true,
+  showSectionTitle = true,
+  useCustomPlayer = false,
+  defaultView = "grid",
+  sectionId = "youtube-feed",
+  includeSitePosts = false,
+  maxSitePosts = 5,  // Increased from 3 to 5 for better content variety
+  showViewModeSwitch = true  // Default to true for backwards compatibility
+} = Astro.props;
+
+// Enforce maximum DOM size limit for performance
+const MAX_DOM_LIMIT = 50; // Increased from 8 to 50 for better user experience  
+const enforcedMaxVideos = Math.min(maxVideos, MAX_DOM_LIMIT);
+
+if (maxVideos > MAX_DOM_LIMIT) {
+  console.warn(`⚠️  YouTubeFeed: maxVideos (${maxVideos}) reduced to ${MAX_DOM_LIMIT} to prevent excessive DOM size`);
+}
+
+---
+
+<style>
+  .youtube-feed {
+    width: 100%;
+    padding: 0 0.5rem; /* Reduced padding */
+  }
+  
+  .youtube-feed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .youtube-feed-title {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(45deg, var(--theme-accent), #FF6B6B);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    flex: 1;
+  }
+  
+  .youtube-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Bigger minimum size, fewer columns */
+    gap: 1rem; /* Reduced gap */
+    width: 100%; /* Remove max-width constraint */
+    margin: 0;
+  }
+  
+  /* Slider/Swipe mode styles */
+  .youtube-grid.slider {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: mandatory;
+    /* gap and padding controlled by global CSS */
+    scrollbar-width: 0;
+    scrollbar-color: var(--theme-accent, #4CAF50) transparent;
+    -webkit-overflow-scrolling: touch;
+    /* Ensure scroll events are captured */
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
+    /* Add pointer events to ensure wheel events are captured */
+    pointer-events: auto;
+  }
+
+
+  
+  .youtube-grid.slider::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .youtube-grid.slider::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+  
+  .youtube-grid.slider::-webkit-scrollbar-thumb {
+    background: var(--theme-accent, #4CAF50);
+    border-radius: 4px;
+  }
+  
+  .youtube-grid.slider::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-accent-hover, #45a049);
+  }
+  
+  .youtube-grid.slider .youtube-video-card {
+    /* flex, width, and positioning controlled by global CSS */
+    scroll-snap-align: center;
+  }
+  
+  /* Grid mode styles */
+  .youtube-grid.grid-container .youtube-video-card {
+    width: 100%;
+  }
+  
+  .youtube-video-card {
+    position: relative;
+    /* width controlled by global CSS */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+    cursor: pointer !important; /* Force pointer cursor for the entire card */
+    display: flex;
+    flex-direction: column;
+    border: 3px solid transparent;
+  }
+  
+  .youtube-grid .youtube-video-card.playing,
+  .youtube-video-card.playing {
+    border: 6px solid #ff0000 !important;
+    box-shadow: 
+      0 0 30px rgba(255, 0, 0, 0.9), 
+      0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-6px) scale(1.02) !important;
+    z-index: 100 !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
+    animation: pulseRed 2s infinite !important;
+  }
+
+  /* Ensure playing state takes precedence over floating-source */
+  .youtube-grid .youtube-video-card.playing:not(.floating-source),
+  .youtube-video-card.playing:not(.floating-source) {
+    border: 6px solid #ff0000 !important;
+    box-shadow: 
+      0 0 30px rgba(255, 0, 0, 0.9), 
+      0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-6px) scale(1.02) !important;
+    z-index: 100 !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
+    animation: pulseRed 2s infinite !important;
+  }
+  
+  /* Enhanced playing indicator when video returns from floating */
+  .youtube-grid .youtube-video-card.playing.returning-from-float,
+  .youtube-video-card.playing.returning-from-float {
+    border: 6px solid #ff0000 !important;
+    box-shadow: 
+      0 0 35px rgba(255, 0, 0, 0.9), 
+      0 8px 25px rgba(0, 0, 0, 0.4), 
+      inset 0 0 20px rgba(255, 0, 0, 0.2) !important;
+    transform: translateY(-6px) scale(1.03) !important;
+    animation: pulseRedIntense 1.5s ease-out, pulseRed 2s infinite 1.5s !important;
+    z-index: 8 !important; /* Below nav bar (10) */
+  }
+  
+  /* Hide playing indicator when video is floating to prevent duplicates */
+  /* BUT keep the red border on the original position while floating */
+  .youtube-grid .youtube-video-card.floating-source,
+  .youtube-video-card.floating-source {
+    /* Keep the red border and highlight on original position */
+    border: 6px solid #ff0000 !important;
+    box-shadow: 
+      0 0 25px rgba(255, 0, 0, 0.8), 
+      0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-6px) scale(1.02) !important;
+    z-index: 50 !important; /* Lower than floating but higher than normal */
+    position: relative !important;
+    background: transparent !important;
+    animation: pulseRed 2s infinite !important;
+    outline: none !important;
+  }
+
+  .slider img{max-height: 50vh; border:1px solid red !important;}
+
+  /* .slider .youtube-video-info {border:1px solid red !important; justify-content: center !important; text-align: center !important;} */
+
+  
+  
+  @keyframes pulseRed {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(255, 0, 0, 0.8), 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+  }
+  
+  @keyframes pulseRedIntense {
+    0% {
+      box-shadow: 0 0 35px rgba(255, 0, 0, 0.9), 0 8px 25px rgba(0, 0, 0, 0.4);
+      transform: translateY(-6px) scale(1.03);
+    }
+    50% {
+      box-shadow: 0 0 50px rgba(255, 0, 0, 1), 0 12px 30px rgba(0, 0, 0, 0.5);
+      transform: translateY(-8px) scale(1.04);
+    }
+    100% {
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.8), 0 4px 15px rgba(0, 0, 0, 0.3);
+      transform: translateY(-4px) scale(1.01);
+    }
+  }
+  
+  @keyframes pulseRedFloating {
+    0%, 100% {
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 0 0 4px #ff0000,
+        0 0 20px rgba(255, 0, 0, 0.6);
+    }
+    50% {
+      box-shadow: 
+        0 12px 35px rgba(0, 0, 0, 0.6),
+        0 0 0 6px #ff0000,
+        0 0 30px rgba(255, 0, 0, 0.9);
+    }
+  }
+  
+  /* Floating video closing animation */
+  .youtube-video-container.floating.closing {
+    animation: floatingVideoClose 0.8s ease-in-out forwards !important;
+    pointer-events: none !important;
+  }
+  
+  @keyframes floatingVideoClose {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(0.9);
+      opacity: 0.8;
+    }
+    70% {
+      transform: scale(0.7);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(0.1);
+      opacity: 0;
+    }
+  }
+  
+  .youtube-video-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden; /* Ensure overlay stays within bounds */
+    z-index: 1; /* Ensure containers have proper stacking context */
+  }
+  
+  .upgrade-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    color: #fff !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9 !important;
+    text-align: center !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    border-radius: 4px !important;
+    font-size: clamp(0.8rem, 2.5vw, 1.2rem) !important;
+    line-height: 1.4 !important;
+    pointer-events: none !important; /* Ensure it never blocks clicks when hidden */
+  }
+  
+  .upgrade-overlay.show {
+    display: flex !important;
+    pointer-events: auto !important; /* Re-enable pointer events when shown */
+  }
+  
+  /* Ensure parent container can contain the overlay */
+  .youtube-video-container {
+    position: relative !important;
+    cursor: pointer !important; /* Force pointer on video containers */
+  }
+  
+  /* Additional cursor enforcement rules - more aggressive */
+  .youtube-video-card,
+  .youtube-video-card *,
+  .youtube-video-container,
+  .youtube-video-container *,
+  .youtube-thumbnail,
+  .youtube-thumbnail *,
+  .youtube-video-card:hover,
+  .youtube-video-container:hover,
+  .youtube-thumbnail:hover {
+    cursor: pointer !important;
+  }
+  
+  /* Ensure thumbnail images specifically show pointer cursor */
+  .youtube-thumbnail img,
+  .youtube-thumbnail:after,
+  .youtube-thumbnail:before,
+  img[src*="youtube"],
+  img[src*="ytimg"] {
+    cursor: pointer !important;
+  }
+  
+  /* Override any inherited cursor styles */
+  .youtube-feed .youtube-video-card,
+  .youtube-feed .youtube-video-container,
+  .youtube-feed .youtube-thumbnail,
+  .youtube-feed img {
+    cursor: pointer !important;
+  }
+  
+  /* Special handling for floating video overlays */
+  .youtube-video-container.floating .upgrade-overlay {
+    z-index: 9 !important;
+    top: 30px !important; /* Account for floating header */
+    height: calc(100% - 30px) !important;
+  }
+  
+  .compact-upgrade-btn {
+    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  
+  .compact-upgrade-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  }
+  
+  .compact-upgrade-btn:active {
+    transform: scale(0.95);
+  }
+  
+  /* Post-specific styling */
+  .youtube-video-card[data-type="post"] {
+    border: 2px solid var(--theme-accent);
+    background: linear-gradient(135deg, rgba(var(--theme-accent-rgb), 0.1), rgba(var(--theme-accent-rgb), 0.05));
+  }
+  
+  .youtube-video-card[data-type="post"]::before {
+    content: "📝 SITE POST";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--theme-accent);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+  }
+  
+  .youtube-video-card[data-type="post"] .youtube-video-meta .youtube-video-channel {
+    color: var(--theme-accent);
+    font-weight: 600;
+  }
+  
+  .youtube-video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+
+  .youtube-grid.slider .youtube-video-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .youtube-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.3s ease;
+    padding: 10px 0 0 18px; 
+  }
+  
+  .youtube-play-button:hover {
+    background: rgba(255, 0, 0, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  
+  .youtube-video-info {
+    padding: 0.75rem; /* Reduced padding */
+    background: var(--theme-bg, #fff);
+    color: var(--theme-text, #333);
+  }
+  
+  .youtube-video-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .youtube-video-date {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  
+  .youtube-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  
+  .youtube-channel {
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
+    color: var(--theme-accent, #4CAF50);
+  }
+  
+  .youtube-video-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid var(--theme-border, #f0f0f0);
+  }
+  
+  /* Skeleton loading styles */
+  .skeleton-loading {
+    background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+  }
+  
+  /* Stagger the animation for a more natural effect */
+  .skeleton-card:nth-child(1) .skeleton-loading { animation-delay: 0s; }
+  .skeleton-card:nth-child(2) .skeleton-loading { animation-delay: 0.1s; }
+  .skeleton-card:nth-child(3) .skeleton-loading { animation-delay: 0.2s; }
+  .skeleton-card:nth-child(4) .skeleton-loading { animation-delay: 0.3s; }
+  .skeleton-card:nth-child(5) .skeleton-loading { animation-delay: 0.4s; }
+  .skeleton-card:nth-child(6) .skeleton-loading { animation-delay: 0.5s; }
+  .skeleton-card:nth-child(7) .skeleton-loading { animation-delay: 0.6s; }
+  .skeleton-card:nth-child(8) .skeleton-loading { animation-delay: 0.7s; }
+  
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  .skeleton-card {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    background: var(--theme-ui-colors-cardBg, #1a1a1a);
+    margin-bottom: 1rem;
+  }
+  
+  .skeleton-thumbnail {
+    width: 100%;
+    height: 200px;
+    background: #333;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .skeleton-info {
+    padding: 1rem;
+  }
+  
+  .skeleton-title {
+    height: 20px;
+    background: #333;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    width: 85%;
+  }
+  
+  .skeleton-meta {
+    height: 14px;
+    background: #333;
+    border-radius: 4px;
+    width: 60%;
+    margin-bottom: 0.25rem;
+  }
+  
+  .skeleton-date {
+    height: 12px;
+    background: #333;
+    border-radius: 4px;
+    width: 40%;
+  }
+  
+  /* Grid adjustments for skeleton cards */
+  .youtube-grid.grid-container .skeleton-card {
+    width: 100%;
+  }
+  
+  .youtube-grid.slider .skeleton-card {
+    width: 100%;
+    min-width: 50vw;
+    scroll-snap-align: center;
+    margin-right: 1rem;
+  }
+  
+  @media (min-width: 38rem) {
+    .youtube-grid.slider .skeleton-card {
+      width: 45vw;
+      min-width: 45vw;
+    }
+    
+    .youtube-grid.grid-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 48rem) {
+    .youtube-grid.slider .skeleton-card {
+      width: 30vw;
+      min-width: 30vw;
+    }
+    
+    .youtube-grid.grid-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  @media (min-width: 64rem) {
+    .youtube-grid.grid-container {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .favorite-button-placeholder,
+  .channel-subscribe-placeholder {
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Premium Button Styles for YouTube Feed */
+  .youtube-video-actions .favorite-button-container,
+  .youtube-video-actions .channel-subscribe-container {
+    position: relative;
+  }
+  
+  .youtube-video-actions .favorite-btn,
+  .youtube-video-actions .subscribe-btn {
+    background: transparent;
+    border: 1px solid var(--theme-border, #ddd);
+    border-radius: 16px;
+    color: var(--theme-text, #666);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+  }
+  
+  .youtube-video-actions .favorite-btn:hover,
+  .youtube-video-actions .subscribe-btn:hover {
+    border-color: var(--theme-accent, #4285f4);
+    color: var(--theme-accent, #4285f4);
+    transform: translateY(-1px);
+  }
+  
+  .youtube-video-actions .favorite-btn.favorited {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-color: #ffd700;
+    color: #333;
+  }
+  
+  .youtube-video-actions .subscribe-btn.subscribed {
+    background: #ff0000;
+    border-color: #ff0000;
+    color: white;
+  }
+  
+  .youtube-video-actions .favorite-btn.premium-locked,
+  .youtube-video-actions .subscribe-btn.premium-locked {
+    border-color: #ccc;
+    color: #999;
+  }
+  
+  .youtube-video-actions .premium-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    z-index: 8;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .youtube-video-actions .favorite-premium-gate:hover .premium-tooltip,
+  .youtube-video-actions .subscribe-premium-gate:hover .premium-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-3px);
+  }
+  
+  .youtube-video-actions .premium-tooltip-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    text-align: center;
+    min-width: 180px;
+    font-size: 0.8rem;
+  }
+  
+  .youtube-video-actions .premium-tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #667eea;
+  }
+  
+  .youtube-video-actions .premium-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .youtube-video-actions .premium-tooltip h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.85rem;
+  }
+  
+  .youtube-video-actions .premium-tooltip p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.75rem;
+    opacity: 0.9;
+  }
+  
+  .youtube-video-actions .mini-upgrade-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: inline-block;
+  }
+  
+  .youtube-video-actions .mini-upgrade-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  @media (max-width: 1024px) {
+    .youtube-grid {
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Slightly smaller for tablets */
+    }
+    
+    .youtube-grid.slider .youtube-video-card {
+      /* width controlled by global CSS */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .youtube-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive but still bigger than before */
+      gap: 0.75rem;
+    }
+    
+    .youtube-grid.slider .youtube-video-card {
+      /* width controlled by global CSS */
+    }
+    
+    .youtube-play-button {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+    
+    .youtube-feed {
+      padding: 0.75rem 0.25rem; /* Reduced mobile padding */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .youtube-grid {
+      grid-template-columns: 1fr; /* Single column on very small screens */
+    }
+    
+    .youtube-grid.slider .youtube-video-card {
+      /* width controlled by global CSS */
+    }
+  }
+
+  /* Floating Video Player Styles - Pure CSS approach */
+  .youtube-video-container.floating {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 400px !important;
+    height: 225px !important;
+    z-index: 9999 !important; /* Higher z-index */
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.5),
+      0 0 0 4px #ff0000,
+      0 0 20px rgba(255, 0, 0, 0.8) !important;
+    border: 4px solid #ff0000 !important;
+    background: #000 !important;
+    cursor: move !important;
+    transition: none !important; /* Disable transitions when floating */
+    animation: pulseRedFloating 2s infinite !important;
+    /* Debugging - temporary bright outline */
+    outline: 8px solid lime !important;
+  }
+
+  /* Note: Header and close button are now created via DOM (not pseudo-elements) */
+
+  .youtube-video-container.floating .youtube-embed {
+    display: block !important;
+    height: 100% !important;
+    margin-top: 30px !important; /* Account for header */
+  }
+
+  .youtube-video-container.floating .youtube-thumbnail {
+    display: none !important;
+  }
+
+  .youtube-video-container.floating .upgrade-overlay {
+    position: absolute !important;
+    top: 30px !important; /* Account for header */
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100% - 30px) !important;
+    z-index: 9 !important;
+  }
+
+  /* Mobile responsive floating video */
+  @media (max-width: 768px) {
+    .youtube-video-container.floating {
+      top: auto !important;
+      right: 10px !important;
+      bottom: 80px !important;
+      left: 40px !important;
+      width: auto !important;
+      height: auto !important;
+      aspect-ratio: 16/9 !important;
+      max-height: 220px !important;
+      /* Keep the red border and pulsing on mobile */
+      border: 4px solid #ff0000 !important;
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.5),
+        0 0 0 3px #ff0000,
+        0 0 15px rgba(255, 0, 0, 0.8) !important;
+      animation: pulseRedFloating 2s infinite !important;
+    }
+
+    .youtube-video-container.floating::before {
+      height: 25px !important;
+      font-size: 0.75rem !important;
+    }
+
+    .youtube-video-container.floating .youtube-embed {
+      margin-top: 25px !important;
+      height: calc(100% - 25px) !important;
+    }
+
+    .youtube-video-container.floating .upgrade-overlay {
+      top: 25px !important;
+      height: calc(100% - 25px) !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .youtube-video-container.floating {
+      bottom: 70px !important;
+      max-height: 180px !important;
+      /* Ensure red border is maintained on very small screens */
+      border: 3px solid #ff0000 !important;
+      box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.4),
+        0 0 0 2px #ff0000,
+        0 0 12px rgba(255, 0, 0, 0.7) !important;
+    }
+  }
+
+  /* FORCE floating styles - highest specificity */
+  .youtube-feed .youtube-video-container.floating {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 400px !important;
+    height: 225px !important;
+    z-index: 9999 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+    background: #000 !important;
+  }
+
+  /* YouTube feeds now use unified CSS selectors from global.css - no custom styling needed */
+</style>
+
+{/* Dynamic content loaded via JavaScript */}
+<div class="youtube-feed" data-section-id={sectionId}>
+  <div class="youtube-feed-header">
+    {showSectionTitle && <h2 class="youtube-feed-title">{title}</h2>}
+    {showViewModeSwitch && (
+      <div style="display: flex; align-items: center; gap: 0;">
+        {/* @ts-ignore - client:load is valid Astro directive */}
+        <ViewModeSwitch 
+          client:load
+          sectionId={sectionId}
+          defaultView={defaultView}
+        />
+      </div>
+    )}
+  </div>
+  
+  <div class="youtube-loading">
+    <div class={`youtube-grid ${defaultView === 'swipe' ? 'slider' : 'grid-container'}`} style="margin-top: 1rem;" id={`youtube-loading-${sectionId}`}>
+      <!-- Skeleton loading cards -->
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+      
+      <div class="skeleton-card">
+        <div class="skeleton-thumbnail skeleton-loading"></div>
+        {showTitles && (
+        <div class="skeleton-info">
+          <div class="skeleton-title skeleton-loading"></div>
+          <div class="skeleton-meta skeleton-loading"></div>
+          <div class="skeleton-date skeleton-loading"></div>
+        </div>
+        )}
+      </div>
+    </div>
+  </div>
+  
+  <div class="youtube-content" style="display: none;">
+    <!-- Content will be populated by JavaScript -->
+  </div>
+  
+  <div class="youtube-error" style="display: none;">
+    <p style="text-align: center; padding: 2rem; color: var(--theme-accent);">
+      Unable to load videos. Please try again later.
+    </p>
+  </div>
+</div>
+
+
+
+<script define:vars={{ channelIds, selectedCollections, feedType, maxVideos: enforcedMaxVideos, showTitles, useCustomPlayer, defaultView, sectionId, includeSitePosts, maxSitePosts, timeLimit: videoTimeLimitMinutes }}>
+// Simple floating video system - CSS does the heavy lifting
+
+
+// Smart thumbnail fallback system
+window.handleThumbnailError = function(img) {
+  const currentSrc = img.src;
+
+  
+  // Extract video ID from current URL
+  const videoIdMatch = currentSrc.match(/\/vi\/([^\/]+)\//);
+  if (!videoIdMatch) {
+    console.error('❌ Could not extract video ID from thumbnail URL:', currentSrc);
+    return;
+  }
+  
+  const videoId = videoIdMatch[1];
+  
+  // Define fallback hierarchy (high-res to lower-res)
+  const fallbackSizes = [
+    'maxresdefault.jpg',    // 1280x720 (original attempt)
+    'sddefault.jpg',        // 640x480 (high quality)
+    'hqdefault.jpg',        // 480x360 (medium quality)
+    'mqdefault.jpg',        // 320x180 (lower quality)
+    'default.jpg'           // 120x90 (lowest quality)
+  ];
+  
+  // Find current size in hierarchy
+  let currentIndex = -1;
+  for (let i = 0; i < fallbackSizes.length; i++) {
+    if (currentSrc.includes(fallbackSizes[i])) {
+      currentIndex = i;
+      break;
+    }
+  }
+  
+  // Try next size in hierarchy
+  if (currentIndex >= 0 && currentIndex < fallbackSizes.length - 1) {
+    const nextSize = fallbackSizes[currentIndex + 1];
+    const newSrc = `https://img.youtube.com/vi/${videoId}/${nextSize}`;
+    img.src = newSrc;
+  } else {
+    console.error('❌ All thumbnail fallbacks failed for video:', videoId);
+    // Could set a default placeholder image here if needed
+  }
+};
+
+let currentPlayingContainer = null;
+let scrollCheckInterval = null;
+let isDragging = false;
+let dragOffset = { x: 0, y: 0 };
+
+
+// Check if video container is visible in viewport
+function isVideoContainerVisible(container) {
+  if (!container) return false;
+  
+  // If container is floating, we need to check if user scrolled back to original position
+  if (container.classList.contains('floating')) {
+    // For floating videos, check if the user has scrolled back to the original position
+    const originalTop = parseFloat(container.getAttribute('data-original-top')) || 0;
+    const originalHeight = parseFloat(container.getAttribute('data-original-height')) || 300;
+    const currentScrollY = window.scrollY || window.pageYOffset;
+    
+    // Calculate where the original position is relative to current viewport
+    const relativeTop = originalTop - currentScrollY;
+    const relativeBottom = relativeTop + originalHeight;
+    
+    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+    
+    // Check if original position is back in view (more forgiving threshold)
+    const visibleHeight = Math.min(relativeBottom, windowHeight) - Math.max(relativeTop, 0);
+    const visibilityRatio = originalHeight > 0 ? Math.max(0, visibleHeight) / originalHeight : 0;
+    
+    // Use more lenient threshold for smooth transitions
+    const isBackInView = visibilityRatio > 0.2; // 20% visible to return to original position
+    
+    //   originalTop: Math.round(originalTop),
+    //   currentScrollY: Math.round(currentScrollY),
+    //   relativeTop: Math.round(relativeTop),
+    //   visibilityRatio: Math.round(visibilityRatio * 100) + '%',
+    //   isBackInView
+    // });
+    
+    return isBackInView;
+  }
+  
+  // For non-floating videos, use normal position
+  const rect = container.getBoundingClientRect();
+  const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+  
+  // Video should float when scrolled DOWN past it
+  // When scrolling down, rect.top becomes NEGATIVE (video goes above viewport)
+  // Video is NOT visible when top is negative (scrolled past it going down)
+  const topPosition = rect.top;
+  // FIXED LOGIC: Video should float when scrolled DOWN (negative top values)
+  // When scroll down, video goes UP and becomes mostly hidden
+  const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(topPosition, 0);
+  const visibilityRatio = rect.height > 0 ? Math.max(0, visibleHeight) / rect.height : 0;
+  const isVisible = visibilityRatio > 0.3; // Video is visible if more than 30% is in viewport
+  
+  //   topPosition: Math.round(topPosition),
+  //   windowHeight,
+  //   isVisible,
+  //   description: topPosition < -100 ? '� SCROLLED DOWN PAST VIDEO' : '👁️ VIDEO STILL IN VIEW',
+  //   willFloat: !isVisible ? '🚀 WILL FLOAT' : '🏠 STAYS PUT'
+  // });
+  
+  return isVisible;
+}
+
+// Start monitoring scroll to show/hide floating player
+function startScrollMonitoring(container, title) {
+
+  
+  // CRITICAL: Stop any existing scroll monitoring first
+  if (scrollCheckInterval) {
+    clearInterval(scrollCheckInterval);
+    scrollCheckInterval = null;
+  }
+  
+  // CRITICAL: Reset any previous current playing container
+  if (currentPlayingContainer && currentPlayingContainer !== container) {
+  }
+  
+  currentPlayingContainer = container;
+  
+  container.setAttribute('data-video-title', title || 'YouTube Video');
+  
+  // Store original position for visibility calculations (absolute page position)
+  const originalRect = container.getBoundingClientRect();
+  const scrollY = window.scrollY || window.pageYOffset;
+  const absoluteTop = originalRect.top + scrollY; // Convert to absolute page position
+  container.setAttribute('data-original-top', absoluteTop.toString());
+  container.setAttribute('data-original-height', originalRect.height.toString());
+  
+  // Reduced frequency for better performance: 200ms instead of 100ms
+  scrollCheckInterval = setInterval(() => {
+    if (!currentPlayingContainer) {
+      clearInterval(scrollCheckInterval);
+      scrollCheckInterval = null;
+      return;
+    }
+    
+    // SAFETY CHECK: Make sure we still have the right container
+    if (currentPlayingContainer !== container) {
+      clearInterval(scrollCheckInterval);
+      scrollCheckInterval = null;
+      return;
+    }
+    
+    // SAFETY CHECK: Make sure no other videos are playing
+    const otherActiveVideos = document.querySelectorAll('.youtube-video-container iframe[src]:not([src="about:blank"])');
+    let hasOtherActiveVideo = false;
+    otherActiveVideos.forEach(iframe => {
+      const containerCheck = iframe.closest('.youtube-video-container');
+      if (containerCheck !== container) {
+        const videoId = containerCheck?.getAttribute('data-video-id');
+        hasOtherActiveVideo = true;
+      }
+    });
+    
+    if (hasOtherActiveVideo) {
+      clearInterval(scrollCheckInterval);
+      scrollCheckInterval = null;
+      return;
+    }
+    
+    const isVisible = isVideoContainerVisible(currentPlayingContainer);
+    const isFloating = currentPlayingContainer.classList.contains('floating');
+    
+    // Add smooth transitions: only change state if there's a clear difference
+    if (!isVisible && !isFloating) {
+      // Video scrolled out of view, make it float
+      makeVideoFloating(currentPlayingContainer);
+    } else if (isVisible && isFloating) {
+      // Video back in view, return to original position
+      removeVideoFloating(currentPlayingContainer);
+    }
+  }, 300); // Increased to 300ms for smoother performance
+}
+
+// Stop scroll monitoring
+function stopScrollMonitoring() {
+  if (scrollCheckInterval) {
+    clearInterval(scrollCheckInterval);
+    scrollCheckInterval = null;
+  }
+  
+  // Reset global state
+  if (currentPlayingContainer) {
+    currentPlayingContainer = null;
+  }
+}
+
+// Make video floating - just add CSS class
+function makeVideoFloating(container) {
+  if (!container) return;
+  
+  
+  // Ensure the embed is visible and iframe is not blank
+  const embedContainer = container.querySelector('.youtube-embed');
+  const iframe = embedContainer?.querySelector('iframe');
+  const thumbnail = container.querySelector('.youtube-thumbnail');
+  
+  if (iframe && iframe.src === 'about:blank') {
+    // Restore iframe src if it was blanked
+    const videoId = container.getAttribute('data-video-id');
+    if (videoId) {
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    }
+  }
+  
+  // Ensure proper visibility state
+  if (embedContainer) {
+    embedContainer.style.display = 'block';
+  }
+  if (thumbnail) {
+    thumbnail.style.display = 'none';
+  }
+  
+  container.classList.add('floating');
+
+  
+  // Keep the original card highlighted with red border while floating
+  const card = container.closest('.youtube-video-card');
+  if (card) {
+    card.classList.add('playing'); // Keep the red border on original position
+    card.classList.add('floating-source'); // Mark as floating source
+  }
+  
+  // Force positioning as backup
+  container.style.position = 'fixed';
+  container.style.top = '20px';
+  container.style.right = '20px';
+  container.style.width = '400px';
+  container.style.height = '225px';
+  container.style.zIndex = '8';
+  container.style.border = '4px solid #ff0000'; // Force red border inline
+  container.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 4px #ff0000, 0 0 20px rgba(255, 0, 0, 0.8)';
+  
+
+  
+  addDragHandlers(container);
+  addTimerDisplay(container);
+  addFloatingControls(container);
+}
+
+// Add timer display to floating video
+function addTimerDisplay(container) {
+
+  
+  if (!container) {
+    return;
+  }
+  
+  // Find the iframe to get video ID
+  const iframe = container.querySelector('iframe');
+  if (!iframe) {
+    return;
+  }
+  
+  const videoId = extractVideoId(iframe.src);
+  if (!videoId) {
+    return;
+  }
+  
+
+
+  
+  const timerInfo = activeVideoTimers.get(videoId);
+  if (!timerInfo) {
+    return;
+  }
+  
+
+  
+  // Remove existing timer display
+  const existingTimer = container.querySelector('.floating-timer');
+  if (existingTimer) {
+    existingTimer.remove();
+  }
+  
+  // Create timer display element
+  const timerDisplay = document.createElement('div');
+  timerDisplay.className = 'floating-timer';
+  timerDisplay.style.cssText = `
+    position: absolute;
+    top: 5px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 7;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+  `;
+  
+  container.appendChild(timerDisplay);
+
+  
+  // Update timer display every second
+  const updateTimer = () => {
+    const currentTime = Date.now();
+    const elapsed = currentTime - timerInfo.startTime;
+    const remaining = Math.max(0, (YOUTUBE_TIME_LIMIT * 60000) - elapsed);
+    
+
+    
+    if (remaining > 0) {
+      const minutes = Math.floor(remaining / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
+      const timeText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      timerDisplay.textContent = timeText;
+      
+
+      
+      // Continue updating if timer still exists
+      if (activeVideoTimers.has(videoId)) {
+        setTimeout(updateTimer, 1000);
+      } else {
+      }
+    } else {
+      timerDisplay.textContent = '0:00';
+    }
+  };
+  
+  updateTimer();
+}
+
+// Add floating controls (header and close button)
+function addFloatingControls(container) {
+  if (!container) {
+    return;
+  }
+  
+  // Remove existing controls
+  const existingHeader = container.querySelector('.floating-header');
+  const existingClose = container.querySelector('.floating-close');
+  if (existingHeader) {
+    existingHeader.remove();
+  }
+  if (existingClose) {
+    existingClose.remove();
+  }
+  
+  // Get video title
+  const videoTitle = container.getAttribute('data-video-title') || 'YouTube Video';
+  
+  // Create header
+  const header = document.createElement('div');
+  header.className = 'floating-header';
+  header.textContent = videoTitle;
+  header.style.cssText = `
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 30px !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 35px 0 10px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    z-index: 6 !important;
+    cursor: move !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+  `;
+  
+  // Create close button
+  const closeBtn = document.createElement('div');
+  closeBtn.className = 'floating-close';
+  closeBtn.innerHTML = '✖';
+  closeBtn.style.cssText = `
+    position: absolute !important;
+    top: 5px !important;
+    right: 8px !important;
+    width: 24px !important;
+    height: 24px !important;
+    background: rgba(255, 0, 0, 0.8) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    z-index: 7 !important;
+    transition: all 0.2s !important;
+    border: 2px solid white !important;
+    box-sizing: border-box !important;
+  `;
+  
+  // Close button functionality
+  closeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+
+    
+    // Animate the closing and highlight the original video
+    closeFloatingPlayerWithAnimation(container);
+  });
+  
+  // Hover effect for close button
+  closeBtn.addEventListener('mouseenter', () => {
+    closeBtn.style.background = 'rgba(255, 0, 0, 1)';
+    closeBtn.style.transform = 'scale(1.1)';
+  });
+  closeBtn.addEventListener('mouseleave', () => {
+    closeBtn.style.background = 'rgba(255, 0, 0, 0.8)';
+    closeBtn.style.transform = 'scale(1)';
+  });
+  
+  // Force container to be positioned
+  if (!container.style.position || container.style.position === 'static') {
+    container.style.position = 'relative';
+  }
+  
+  container.appendChild(header);
+  container.appendChild(closeBtn);
+}
+
+// Remove timer display
+function removeTimerDisplay(container) {
+  if (!container) return;
+  
+  const timerDisplay = container.querySelector('.floating-timer');
+  if (timerDisplay) {
+    timerDisplay.remove();
+  }
+}
+
+// Remove floating - just remove CSS class
+function removeVideoFloating(container) {
+  if (!container) return;
+  
+  container.classList.remove('floating');
+  
+  // Remove floating-source class from the card but keep playing class temporarily
+  const card = container.closest('.youtube-video-card');
+  if (card) {
+    card.classList.remove('floating-source');
+    // Keep the playing class for a smooth transition back to original position
+
+  }
+  
+  // Reset all positioning styles to return to original location
+  container.style.position = '';
+  container.style.top = '';
+  container.style.right = '';
+  container.style.left = '';
+  container.style.bottom = '';
+  container.style.width = '';
+  container.style.height = '';
+  container.style.zIndex = '';
+  container.style.transform = '';
+  
+  // Remove timer display
+  removeTimerDisplay(container);
+  
+  // Remove floating controls
+  const header = container.querySelector('.floating-header');
+  const closeBtn = container.querySelector('.floating-close');
+  if (header) header.remove();
+  if (closeBtn) closeBtn.remove();
+  
+  // Remove drag handlers
+  removeDragHandlers(container);
+}
+
+// Add drag functionality
+function addDragHandlers(container) {
+  // Mouse events
+  container.addEventListener('mousedown', startDrag);
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('mouseup', endDrag);
+  
+  // Touch events for mobile
+  container.addEventListener('touchstart', startDrag, { passive: false });
+  document.addEventListener('touchmove', drag, { passive: false });
+  document.addEventListener('touchend', endDrag);
+  
+  // Close button handler (click on the ::after pseudo-element area)
+  container.addEventListener('click', handleCloseClick);
+}
+
+// Remove drag functionality
+function removeDragHandlers(container) {
+  container.removeEventListener('mousedown', startDrag);
+  container.removeEventListener('touchstart', startDrag);
+  container.removeEventListener('click', handleCloseClick);
+}
+
+function startDrag(e) {
+  const container = e.currentTarget;
+  if (!container.classList.contains('floating')) return;
+  
+  // Check if click is in close button area (top-right corner)
+  const rect = container.getBoundingClientRect();
+  const clickX = e.clientX || (e.touches && e.touches[0].clientX);
+  const clickY = e.clientY || (e.touches && e.touches[0].clientY);
+  
+  const relativeX = clickX - rect.left;
+  const relativeY = clickY - rect.top;
+  
+  // If click is in close button area (top-right 30x30 pixels), don't start drag
+  if (relativeX > rect.width - 30 && relativeY < 30) {
+    return;
+  }
+  
+  e.preventDefault();
+  isDragging = true;
+  
+  const clientX = clickX;
+  const clientY = clickY;
+  
+  dragOffset.x = clientX - rect.left;
+  dragOffset.y = clientY - rect.top;
+}
+
+function drag(e) {
+  if (!isDragging || !currentPlayingContainer) return;
+  
+  e.preventDefault();
+  
+  const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+  const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+  
+  const x = clientX - dragOffset.x;
+  const y = clientY - dragOffset.y;
+  
+  // Keep within viewport bounds
+  const maxX = window.innerWidth - 400;
+  const maxY = window.innerHeight - 225;
+  
+  const boundedX = Math.max(0, Math.min(x, maxX));
+  const boundedY = Math.max(0, Math.min(y, maxY));
+  
+  currentPlayingContainer.style.left = boundedX + 'px';
+  currentPlayingContainer.style.top = boundedY + 'px';
+  currentPlayingContainer.style.right = 'auto';
+  currentPlayingContainer.style.bottom = 'auto';
+}
+
+function endDrag() {
+  isDragging = false;
+}
+
+function handleCloseClick(e) {
+  const container = e.currentTarget;
+  if (!container.classList.contains('floating')) return;
+  
+  const rect = container.getBoundingClientRect();
+  const clickX = e.clientX;
+  const clickY = e.clientY;
+  
+  const relativeX = clickX - rect.left;
+  const relativeY = clickY - rect.top;
+  
+  // Check if click is in close button area (top-right 30x30 pixels)
+  if (relativeX > rect.width - 30 && relativeY < 30) {
+    e.preventDefault();
+    e.stopPropagation();
+    closeFloatingPlayer();
+  }
+}
+
+function closeFloatingPlayer() {
+  // Remove floating from any containers
+  document.querySelectorAll('.youtube-video-container.floating').forEach(container => {
+    removeVideoFloating(container);
+  });
+  
+  // Stop all videos
+  document.querySelectorAll('.youtube-video-container').forEach(container => {
+    stopVideo(container);
+  });
+  
+  // Stop scroll monitoring
+  stopScrollMonitoring();
+  
+
+}
+
+// Enhanced closing with animation and scroll-to-video
+function closeFloatingPlayerWithAnimation(floatingContainer) {
+  if (!floatingContainer) return;
+  
+
+  
+  // Find the original video container by video ID
+  const iframe = floatingContainer.querySelector('iframe');
+  const videoId = iframe ? extractVideoId(iframe.src) : null;
+  
+  let originalContainer = null;
+  if (videoId) {
+    // Find the original container in the grid
+    originalContainer = document.querySelector(`[data-video-id="${videoId}"]`);
+
+  }
+  
+  // Start closing animation
+  floatingContainer.classList.add('closing');
+  
+  // IMPORTANT: Stop scroll monitoring immediately to prevent conflicts
+  stopScrollMonitoring();
+  
+  // After animation completes, remove floating and highlight original
+  setTimeout(() => {
+
+    
+    // Remove floating state
+    removeVideoFloating(floatingContainer);
+    
+    // If we found the original container, scroll to it and highlight it
+    if (originalContainer) {
+      // Small delay to ensure DOM is ready after floating removal
+      setTimeout(() => {
+
+        
+        // Scroll to the original video with smooth animation
+        originalContainer.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        
+        // Backup scroll method if scrollIntoView doesn't work well
+        setTimeout(() => {
+          const rect = originalContainer.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const offsetTop = rect.top + scrollTop - (window.innerHeight / 2) + (rect.height / 2);
+          
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+          });
+        }, 100);
+        
+        // Find the video card container
+        const originalCard = originalContainer.closest('.youtube-video-card');
+        if (originalCard) {
+          // Add playing class to show red highlight
+          originalCard.classList.add('playing', 'returning-from-float');
+  
+          
+          // Remove the special returning class after animation
+          setTimeout(() => {
+            originalCard.classList.remove('returning-from-float');
+          }, 1500); // Match the animation duration
+          
+          // Keep the playing class for a bit longer to show which video was playing
+          setTimeout(() => {
+            originalCard.classList.remove('playing');
+          }, 4000); // Show highlight for 4 seconds total
+        }
+      }, 100); // Small delay for smooth transition
+    } else {
+    }
+  }, 800); // Match the CSS animation duration
+}
+
+async function loadYouTubeVideos() {
+  let finalFeedIds = []; // Declare at function scope for error handling
+  
+  try {
+
+    
+    // Use sectionId to scope selectors to this specific instance
+    const sectionContainer = document.querySelector(`[data-section-id="${sectionId}"]`);
+    if (!sectionContainer) {
+      console.error(`❌ YouTube feed section not found: ${sectionId}`);
+      return;
+    }
+    
+
+    
+    const loadingDiv = sectionContainer.querySelector('.youtube-loading');
+    const contentDiv = sectionContainer.querySelector('.youtube-content');
+    const errorDiv = sectionContainer.querySelector('.youtube-error');
+    
+    if (!loadingDiv || !contentDiv || !errorDiv) {
+      console.error(`❌ YouTube feed elements not found in section: ${sectionId}`);
+      return;
+    }
+    
+
+    
+    // Show loading state
+    loadingDiv.style.display = 'block';
+    contentDiv.style.display = 'none';
+    errorDiv.style.display = 'none';
+    
+    // Prepare feed identifiers based on feed type
+    let feedIdentifiers = [];
+    
+    // Process channel IDs (backward compatibility)
+    const channelIdsArray = channelIds 
+      ? (Array.isArray(channelIds) ? channelIds : channelIds.split(',').map(id => id.trim()))
+      : [];
+    
+    // Add custom channels
+    if (feedType === 'channels' || feedType === 'mixed') {
+      feedIdentifiers = [...feedIdentifiers, ...channelIdsArray];
+    }
+    
+    // Add selected Keystatic collections
+    if (feedType === 'collections' || feedType === 'mixed') {
+      const collectionsArray = Array.isArray(selectedCollections) ? selectedCollections : [];
+      feedIdentifiers = [...feedIdentifiers, ...collectionsArray];
+    }
+    
+    // Default channels if no feed identifiers provided
+    const defaultChannels = [
+      "UCBJycsmduvYEL83R_U4JriQ", // Marques Brownlee
+      "UC6nSFpj9HTCZ5t-N3Rm3-HA", // Vsauce
+      "UCsooa4yRKGN_zEE8iknghZA"  // TED-Ed
+    ];
+    
+    finalFeedIds = feedIdentifiers.length > 0 ? feedIdentifiers : defaultChannels;
+    
+    // Add delay based on section ID to prevent overwhelming the API
+    const sectionIndex = parseInt(sectionId.split('-').pop()) || 0;
+    const delay = sectionIndex * 1000; // 0ms, 1000ms, 2000ms delay
+    
+    if (delay > 0) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+    
+    // Fetch YouTube videos with timeout
+
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 15000); // 15 second timeout (increased)
+    
+
+    // Always request enough videos to support progressive loading, regardless of maxVideos prop
+    const apiMaxVideos = Math.max(maxVideos, 200); // Request at least 30 videos to support progressive loading
+    const response = await fetch('/.netlify/functions/youtube-feed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        channelIds: finalFeedIds,
+        maxVideos: apiMaxVideos 
+      }),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch videos: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    let videos = data.videos || [];
+    
+    //   totalVideos: videos.length,
+    //   firstVideo: videos[0]?.title || 'None',
+    //   responseStructure: Object.keys(data)
+    // });
+    
+    // Fetch site posts if enabled
+    let posts = [];
+    
+    if (includeSitePosts && maxSitePosts > 0) {
+      
+      try {
+        const postsResponse = await fetch(`/api/posts?maxPosts=${maxSitePosts}`);
+        if (postsResponse.ok) {
+          const postsData = await postsResponse.json();
+          posts = postsData.posts || [];
+        } else {
+        
+        }
+      } catch (postsError) {
+        
+      }
+    } else {
+
+    }
+    
+    // Shuffle videos to ensure random distribution across all channels
+    // Fisher-Yates shuffle algorithm for true randomization
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+    
+    // Shuffle the videos to mix channels randomly
+    videos = shuffleArray(videos);
+    
+    // Combine and randomly mix videos and posts
+    let allContent = [...videos];
+    if (posts.length > 0) {
+
+      // Insert posts at random positions
+      posts.forEach(post => {
+        const randomIndex = Math.floor(Math.random() * (allContent.length + 1));
+        allContent.splice(randomIndex, 0, post);
+      });
+      
+    }
+    
+
+    
+    // For mixed content, ensure we have enough total content to show
+    // maxVideos represents the desired total content (videos + posts)
+    if (allContent.length > maxVideos) {
+      allContent = allContent.slice(0, maxVideos);
+
+    } else if (allContent.length < 10 && maxVideos >= 10) {
+      // If we have very few items but maxVideos allows more, log a warning
+      
+    }
+    
+    if (allContent.length === 0) {
+      contentDiv.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: 2rem;">No content found</p>';
+    } else {
+      // Progressive loading: Show initial batch, then "Load More" for remaining
+      // Adjust initial load based on available content and maxVideos setting
+      const TARGET_INITIAL_LOAD = 3; // Preferred initial load
+      const MIN_REMAINING_FOR_BUTTON = 3; // Minimum items needed to show load more button
+      
+      let INITIAL_LOAD = TARGET_INITIAL_LOAD;
+      
+      // For small feeds, show all content initially (no progressive loading needed)
+      if (allContent.length <= 12) {
+        INITIAL_LOAD = allContent.length; // Show everything for small feeds
+      } else if (allContent.length <= TARGET_INITIAL_LOAD + MIN_REMAINING_FOR_BUTTON) {
+        // For medium feeds, show most initially but leave some for load more
+        INITIAL_LOAD = Math.max(8, allContent.length - MIN_REMAINING_FOR_BUTTON);
+      }
+      
+      // Ensure we don't show more than available
+      INITIAL_LOAD = Math.min(INITIAL_LOAD, allContent.length);
+      
+      const initialContent = allContent.slice(0, INITIAL_LOAD);
+      const remainingContent = allContent.slice(INITIAL_LOAD);
+      
+
+      
+      // Build the content with section-content wrapper to match posts structure
+      // Check localStorage first to respect user's saved preference
+      let initialViewMode = defaultView;
+      if (typeof localStorage !== 'undefined') {
+        const storageKey = `viewMode-${sectionId}`;
+        const storedValue = localStorage.getItem(storageKey);
+        if (storedValue) {
+          initialViewMode = storedValue;
+        }
+      }
+      
+      const gridClass = initialViewMode === 'swipe' ? 'slider' : 'grid-container';
+      contentDiv.innerHTML = `
+        <div style="padding:0 3%" class="section-content ${gridClass}">
+          ${initialContent.map(item => {
+            // Extract video ID with fallback logic
+            let videoId = item.id;
+            if (!videoId && item.url) {
+              // Try to extract video ID from YouTube URL
+              const urlMatch = item.url.match(/[?&]v=([^&]+)/);
+              const shortMatch = item.url.match(/youtu\.be\/([^?]+)/);
+              const embedMatch = item.url.match(/\/embed\/([^?]+)/);
+              videoId = urlMatch?.[1] || shortMatch?.[1] || embedMatch?.[1] || '';
+            }
+            
+            if (item.type === 'post') {
+              // Render site post using post-card1 structure 
+              return `
+                <div class="post-card1 post-video-card" data-type="post">
+                  <a href="${item.url}" class="pirate-link" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+                    <div class="post-video-container">
+                      <img
+                        src="${item.thumbnail}"
+                        alt="${item.title.replace(/"/g, '&quot;')}"
+                        class="post-thumbnail"
+                        loading="lazy"
+                        width="480"
+                        height="360"
+                        onerror="handleThumbnailError(this)"
+                      />
+                    </div>
+                    
+                    ${showTitles ? `
+                      <div class="post-video-info">
+                        <h3 class="post-video-title">${item.title}</h3>
+                        <div class="post-meta">
+                          <span class="post-date">Site Post • ${new Date(item.publishDate).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    ` : ''}
+                  </a>
+                </div>
+              `;
+            } else {
+              // Render YouTube video using post-card1 structure
+              return `
+                <div class="post-card1 post-video-card">
+                  <a href="/video?videoId=${encodeURIComponent(videoId)}" class="pirate-link" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+                    <div class="post-video-container video-container" 
+                         data-video-id="${videoId}"
+                         data-use-custom-player="${useCustomPlayer}">
+                      <img
+                        src="${item.thumbnail}"
+                        alt="${item.title.replace(/"/g, '&quot;')}"
+                        class="post-thumbnail"
+                        loading="lazy"
+                        width="480"
+                        height="360"
+                        onerror="handleThumbnailError(this)"
+                      />
+                      
+                      <div class="post-play-button play-button" aria-label="Play video">&#x25B6;</div>
+
+                      <div class="youtube-embed" style="display: none;">
+                        <iframe
+                          src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1"
+                          title="${item.title.replace(/"/g, '&quot;')}"
+                          width="100%"
+                          height="100%"
+                          frameborder="0"
+                          allowfullscreen
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          loading="lazy"
+                          style="width: 100%; height: 100%; border: none;"
+                        ></iframe>
+                      </div>
+                    </div>
+                    
+                    ${showTitles ? `
+                      <div class="post-video-info">
+                        <h3 class="post-video-title">${item.title}</h3>
+                        <div class="post-meta">
+                          <span class="post-date">${item.channelTitle || 'YouTube'} • ${new Date(item.publishDate).toLocaleDateString()}</span>
+                        </div>
+                        <div class="youtube-video-actions">
+                          <div class="favorite-button-placeholder" 
+                               data-video-id="${videoId}"
+                               data-video-title="${item.title.replace(/"/g, '&quot;')}"
+                               data-video-thumbnail="${item.thumbnail}"
+                               data-video-author="${item.channelTitle || ''}"
+                               data-video-published="${new Date(item.publishDate).toLocaleDateString()}"
+                               data-video-url="https://www.youtube.com/watch?v=${videoId}"
+                               data-video-duration="${item.duration || ''}"
+                               data-video-views="${item.viewCount || ''}">
+                          </div>
+                          <div class="channel-subscribe-placeholder"
+                               data-channel-handle="${item.channelTitle || ''}"
+                               data-channel-url="https://www.youtube.com/channel/${item.channelId || ''}"
+                               data-channel-title="${item.channelTitle || ''}">
+                          </div>
+                          <div class="member-favorite-buttons" 
+                               data-video-id="${videoId}"
+                               data-video-title="${item.title.replace(/"/g, '&quot;')}"
+                               data-video-thumbnail="${item.thumbnail}"
+                               data-channel-title="${item.channelTitle || ''}"
+                               data-channel-id="${item.channelId || ''}"
+                               data-video-url="https://www.youtube.com/watch?v=${videoId}">
+                          </div>
+                        </div>
+                      </div>
+                    ` : ''}
+                  </a>
+                </div>
+              `;
+            }
+          }).join('')}
+          ${remainingContent.length > 0 ? (() => {
+
+            return `
+            <div class="load-more-container" style="grid-column: 1 / -1; text-align: center; padding: 0;">
+              <button class="load-more-btn" style="
+                background: #222; 
+                color: #ffffff; 
+                border: 2px solid #000;
+                padding: 12px 24px; 
+                border-radius: 8px; 
+                cursor: pointer; 
+                font-size: 1rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+              " data-remaining-content='${JSON.stringify(remainingContent).replace(/'/g, "&#39;")}'
+                 data-section-id="${sectionId}"
+                 onmouseover="this.style.background='#333'"
+                 onmouseout="this.style.background='#222'"
+                 onclick="loadMoreContent('${sectionId}')">
+                Load More Videos
+              </button>
+             
+              <br />
+              <br />
+              
+            </div>`;
+            // Load More Videos (${remainingContent.length} remaining)
+          })() : ''}
+          
+        </div>
+      `;
+      
+      // ViewModeSwitch will handle applying the correct view mode automatically
+      // No need for custom event triggering
+      
+      // Store remaining content for progressive loading (per section)
+      if (!window.remainingYouTubeContent) window.remainingYouTubeContent = {};
+      window.remainingYouTubeContent[sectionId] = remainingContent;
+      
+      // Global load more function that works with any section
+      if (!window.loadMoreProcessing) window.loadMoreProcessing = new Set();
+      
+      window.loadMoreContent = function(targetSectionId) {
+        try {
+
+          
+          // Prevent multiple simultaneous loads for the same section
+          if (window.loadMoreProcessing.has(targetSectionId)) {
+            return;
+          }
+          
+          window.loadMoreProcessing.add(targetSectionId);
+          
+          const BATCH_SIZE = 21;
+          const remainingForSection = window.remainingYouTubeContent[targetSectionId];
+          
+          if (!remainingForSection || remainingForSection.length === 0) {
+            // Clean up processing flag before returning
+            window.loadMoreProcessing.delete(targetSectionId);
+            return;
+          }
+          
+
+          
+          const nextBatch = remainingForSection.slice(0, BATCH_SIZE);
+          window.remainingYouTubeContent[targetSectionId] = remainingForSection.slice(BATCH_SIZE);
+          
+          // Find the grid container for this specific section
+          const sectionContainer = document.querySelector(`[data-section-id="${targetSectionId}"]`);
+          if (!sectionContainer) {
+            // Clean up processing flag before returning
+            window.loadMoreProcessing.delete(targetSectionId);
+            return;
+          }
+          
+
+          
+          // Find the grid container specifically in the content area (not the loading area)
+          const contentDiv = sectionContainer.querySelector('.youtube-content');
+          if (!contentDiv) {
+            // Clean up processing flag before returning
+            window.loadMoreProcessing.delete(targetSectionId);
+            return;
+          }
+          
+          const gridContainer = contentDiv.querySelector('.section-content');
+          if (!gridContainer) {
+
+            // Clean up processing flag before returning
+            window.loadMoreProcessing.delete(targetSectionId);
+            return;
+          }
+          
+
+          const loadMoreContainer = gridContainer.querySelector('.load-more-container');
+          if (!loadMoreContainer) {
+  
+            // Clean up processing flag before returning
+            window.loadMoreProcessing.delete(targetSectionId);
+            return;
+          }
+          
+
+        
+          
+          // Add new content before the load more button
+          nextBatch.forEach((item, index) => {
+            const itemHtml = window.createItemHtml(item, targetSectionId);
+  
+            
+            const itemElement = document.createElement('div');
+            itemElement.innerHTML = itemHtml;
+            const newChild = itemElement.firstElementChild; // Use firstElementChild instead of firstChild
+            
+            if (!newChild) {
+              return; // Skip this item
+            }
+            
+
+
+            
+            // Only call getComputedStyle if newChild is a valid element
+            if (newChild && newChild.nodeType === Node.ELEMENT_NODE) {
+              const computedStyle = window.getComputedStyle(newChild);
+            }
+            
+            gridContainer.insertBefore(newChild, loadMoreContainer);
+            
+            // Force a layout check
+            setTimeout(() => {
+              if (newChild.nodeType === Node.ELEMENT_NODE) {
+                const computedStyle = window.getComputedStyle(newChild);
+              }
+            }, 100);
+          });
+          
+
+          
+          // Update or remove load more button
+          const updatedRemaining = window.remainingYouTubeContent[targetSectionId];
+          if (updatedRemaining.length === 0) {
+            loadMoreContainer.remove();
+          } else {
+            const loadMoreBtn = loadMoreContainer.querySelector('.load-more-btn');
+            if (loadMoreBtn) {
+              loadMoreBtn.textContent = `Load More Videos (${updatedRemaining.length} remaining)`;
+            }
+          }
+          
+          // Re-initialize handlers for new content with explicit targeting
+
+          
+          // Wait a moment for DOM to be fully ready
+          setTimeout(() => {
+            // Use the main initialization function instead of manual handlers
+            initializeVideoHandlers(targetSectionId);
+            createPremiumButtons();
+            
+            // The delegation system will handle any missed events automatically
+
+          }, 100);
+          
+
+          
+          // Remove processing flag
+          window.loadMoreProcessing.delete(targetSectionId);
+        } catch (error) {
+          console.error('Error loading more content:', error);
+          // Make sure to remove processing flag even on error
+          window.loadMoreProcessing.delete(targetSectionId);
+        }
+      };
+      
+      // Store section-specific configuration for the createItemHtml function
+      if (!window.youtubeSectionConfig) window.youtubeSectionConfig = {};
+      window.youtubeSectionConfig[sectionId] = { showTitles, useCustomPlayer };
+      
+      // Helper function to create item HTML (extracted from above)
+      window.createItemHtml = function(item, targetSectionId = sectionId) {
+        const config = window.youtubeSectionConfig[targetSectionId] || { showTitles: true, useCustomPlayer: false };
+        
+        // Extract video ID with fallback
+        const videoId = item.id || (item.url ? item.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1] : '');
+        
+        if (item.type === 'post') {
+          return `
+            <div class="post-card1 post-video-card" data-type="post">
+              <a href="${item.url}" class="pirate-link" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+                <div class="post-video-container">
+                  <img
+                    src="${item.thumbnail}"
+                    alt="${item.title.replace(/"/g, '&quot;')}"
+                    class="post-thumbnail"
+                    loading="lazy"
+                    width="480"
+                    height="360"
+                    onerror="handleThumbnailError(this)"
+                  />
+                </div>
+                
+                ${config.showTitles ? `
+                  <div class="post-video-info">
+                    <h3 class="post-video-title">${item.title}</h3>
+                    <div class="post-meta">
+                      <span class="post-date">Site Post • ${new Date(item.publishDate).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ` : ''}
+              </a>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="post-card1 post-video-card">
+              <a href="/video?videoId=${encodeURIComponent(videoId)}" class="pirate-link" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+                <div class="post-video-container video-container" 
+                     data-video-id="${videoId}"
+                     data-use-custom-player="${config.useCustomPlayer}">
+                  <img
+                    src="${item.thumbnail}"
+                    alt="${item.title.replace(/"/g, '&quot;')}"
+                    class="post-thumbnail video-thumbnail"
+                    loading="lazy"
+                    width="480"
+                    height="360"
+                    onerror="handleThumbnailError(this)"
+                  />
+                  
+                  <div class="post-play-button play-button" aria-label="Play video">&#x25B6;</div>
+
+                  <div class="youtube-embed" style="display: none;">
+                    <iframe
+                      src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1"
+                      title="${item.title.replace(/"/g, '&quot;')}"
+                      width="100%"
+                      height="100%"
+                      frameborder="0"
+                      allowfullscreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      loading="lazy"
+                      style="width: 100%; height: 100%; border: none;"
+                    ></iframe>
+                  </div>
+                </div>
+                
+                ${config.showTitles ? `
+                  <div class="post-video-info">
+                    <h3 class="post-video-title">${item.title}</h3>
+                    <div class="post-meta">
+                      <span class="post-date">${item.channelTitle || 'YouTube'} • ${new Date(item.publishDate).toLocaleDateString()}</span>
+                    </div>
+                    <div class="youtube-video-actions">
+                      <div class="favorite-button-placeholder" 
+                           data-video-id="${videoId}"
+                           data-video-title="${item.title.replace(/"/g, '&quot;')}"
+                           data-video-thumbnail="${item.thumbnail}"
+                           data-video-author="${item.channelTitle || ''}"
+                           data-video-published="${new Date(item.publishDate).toLocaleDateString()}"
+                           data-video-url="https://www.youtube.com/watch?v=${videoId}"
+                           data-video-duration="${item.duration || ''}"
+                           data-video-views="${item.viewCount || ''}">
+                      </div>
+                      <div class="channel-subscribe-placeholder"
+                           data-channel-handle="${item.channelTitle || ''}"
+                           data-channel-url="https://www.youtube.com/channel/${item.channelId || ''}"
+                           data-channel-title="${item.channelTitle || ''}">
+                      </div>
+                      <div class="member-favorite-buttons" 
+                           data-video-id="${videoId}"
+                           data-video-title="${item.title.replace(/"/g, '&quot;')}"
+                           data-video-thumbnail="${item.thumbnail}"
+                           data-channel-title="${item.channelTitle || ''}"
+                           data-channel-id="${item.channelId || ''}"
+                           data-video-url="https://www.youtube.com/watch?v=${videoId}">
+                      </div>
+                    </div>
+                  </div>
+                ` : ''}
+              </a>
+            </div>
+          `;
+        }
+      };
+      
+      // Initialize video click handlers (no play button, just clickable thumbnails)
+      initializeVideoHandlers();
+      
+      // Force cursor pointer on all video elements after initialization
+      setTimeout(() => {
+        forceCursorPointersOnSection(sectionId);
+      }, 100);
+      
+      // Create premium buttons for favorites and channel subscriptions
+      createPremiumButtons();
+      
+      // Apply video preferences
+      applyVideoPreferences();
+      
+      // If initial view mode is swipe (from localStorage), apply scroll functionality
+      if (initialViewMode === 'swipe') {
+        setTimeout(() => {
+          const sectionElement = document.querySelector(`[data-section-id="${sectionId}"]`);
+          if (sectionElement) {
+            const contentContainer = sectionElement.querySelector('.section-content');
+            if (contentContainer && contentContainer.classList.contains('slider')) {
+              // Import and use ViewModeSwitch's scroll functionality
+              if (window.ViewModeSwitchScrollFunctions) {
+                window.ViewModeSwitchScrollFunctions.addScrollFunctionality(contentContainer);
+              }
+            }
+          }
+        }, 100);
+      }
+    }
+    
+    // Hide loading, show content
+    loadingDiv.style.display = 'none';
+    contentDiv.style.display = 'block';
+    
+    // Give ViewModeSwitch time to initialize and apply stored view mode
+    setTimeout(() => {
+      // Trigger ViewModeSwitch to check localStorage and apply correct view mode
+      const viewModeEvent = new CustomEvent('viewModeApplyStored', {
+        detail: { sectionId: sectionId }
+      });
+      window.dispatchEvent(viewModeEvent);
+      
+      // Also dispatch the content-loaded event for other components
+      document.dispatchEvent(new CustomEvent('content-loaded', {
+        detail: { sectionId: sectionId, type: 'youtube-feed' }
+      }));
+    }, 200); // Increased delay to ensure ViewModeSwitch is ready
+    
+  } catch (error) {
+    console.error(`❌ Error loading YouTube videos for section ${sectionId}:`, error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      stack: error.stack,
+      sectionId: sectionId,
+      feedIdentifiers: finalFeedIds || 'undefined',
+      errorName: error.name,
+      isTimeout: error.name === 'AbortError'
+    });
+    
+    // Use scoped selectors for error handling too
+    const sectionContainer = document.querySelector(`[data-section-id="${sectionId}"]`);
+    if (sectionContainer) {
+      const loadingDiv = sectionContainer.querySelector('.youtube-loading');
+      const contentDiv = sectionContainer.querySelector('.youtube-content');
+      const errorDiv = sectionContainer.querySelector('.youtube-error');
+      
+      if (loadingDiv && contentDiv && errorDiv) {
+        loadingDiv.style.display = 'none';
+        contentDiv.style.display = 'none';
+        errorDiv.style.display = 'block';
+      }
+    }
+  }
+}
+
+// Timer and membership variables (per-video tracking)
+let youtubeTimerRunning = false;
+let youtubePlaybackTimer = null;
+let youtubePlaybackStartTime = null;
+let youtubeElapsedTime = 0;
+const YOUTUBE_TIME_LIMIT = timeLimit; // Use actual site setting (should be 0.2 minutes = 12 seconds)
+
+// Per-video timer tracking to avoid global timer conflicts
+const activeVideoTimers = new Map(); // Map to store individual video timers
+
+// Use global timer flag for consistency with other video components
+if (!window.youtubeTimerExpired) {
+  window.youtubeTimerExpired = false;
+}
+
+// Membership system - consistent with other video components
+async function checkMembership() {
+
+  const membershipCode = localStorage.getItem('membershipCode');
+
+  
+  if (!membershipCode) {
+    return false;
+  }
+
+  // Check cached status first
+  const cachedStatus = localStorage.getItem('membershipStatus');
+  const cacheTime = localStorage.getItem('membershipCacheTime');
+
+  
+  if (cachedStatus && cacheTime) {
+    const cacheAge = Date.now() - parseInt(cacheTime);
+    const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
+    
+    if (cacheAge < CACHE_DURATION) {
+      const result = JSON.parse(cachedStatus);
+      if (!result.isValid) {
+        // Cached result shows invalid, clean up
+        localStorage.removeItem('membershipStatus');
+        localStorage.removeItem('membershipCacheTime');
+        return false;
+      }
+      return result.isValid;
+    } else {
+    }
+  }
+
+
+  try {
+    const response = await fetch('/.netlify/functions/validate-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: membershipCode, action: 'validate' })
+    });
+    
+
+    
+    if (response.ok) {
+      const result = await response.json();
+
+      
+      // Cache the result
+      localStorage.setItem('membershipStatus', JSON.stringify(result));
+      localStorage.setItem('membershipCacheTime', Date.now().toString());
+
+      
+      if (!result.isValid) {
+        // Clean up invalid membership
+        localStorage.removeItem('membershipCode');
+        localStorage.removeItem('membershipStatus');
+        localStorage.removeItem('membershipCacheTime');
+      }
+      
+
+      return result.isValid;
+    } else {
+    }
+  } catch (error) {
+    console.error('YouTubeFeed: Error validating membership:', error);
+  }
+  
+
+  return false;
+}
+
+// Extract video ID from YouTube URL for per-video timer tracking
+function extractVideoId(url) {
+  if (!url) return null;
+  
+  // Handle YouTube embed URLs
+  const embedMatch = url.match(/\/embed\/([a-zA-Z0-9_-]+)/);
+  if (embedMatch) return embedMatch[1];
+  
+  // Handle regular YouTube URLs
+  const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (watchMatch) return watchMatch[1];
+  
+  // Handle youtu.be URLs
+  const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (shortMatch) return shortMatch[1];
+  
+  return null;
+}
+
+async function startYouTubeTimer(iframe) {
+  // Get video ID for per-video tracking
+  const videoId = extractVideoId(iframe.src);
+  if (!videoId) {
+    return;
+  }
+  
+  // Don't start timer if this specific video already expired
+  if (iframe.getAttribute('data-video-expired') === 'true') {
+    showYouTubeUpgradeMessage(iframe);
+    return;
+  }
+  
+  // Check membership status first
+  const hasMembership = await checkMembership();
+  
+  if (hasMembership) {
+    return;
+  }
+  
+  // Skip timer if disabled (-1)
+  if (YOUTUBE_TIME_LIMIT === -1) {
+    return;
+  }
+  
+  // Show immediate paywall if set to 0
+  if (YOUTUBE_TIME_LIMIT === 0) {
+    setTimeout(() => {
+      showYouTubeUpgradeMessage(iframe);
+    }, 100);
+    return;
+  }
+  
+  const PLAYBACK_LIMIT_MS = YOUTUBE_TIME_LIMIT * 60000;
+  const timerStartTime = Date.now();
+  
+  // Clear any existing timer for this video
+  const existingTimer = activeVideoTimers.get(videoId);
+  if (existingTimer) {
+    clearTimeout(existingTimer.timer);
+  }
+  
+  // Create per-video timer
+  const timer = setTimeout(() => {
+    iframe.setAttribute('data-video-expired', 'true');
+    showYouTubeUpgradeMessage(iframe);
+    activeVideoTimers.delete(videoId); // Clean up
+  }, PLAYBACK_LIMIT_MS);
+  
+  // Store timer info for this video
+  activeVideoTimers.set(videoId, {
+    timer: timer,
+    startTime: timerStartTime,
+    iframe: iframe,
+    videoId: videoId
+  });
+}
+
+function stopYouTubeTimer(iframe) {
+  if (!iframe) {
+    return;
+  }
+  
+  const videoId = extractVideoId(iframe.src);
+  if (!videoId) {
+    return;
+  }
+  
+  const timerInfo = activeVideoTimers.get(videoId);
+  if (timerInfo) {
+    clearTimeout(timerInfo.timer);
+    activeVideoTimers.delete(videoId);
+  }
+  
+  // Also clear the old global timer if it exists (cleanup)
+  if (youtubePlaybackTimer) {
+    clearTimeout(youtubePlaybackTimer);
+    youtubePlaybackTimer = null;
+  }
+}
+
+function showYouTubeUpgradeMessage(iframe) {
+  // Stop the specific timer for this video
+  stopYouTubeTimer(iframe);
+
+  if (iframe) {
+    // Check if this iframe is in a floating player
+    const videoContainer = iframe.closest('.youtube-video-container');
+    const isInFloatingPlayer = videoContainer && videoContainer.classList.contains('floating');
+    
+    if (isInFloatingPlayer) {
+      // Mark iframe as expired for future clicks
+      iframe.setAttribute('data-video-expired', 'true');
+      
+      // Close the floating player instead of showing upgrade overlay
+      closeFloatingPlayer();
+      
+      // Don't show upgrade overlay in floating player - let it show when user clicks the original video
+      return;
+    }
+    
+    // Video is not in floating player - proceed with normal upgrade overlay
+    
+    // Store the current src for potential restoration
+    const currentSrc = iframe.src;
+    
+    // Stop video playback
+    try {
+      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      iframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+    } catch (e) {
+      // Could not send pause command to YouTube iframe
+    }
+    
+    // Mark iframe as expired for this specific video
+    iframe.setAttribute('data-video-expired', 'true');
+    
+    // Replace video with upgrade message
+    iframe.src = 'about:blank';
+    if (currentSrc) {
+      iframe.dataset.originalSrc = currentSrc;
+    }
+    
+    // Remove playing indicator from the card
+    const card = iframe.closest('.youtube-video-card');
+    if (card) {
+      card.classList.remove('playing');
+    }
+    
+    // Show upgrade overlay - find the specific video container
+    const overlayContainer = iframe.closest('.youtube-video-container');
+    if (overlayContainer) {
+      // Ensure container has relative positioning for overlay
+      overlayContainer.style.position = 'relative';
+      
+
+      
+      // Create or update upgrade overlay within the video container only
+      let overlay = overlayContainer.querySelector('.upgrade-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'upgrade-overlay';
+        
+        // Enhanced overlay content with better styling
+        overlay.innerHTML = `
+          <div style="
+            max-width: 90%; 
+            background: rgba(0, 0, 0, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border: 2px solid #FFD700;
+          ">
+            <div style="
+              margin-bottom: 12px; 
+              font-weight: bold; 
+              color: #FFD700;
+              font-size: 1rem;
+              text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            ">
+              ⏱️ Time Limit Reached
+            </div>
+            <div style="
+              margin-bottom: 16px; 
+              font-size: 1em;
+              color: #fff;
+              line-height: 1.4;
+            ">
+              Get unlimited access to all videos
+            </div>
+            <a href="/membership">
+      <button id="upgrade-btn1" style="
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+      " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        🔓 Upgrade Now - $9.99
+      </button></a>
+            <div style="
+              font-size: 0.85em; 
+              opacity: 0.9; 
+              margin-top: 12px;
+              color: #ccc;
+            ">
+              One-time payment • Lifetime access
+            </div>
+          </div>
+        `;
+        
+        // Apply additional inline styles to ensure overlay works
+        overlay.style.cssText = `
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          background: rgba(0, 0, 0, 0.95) !important;
+          color: #fff !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          z-index: 9 !important;
+          text-align: center !important;
+          box-sizing: border-box !important;
+          border-radius: 4px !important;
+        `;
+        
+        overlayContainer.appendChild(overlay);
+
+      } else {
+        // Show existing overlay
+        overlay.style.display = 'flex';
+
+      }
+      
+      // Ensure overlay is visible using both class and style
+      overlay.classList.add('show');
+      overlay.style.display = 'flex';
+      
+
+    } else {
+      
+    }
+  }
+}
+
+// Centralized video click handler
+async function handleVideoClick(container) {
+  const videoId = container.getAttribute('data-video-id');
+  const thumbnail = container.querySelector('.youtube-thumbnail');
+  const embedContainer = container.querySelector('.youtube-embed');
+  
+  if (!thumbnail || !embedContainer || !videoId) {
+    console.error('❌ Missing essential elements for video click:', { thumbnail, embedContainer, videoId });
+    return;
+  }
+  
+  // FIRST: Always stop all other videos immediately on ANY click
+  stopAllOtherVideos(container);
+  
+  // Navigate to video page with the video ID
+  if (!videoId) {
+    console.error('❌ No video ID found');
+    return;
+  }
+  
+  // Add playing class to show visual feedback
+  const card = container.closest('.youtube-video-card');
+  if (card) {
+    card.classList.add('playing');
+  }
+  
+  // Build the video page URL and navigate
+  const videoPageUrl = `/video?videoId=${encodeURIComponent(videoId)}`;
+  
+  // Small delay to show visual feedback
+  setTimeout(() => {
+    window.location.href = videoPageUrl;
+  }, 150);
+}
+
+// Debug function to check why a video might not be clickable
+function diagnoseVideoClickability(containerOrSectionId, index = null) {
+  // Handle both individual container and section-wide diagnosis
+  if (typeof containerOrSectionId === 'string') {
+    // Section-wide diagnosis
+    const targetSectionId = containerOrSectionId;
+    const sectionContainer = document.querySelector(`[data-section-id="${targetSectionId}"]`);
+    if (!sectionContainer) {
+      return false;
+    }
+    
+    const videoContainers = sectionContainer.querySelectorAll('.youtube-video-container');
+    let allClickable = true;
+    
+    videoContainers.forEach((container, idx) => {
+      const isClickable = diagnoseVideoClickability(container, idx);
+      if (!isClickable) allClickable = false;
+    });
+    
+    return allClickable;
+  }
+  
+  // Individual container diagnosis
+  const container = containerOrSectionId;
+  const thumbnail = container.querySelector('.youtube-thumbnail');
+  const embedContainer = container.querySelector('.youtube-embed');
+  const upgradeOverlay = container.querySelector('.upgrade-overlay');
+  const videoId = container.getAttribute('data-video-id');
+  
+  const issues = [];
+  
+  if (!thumbnail) issues.push('Missing thumbnail element');
+  if (!embedContainer) issues.push('Missing embed container');
+  if (!videoId) issues.push('Missing video ID');
+  
+  if (thumbnail) {
+    const thumbnailStyles = window.getComputedStyle(thumbnail);
+    if (thumbnailStyles.pointerEvents === 'none') {
+      issues.push('Thumbnail has pointer-events: none');
+    }
+    if (thumbnailStyles.position === 'static') {
+      // Check for overlapping elements
+      const rect = thumbnail.getBoundingClientRect();
+      const elementAtCenter = document.elementFromPoint(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2
+      );
+      if (elementAtCenter !== thumbnail && !thumbnail.contains(elementAtCenter)) {
+        issues.push('Element is being covered by another element');
+      }
+    }
+  }
+  
+  if (upgradeOverlay) {
+    const overlayStyles = window.getComputedStyle(upgradeOverlay);
+    if (overlayStyles.display !== 'none') {
+      issues.push('Upgrade overlay is visible and may be blocking clicks');
+    }
+    if (overlayStyles.pointerEvents !== 'none') {
+      issues.push('Upgrade overlay has pointer events enabled');
+    }
+  }
+  
+  if (issues.length > 0) {
+    return false;
+  }
+  
+  return true;
+}
+
+// Force cursor pointers on a specific section
+function forceCursorPointersOnSection(targetSectionId) {
+  const sectionContainer = document.querySelector(`[data-section-id="${targetSectionId}"]`);
+  if (!sectionContainer) {
+    return;
+  }
+  
+  let fixedCount = 0;
+  
+  // Fix all video elements in this section
+  const elements = sectionContainer.querySelectorAll('.youtube-video-card, .youtube-video-container, .youtube-thumbnail, .youtube-thumbnail img, img[src*="youtube"], img[src*="ytimg"]');
+  
+  elements.forEach((element, index) => {
+    element.style.setProperty('cursor', 'pointer', 'important');
+    if (element.tagName === 'IMG' || element.classList.contains('youtube-thumbnail')) {
+      element.style.pointerEvents = 'auto';
+    }
+    fixedCount++;
+  });
+  
+  return fixedCount;
+}
+
+// Video click handlers - no play button, just clickable thumbnails
+function initializeVideoHandlers(targetSectionId = null) {
+  const effectiveSectionId = targetSectionId || sectionId;
+
+  
+  // Scope to specific section
+  const sectionContainer = document.querySelector('[data-section-id="' + effectiveSectionId + '"]');
+  if (!sectionContainer) {
+    console.warn('❌ Section container not found for:', effectiveSectionId);
+    return;
+  }
+  
+  const videoContainers = sectionContainer.querySelectorAll('.youtube-video-container');
+
+  
+  sectionContainer.querySelectorAll('.youtube-video-container').forEach((container, index) => {
+    const thumbnail = container.querySelector('.youtube-thumbnail');
+    const embedContainer = container.querySelector('.youtube-embed');
+    const videoId = container.getAttribute('data-video-id');
+    
+    // Skip if this is a post (not a video)
+    const isPost = container.closest('.youtube-video-card[data-type="post"]');
+    if (isPost) {
+      return;
+    }
+    
+
+    
+    // Skip if already initialized (for dynamically loaded content)
+    if (container.hasAttribute('data-handlers-initialized')) {
+      return;
+    }
+    
+    // Early validation: Try to extract video ID from thumbnail URL as fallback
+    if (!videoId) {
+      const thumbnail = container.querySelector('.youtube-thumbnail');
+      if (thumbnail && thumbnail.src) {
+        const thumbnailMatch = thumbnail.src.match(/\/vi\/([a-zA-Z0-9_-]{11})\//);
+        if (!thumbnailMatch || !thumbnailMatch[1]) {
+          // Add a visual indicator for videos with missing ID
+          container.style.filter = 'opacity(0.8)';
+          container.title = 'Video ID unavailable - limited functionality';
+        }
+      }
+    }
+    
+    // Run diagnostic check
+    const isClickable = diagnoseVideoClickability(container, index);
+    if (!isClickable) {
+
+      
+      // Try to fix common issues
+      const upgradeOverlay = container.querySelector('.upgrade-overlay');
+      // Ensure overlay doesn't block clicks when hidden
+      if (upgradeOverlay) {
+        upgradeOverlay.style.pointerEvents = 'none';
+      }
+      
+      // Fix z-index and position issues
+      if (thumbnail) {
+        thumbnail.style.setProperty('position', 'relative', 'important');
+        thumbnail.style.setProperty('z-index', '5', 'important');
+        thumbnail.style.setProperty('cursor', 'pointer', 'important');
+        thumbnail.style.setProperty('pointer-events', 'auto', 'important');
+      }
+      
+      const card = container.closest('.youtube-video-card');
+      if (card) {
+        card.style.setProperty('position', 'relative', 'important');
+        card.style.setProperty('z-index', '3', 'important');
+      }
+      container.style.setProperty('position', 'relative', 'important');
+      container.style.setProperty('z-index', '4', 'important');
+    }
+    
+    // Check for common issues
+    if (!thumbnail) {
+      return;
+    }
+    
+    if (!embedContainer) {
+      return;
+    }
+    
+    // Video ID is already validated above, no need to check again
+    
+    // Check if thumbnail is clickable (not blocked by CSS)
+    const thumbnailStyles = window.getComputedStyle(thumbnail);
+    if (thumbnailStyles.pointerEvents === 'none') {
+      console.warn(`❌ Video ${index + 1} thumbnail has pointer-events: none`);
+    }
+    
+    // Remove any existing click handlers to prevent duplicates
+    const existingHandler = thumbnail._currentClickHandler;
+    if (existingHandler) {
+      thumbnail.removeEventListener('click', existingHandler);
+    }
+    
+
+    
+    const dynamicClickHandler = async (event) => {
+      // Prevent event bubbling
+      event.preventDefault();
+      event.stopPropagation();
+      
+      // Validate elements still exist
+      if (!thumbnail || !embedContainer || !container) {
+        console.error('❌ Essential elements missing:', { thumbnail, embedContainer, container });
+        return;
+      }
+      
+      // Extract video ID
+      const videoId = container.getAttribute('data-video-id');
+      if (!videoId) {
+        console.error('❌ No video ID found');
+        return;
+      }
+      
+      // Add playing class to show visual feedback before navigation
+      const card = container.closest('.youtube-video-card');
+      if (card) {
+        card.classList.add('playing');
+      }
+      
+      // Build the video page URL and navigate
+      const videoPageUrl = `/video?videoId=${encodeURIComponent(videoId)}`;
+      
+      // Small delay to show visual feedback
+      setTimeout(() => {
+        window.location.href = videoPageUrl;
+      }, 150);
+    };
+    
+    // Store reference to handler for future updates
+    thumbnail._currentClickHandler = dynamicClickHandler;
+    
+    // Add click event listener
+    thumbnail.addEventListener('click', dynamicClickHandler);
+    
+    // Also add a hover effect to indicate clickability - force the cursor
+    thumbnail.style.setProperty('cursor', 'pointer', 'important');
+    const card = container.closest('.youtube-video-card');
+    if (card) {
+      card.style.setProperty('cursor', 'pointer', 'important');
+    }
+    
+    // Add debugging hover events
+    thumbnail.addEventListener('mouseenter', () => {
+    });
+    
+    thumbnail.addEventListener('mouseleave', () => {
+    });
+    
+
+    
+    // Mark as initialized to prevent duplicate handlers
+    container.setAttribute('data-handlers-initialized', 'true');
+  });
+  
+
+  
+  // Add event delegation as a backup for reliability with dynamic content
+  if (!sectionContainer._youtubeClickDelegationInitialized) {
+
+    
+    const delegatedClickHandler = function(e) {
+      // Find the closest video container
+      const container = e.target.closest('.youtube-video-container');
+      if (!container) return;
+
+      // Skip if this is a post (not a video)
+      const isPost = container.closest('.youtube-video-card[data-type="post"]');
+      if (isPost) return;
+
+      // Skip if click is on favorite/bookmark buttons or their children
+      if (e.target.closest('.favorite-btn, .bookmark-btn, .youtube-video-actions')) {
+        return;
+      }
+
+      // Only handle clicks on thumbnails or their children
+      const thumbnail = e.target.closest('.youtube-thumbnail');
+      if (!thumbnail) return;
+
+      // Check if the direct handler already processed this
+      if (e.target._youtubeDirectHandlerProcessed || container._directHandlerExists) {
+        return;
+      }
+
+      
+      e.preventDefault();
+      e.stopPropagation();
+
+      const videoId = container.getAttribute('data-video-id');
+      const index = Array.from(container.parentNode.children).indexOf(container.closest('.youtube-video-card'));
+      
+
+
+      // Create the dynamic click handler logic inline
+      const extractedVideoId = videoId ? videoId.replace(/^.*[?&]v=([^&]+).*$/, '$1').replace(/^.*\/([^\/\?]+)(\?.*)?$/, '$1') : '';
+      
+      if (!extractedVideoId) {
+        console.error('❌ Could not extract video ID from:', videoId);
+        return;
+      }
+
+      // Always navigate to video page (popup mode removed)
+      // Add visual feedback
+      const card = container.closest('.youtube-video-card');
+      if (card) {
+        card.classList.add('playing');
+      }
+      
+      // Build the video page URL and navigate
+      const videoPageUrl = `/video?videoId=${encodeURIComponent(extractedVideoId)}`;
+      
+      // Small delay to show the red border before navigation
+      setTimeout(() => {
+        window.location.href = videoPageUrl;
+      }, 150);
+    };
+
+    // Store the handler reference and add it
+    sectionContainer._youtubeClickDelegationHandler = delegatedClickHandler;
+    sectionContainer.addEventListener('click', delegatedClickHandler, true); // Use capture phase
+    sectionContainer._youtubeClickDelegationInitialized = true;
+    
+  }
+
+  // Mark containers with direct handlers for delegation logic
+  sectionContainer.querySelectorAll('.youtube-video-container[data-handlers-initialized]').forEach(container => {
+    container._directHandlerExists = true;
+  });
+}
+
+// Function to stop a video by replacing its src
+function stopVideo(container) {
+  const embedContainer = container.querySelector('.youtube-embed');
+  const iframe = embedContainer?.querySelector('iframe');
+  const card = container.closest('.youtube-video-card');
+  const thumbnail = container.querySelector('.youtube-thumbnail');
+  
+  if (iframe) {
+    // Store original src if not already stored
+    if (iframe.src !== 'about:blank') {
+      iframe.dataset.originalSrc = iframe.src;
+    }
+    // Set to blank to stop video
+    iframe.src = 'about:blank';
+  }
+  
+  // Hide embed, show thumbnail
+  if (embedContainer) {
+    embedContainer.style.display = 'none';
+  }
+  if (thumbnail) {
+    thumbnail.style.display = 'block';
+  }
+  
+  // Remove playing and floating indicators from both card and container
+  if (card) {
+    card.classList.remove('playing', 'returning-from-float', 'floating-source');
+  }
+  if (container) {
+    container.classList.remove('playing', 'floating-source');
+  }
+  
+  // Remove floating state
+  if (container) {
+    container.classList.remove('floating');
+    removeDragHandlers(container);
+  }
+  
+  // Hide any upgrade overlays
+  const overlay = container.querySelector('.upgrade-overlay');
+  if (overlay) {
+    overlay.classList.remove('show');
+  }
+  
+  // Stop timer for this video
+  if (iframe) {
+    stopYouTubeTimer(iframe);
+  }
+}
+
+// Apply user video preferences
+function applyVideoPreferences() {
+  const sectionContainer = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!sectionContainer) return;
+  
+  const preferences = window.VideoPreferences?.getPreferences() || { muted: false };
+  
+  // Apply to all iframes in this YouTube feed section
+  sectionContainer.querySelectorAll('iframe').forEach((iframe) => {
+    if (iframe.src.includes('youtube.com/embed/') || iframe.src.includes('youtube-nocookie.com/embed/')) {
+      const currentSrc = iframe.src;
+      const url = new URL(currentSrc);
+      
+      // Update mute parameter
+      if (preferences.muted) {
+        url.searchParams.set('mute', '1');
+      } else {
+        url.searchParams.delete('mute');
+      }
+      
+      // Only update if different
+      if (iframe.src !== url.toString()) {
+        iframe.src = url.toString();
+      }
+    }
+  });
+}
+
+// Create premium buttons for favorites and channel subscriptions
+function createPremiumButtons() {
+  const sectionContainer = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!sectionContainer) {
+    return;
+  }
+
+  // Create favorite buttons
+  const favoritePlaceholders = sectionContainer.querySelectorAll('.favorite-button-placeholder');
+  favoritePlaceholders.forEach(placeholder => {
+    const videoId = placeholder.dataset.videoId;
+    const videoTitle = placeholder.dataset.videoTitle;
+    const videoThumbnail = placeholder.dataset.videoThumbnail;
+    const videoAuthor = placeholder.dataset.videoAuthor;
+    const videoPublished = placeholder.dataset.videoPublished;
+    const videoUrl = placeholder.dataset.videoUrl;
+    const videoDuration = placeholder.dataset.videoDuration;
+    const videoViews = placeholder.dataset.videoViews;
+
+    // Create favorite button HTML structure
+    const favoriteButtonHTML = `
+      <div class="favorite-button-container small icon" data-component-id="fav-${videoId}-${Math.random().toString(36).substr(2, 9)}">
+        <!-- Premium Gate (shown to basic members) -->
+        <div class="favorite-premium-gate" style="display: none;">
+          <div class="premium-tooltip">
+            <div class="premium-tooltip-content">
+              <div class="premium-icon">⭐</div>
+              <h4>Premium Feature</h4>
+              <p>Save videos to favorites with <strong>Premium</strong> membership</p>
+              <div class="premium-actions">
+                <a href="/membership" class="mini-upgrade-btn">
+                  🔓 Upgrade - $9.99
+                </a>
+              </div>
+            </div>
+          </div>
+          <button class="favorite-btn premium-locked" title="Premium Feature - Click to upgrade">
+            <span class="star-icon">☆</span>
+            <span class="btn-text">Save</span>
+            <span class="lock-icon">🔒</span>
+          </button>
+        </div>
+
+        <!-- Premium Member Controls -->
+        <div class="favorite-premium-controls" style="display: none;">
+          <button class="favorite-btn" data-video-id="${videoId}" title="Add to favorites">
+            <span class="star-icon">☆</span>
+            <span class="btn-text">Save</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    placeholder.innerHTML = favoriteButtonHTML;
+    
+    // Store video data for the favorite functionality
+    placeholder.dataset.videoTitle = videoTitle;
+    placeholder.dataset.videoThumbnail = videoThumbnail;
+    placeholder.dataset.videoAuthor = videoAuthor;
+    placeholder.dataset.videoPublished = videoPublished;
+    placeholder.dataset.videoUrl = videoUrl;
+    placeholder.dataset.videoDuration = videoDuration;
+    placeholder.dataset.videoViews = videoViews;
+  });
+
+  // Create channel subscribe buttons
+  const subscribePlaceholders = sectionContainer.querySelectorAll('.channel-subscribe-placeholder');
+  subscribePlaceholders.forEach(placeholder => {
+    const channelHandle = placeholder.dataset.channelHandle;
+    const channelUrl = placeholder.dataset.channelUrl;
+    const channelTitle = placeholder.dataset.channelTitle;
+
+    // Create channel subscribe button HTML structure
+    const subscribeButtonHTML = `
+      <div class="channel-subscribe-container small icon" data-component-id="sub-${channelHandle}-${Math.random().toString(36).substr(2, 9)}">
+        <!-- Premium Gate (shown to basic members) -->
+        <div class="subscribe-premium-gate" style="display: none;">
+          <div class="premium-tooltip">
+            <div class="premium-tooltip-content">
+              <div class="premium-icon">📺</div>
+              <h4>Premium Feature</h4>
+              <p>Subscribe to channels and get personalized feeds with <strong>Premium</strong> membership</p>
+              <div class="premium-actions">
+                <a href="/membership" class="mini-upgrade-btn">
+                  🔓 Upgrade - $9.99
+                </a>
+              </div>
+            </div>
+          </div>
+          <button class="subscribe-btn premium-locked" title="Premium Feature - Click to upgrade">
+            <span class="subscribe-icon">📺</span>
+            <span class="btn-text">Subscribe</span>
+            <span class="lock-icon">🔒</span>
+          </button>
+        </div>
+
+        <!-- Premium Member Controls -->
+        <div class="subscribe-premium-controls" style="display: none;">
+          <button class="subscribe-btn" data-channel-handle="${channelHandle}" data-channel-url="${channelUrl}" data-channel-title="${channelTitle}" title="Subscribe to channel">
+            <span class="subscribe-icon">📺</span>
+            <span class="btn-text">Subscribe</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    placeholder.innerHTML = subscribeButtonHTML;
+  });
+
+  // Create member favorite buttons (new system)
+  const memberFavoritePlaceholders = sectionContainer.querySelectorAll('.member-favorite-buttons');
+  memberFavoritePlaceholders.forEach(placeholder => {
+    const videoId = placeholder.dataset.videoId;
+    const videoTitle = placeholder.dataset.videoTitle;
+    const videoThumbnail = placeholder.dataset.videoThumbnail;
+    const channelTitle = placeholder.dataset.channelTitle;
+    const channelId = placeholder.dataset.channelId;
+    const videoUrl = placeholder.dataset.videoUrl;
+
+
+
+    // Create member favorite buttons HTML structure
+    const memberFavoriteHTML = `
+      <div class="member-favorite-container" style="display: none; gap: 8px; align-items: center; justify-content: flex-end; padding: 4px;">
+        <button class="member-favorite-btn" 
+                data-video-id="${videoId}" 
+                title="Add to Favorites"
+                style="background: rgba(0, 0, 0, 0.8); border: none; border-radius: 4px; color: #fff; cursor: pointer; padding: 6px; transition: all 0.2s ease; display: flex; align-items: center; backdrop-filter: blur(4px);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));">
+            <polygon points="12,2 15,8 22,9 17,14 18,21 12,18 6,21 7,14 2,9 9,8"></polygon>
+          </svg>
+        </button>
+        
+        ${(channelTitle && channelTitle.trim() !== '') && (channelId && channelId.trim() !== '') ? `
+          <button class="member-bookmark-btn" 
+                  data-channel-id="${channelId}"
+                  data-channel-title="${channelTitle}"
+                  title="Bookmark Channel"
+                  style="background: rgba(0, 0, 0, 0.8); border: none; border-radius: 4px; color: #fff; cursor: pointer; padding: 6px; transition: all 0.2s ease; display: flex; align-items: center; backdrop-filter: blur(4px);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        ` : `
+          <button class="member-bookmark-btn-fallback" 
+                  data-video-url="${videoUrl}"
+                  data-video-id="${videoId}"
+                  title="Bookmark Channel (Smart Detection)"
+                  style="background: rgba(0, 0, 0, 0.8); border: none; border-radius: 4px; color: #fff; cursor: pointer; padding: 6px; transition: all 0.2s ease; display: flex; align-items: center; backdrop-filter: blur(4px);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
+        `}
+      </div>
+    `;
+
+    placeholder.innerHTML = memberFavoriteHTML;
+    
+    // Store data for easy access
+    placeholder.dataset.videoTitle = videoTitle;
+    placeholder.dataset.videoThumbnail = videoThumbnail;
+    placeholder.dataset.channelTitle = channelTitle;
+    placeholder.dataset.channelId = channelId;
+    placeholder.dataset.videoUrl = videoUrl;
+  });
+
+  // Initialize the premium button functionality
+  initializePremiumButtons(sectionContainer);
+  
+  // Initialize member favorite buttons
+  initializeMemberFavoriteButtons(sectionContainer);
+}
+
+// Initialize premium button functionality
+function initializePremiumButtons(container) {
+  // Initialize favorite buttons
+  const favoriteContainers = container.querySelectorAll('.favorite-button-container[data-component-id]');
+  favoriteContainers.forEach(favContainer => {
+    const componentId = favContainer.dataset.componentId;
+    if (componentId && window.PremiumFavoriteButton) {
+      new window.PremiumFavoriteButton(componentId);
+    }
+  });
+
+  // Initialize subscribe buttons  
+  const subscribeContainers = container.querySelectorAll('.channel-subscribe-container[data-component-id]');
+  subscribeContainers.forEach(subContainer => {
+    const componentId = subContainer.dataset.componentId;
+    if (componentId && window.PremiumChannelSubscribeButton) {
+      new window.PremiumChannelSubscribeButton(componentId);
+    }
+  });
+}
+
+// Show premium notice for favorite/bookmark buttons
+function showPremiumNotice(container) {
+  const memberContainers = container.querySelectorAll('.member-favorite-container');
+  
+  memberContainers.forEach(memberContainer => {
+    // Show the container but grey it out and disable it
+    memberContainer.style.display = 'flex';
+    memberContainer.style.opacity = '0.5';
+    memberContainer.style.pointerEvents = 'none';
+    memberContainer.style.filter = 'grayscale(1)';
+    
+    // Add a premium notice overlay
+    const premiumOverlay = document.createElement('div');
+    premiumOverlay.style.cssText = `
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+    `;
+    premiumOverlay.innerHTML = '🔒 Premium';
+    
+    // Make the container relative so we can position the overlay
+    memberContainer.style.position = 'relative';
+    memberContainer.appendChild(premiumOverlay);
+    
+    // Add click handler to redirect to membership page
+    memberContainer.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.open('/membership/', '_blank');
+    });
+    
+    // Change cursor to indicate it's clickable for upgrade
+    memberContainer.style.cursor = 'pointer';
+  });
+}
+
+// Initialize member favorite buttons (new system)
+async function initializeMemberFavoriteButtons(container) {
+  // Import the membership utilities
+  try {
+    const { MembershipUtils } = await import('/membershipUtils.js');
+    
+    // Check membership status and show buttons only for Premium members
+    const membershipStatus = await MembershipUtils.checkMembershipStatus();
+    
+
+    
+    if (!membershipStatus.isValid) {
+      // Show premium notice for non-members
+      showPremiumNotice(container);
+      return;
+    }
+    
+    // Check if user is Premium (favorites are Premium-only, NOT for Unlimited)
+    const accessLevel = membershipStatus.accessLevel || membershipStatus.token?.accessLevel || membershipStatus.tier;
+
+    
+    if (accessLevel !== 'premium') {
+      // Show premium notice for unlimited and other non-premium users
+      showPremiumNotice(container);
+      return;
+    }
+    
+    
+
+    // Show all member favorite containers for Premium users only
+    const memberContainers = container.querySelectorAll('.member-favorite-container');
+    
+    memberContainers.forEach(memberContainer => {
+      memberContainer.style.display = 'flex';
+      
+      const placeholder = memberContainer.closest('.member-favorite-buttons');
+      const videoId = placeholder.dataset.videoId;
+      const videoTitle = placeholder.dataset.videoTitle;
+      const videoThumbnail = placeholder.dataset.videoThumbnail;
+      const channelTitle = placeholder.dataset.channelTitle;
+      const channelId = placeholder.dataset.channelId;
+      const videoUrl = placeholder.dataset.videoUrl;
+      
+      
+      
+      // Add event listeners
+      const favoriteBtn = memberContainer.querySelector('.member-favorite-btn');
+
+      // Favorite button
+      favoriteBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const favorites = JSON.parse(localStorage.getItem('memberFavorites') || '[]');
+        const exists = favorites.some(fav => fav.videoId === videoId);
+        
+        if (exists) {
+          const filtered = favorites.filter(fav => fav.videoId !== videoId);
+          localStorage.setItem('memberFavorites', JSON.stringify(filtered));
+        } else {
+          favorites.unshift({
+            videoId,
+            title: videoTitle,
+            thumbnail: videoThumbnail,
+            channelTitle: channelTitle || 'Unknown Channel',
+            url: videoUrl,
+            dateAdded: new Date().toISOString()
+          });
+          localStorage.setItem('memberFavorites', JSON.stringify(favorites));
+        }
+        
+        // Update button appearance
+        updateMemberButtonStates(memberContainer, videoId, placeholder.dataset.channelId);
+      });
+
+      // Bookmark button (with channel info)
+      const bookmarkBtn = memberContainer.querySelector('.member-bookmark-btn');
+      bookmarkBtn?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        try {
+          const channelId = bookmarkBtn.dataset.channelId;
+          const channelTitle = bookmarkBtn.dataset.channelTitle;
+          
+
+          
+          const { FavoritesManager } = await import('/membershipUtils.js');
+          const isBookmarked = FavoritesManager.isChannelBookmarked(channelId);
+          
+          if (isBookmarked) {
+            FavoritesManager.removeChannel(channelId);
+          } else {
+            const channel = {
+              channelId: channelId,
+              channelName: channelTitle || 'Unknown Channel',
+              addedAt: Date.now()
+            };
+            FavoritesManager.addChannel(channel);
+          }
+          
+          // Update the current button state
+          updateMemberButtonStates(memberContainer, videoId, channelId);
+        } catch (error) {
+          console.error('❌ YouTubeFeed: Error bookmarking channel:', error);
+        }
+      });
+
+      // Fallback bookmark button (requires channel resolution)
+      const bookmarkFallbackBtn = memberContainer.querySelector('.member-bookmark-btn-fallback');
+      bookmarkFallbackBtn?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        try {
+          const videoUrl = bookmarkFallbackBtn.dataset.videoUrl;
+          const videoId = bookmarkFallbackBtn.dataset.videoId;
+          
+          
+          // Use the resolveAndBookmarkChannel function to get channel info
+          const channel = await resolveAndBookmarkChannel(null, null, videoUrl);
+          
+          const { FavoritesManager } = await import('/membershipUtils.js');
+          const isBookmarked = FavoritesManager.isChannelBookmarked(channel.channelId);
+          
+          if (isBookmarked) {
+            FavoritesManager.removeChannel(channel.channelId);
+
+          } else {
+            FavoritesManager.addChannel(channel);
+
+          }
+          
+          // Update the placeholder dataset with the resolved channel ID for future reference
+          placeholder.dataset.channelId = channel.channelId;
+          placeholder.dataset.channelTitle = channel.channelName;
+          
+          // Update the current button state
+          updateMemberButtonStates(memberContainer, videoId, channel.channelId);
+        } catch (error) {
+          console.error('❌ YouTubeFeed: Error with fallback bookmark:', error);
+        }
+      });
+
+      // Update button states
+      updateMemberButtonStates(memberContainer, videoId, channelId);
+    });
+  } catch (error) {
+    console.error('❌ YouTubeFeed: Error checking membership for favorites:', error);
+  }
+}
+
+// Update all videos from the same channel when bookmark state changes
+function updateAllChannelBookmarkStates(sectionContainer, channelId) {
+  if (!channelId) {
+    return;
+  }
+  
+  
+  // Find all member favorite containers in this section
+  const allMemberContainers = sectionContainer.querySelectorAll('.member-favorite-container');
+
+  
+  let updatedCount = 0;
+  allMemberContainers.forEach(memberContainer => {
+    const placeholder = memberContainer.closest('.member-favorite-buttons');
+    const videoId = placeholder.dataset.videoId;
+    const videoChannelId = placeholder.dataset.channelId;
+    
+
+    
+    // Update videos that match this channel ID
+    if (videoChannelId === channelId) {
+      updateMemberButtonStates(memberContainer, videoId, channelId);
+      updatedCount++;
+    }
+  });
+  
+}
+
+// Update all placeholders with resolved channel information
+function updateAllChannelPlaceholderData(sectionContainer, videoUrl, resolvedChannelId, resolvedChannelName) {
+  if (!resolvedChannelId) return;
+  
+
+  
+  // Find all placeholders that have the same video URL or empty channel ID
+  const allPlaceholders = sectionContainer.querySelectorAll('.member-favorite-buttons');
+  
+  allPlaceholders.forEach(placeholder => {
+    const placeholderVideoUrl = placeholder.dataset.videoUrl;
+    const placeholderChannelId = placeholder.dataset.channelId;
+    
+    // If this placeholder has the same video URL or empty channel ID and same domain
+    if (placeholderVideoUrl && placeholderVideoUrl.includes('youtube.com/watch') && 
+        (!placeholderChannelId || placeholderChannelId === '')) {
+      
+      // Extract video ID to check if they're from the same channel
+      const placeholderVideoId = placeholderVideoUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+      const targetVideoId = videoUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+      
+      // For now, we'll be conservative and only update if it's the exact same video
+      // In the future, we could make API calls to check if videos are from the same channel
+      if (placeholderVideoId === targetVideoId) {
+        placeholder.dataset.channelId = resolvedChannelId;
+        placeholder.dataset.channelTitle = resolvedChannelName;
+      }
+    }
+  });
+}
+
+// Enhanced channel resolution function using POST API
+async function resolveAndBookmarkChannel(channelId, channelTitle, videoUrl, manualInput = null) {
+  try {
+    let resolvedChannelId = channelId;
+    let resolvedChannelName = channelTitle || 'Unknown Channel';
+    
+    // If manual input provided, use that for resolution
+    if (manualInput) {
+      
+      const response = await fetch('/api/youtube-feed', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'resolve',
+          input: manualInput.trim()
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (data.channelId) {
+        resolvedChannelId = data.channelId;
+        resolvedChannelName = data.name || data.channelId;
+      } else {
+        throw new Error('No channel ID returned from API');
+      }
+    } 
+    // If we only have a video URL, try to resolve channel from it
+    else if (videoUrl && !channelId) {
+      
+      const response = await fetch('/api/youtube-feed', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'resolve',
+          input: videoUrl
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (data.channelId) {
+        resolvedChannelId = data.channelId;
+        resolvedChannelName = data.name || data.channelId;
+      } else {
+        throw new Error('No channel ID returned from video URL');
+      }
+    }
+    // If we have channel ID but want to get better channel name
+    else if (channelId && (!channelTitle || channelTitle === 'Unknown Channel')) {
+      
+      
+      try {
+        // Try to get enhanced channel info using our POST API
+        const response = await fetch('/api/youtube-feed', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'resolve',
+            input: channelId
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.name && !data.error) {
+            resolvedChannelName = data.name;
+          }
+        }
+      } catch (enhanceError) {
+        // Continue with existing channel info
+      }
+    }
+    
+    // Create the channel object
+    const channel = {
+      channelId: resolvedChannelId,
+      channelName: resolvedChannelName,
+      addedAt: Date.now()
+    };
+    
+
+    
+  } catch (error) {
+    console.error('❌ YouTubeFeed: Channel resolution failed:', error);
+    throw new Error(`Failed to resolve channel: ${error.message}`);
+  }
+}
+
+// Update member button states
+function updateMemberButtonStates(container, videoId, channelId) {
+  const favoriteBtn = container.querySelector('.member-favorite-btn');
+  
+  // Update favorite button
+  if (favoriteBtn) {
+    const favorites = JSON.parse(localStorage.getItem('memberFavorites') || '[]');
+    const isFavorited = favorites.some(fav => fav.videoId === videoId);
+    
+    if (isFavorited) {
+      favoriteBtn.style.background = 'rgba(255, 193, 7, 0.9)';
+      favoriteBtn.style.backdropFilter = 'blur(4px)';
+      favoriteBtn.querySelector('svg').style.fill = 'currentColor';
+      favoriteBtn.querySelector('svg').style.stroke = 'currentColor';
+      favoriteBtn.setAttribute('title', 'Remove from Favorites');
+    } else {
+      favoriteBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+      favoriteBtn.style.backdropFilter = 'blur(4px)';
+      favoriteBtn.querySelector('svg').style.fill = 'none';
+      favoriteBtn.querySelector('svg').style.stroke = 'currentColor';
+      favoriteBtn.setAttribute('title', 'Add to Favorites');
+    }
+  }
+  
+  // Update bookmark button states
+  if (channelId) {
+    const bookmarkBtn = container.querySelector('.member-bookmark-btn');
+    const bookmarkFallbackBtn = container.querySelector('.member-bookmark-btn-fallback');
+    
+    const channels = JSON.parse(localStorage.getItem('memberChannels') || '[]');
+    const isBookmarked = channels.some(ch => ch.channelId === channelId);
+    
+    
+    
+    // Update regular bookmark button
+    if (bookmarkBtn) {
+      if (isBookmarked) {
+        bookmarkBtn.style.background = 'red';
+        bookmarkBtn.style.backdropFilter = 'blur(4px)';
+        bookmarkBtn.querySelector('svg').style.fill = 'currentColor';
+        bookmarkBtn.querySelector('svg').style.stroke = 'currentColor';
+        bookmarkBtn.setAttribute('title', 'Remove Channel Bookmark');
+        
+      } else {
+        bookmarkBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+        bookmarkBtn.style.backdropFilter = 'blur(4px)';
+        bookmarkBtn.querySelector('svg').style.fill = 'none';
+        bookmarkBtn.querySelector('svg').style.stroke = 'currentColor';
+        bookmarkBtn.setAttribute('title', 'Bookmark Channel');
+        
+      }
+    }
+    
+    // Update fallback bookmark button
+    if (bookmarkFallbackBtn) {
+      if (isBookmarked) {
+        bookmarkFallbackBtn.style.background = 'red';
+        bookmarkFallbackBtn.style.backdropFilter = 'blur(4px)';
+        bookmarkFallbackBtn.querySelector('svg').style.fill = 'currentColor';
+        bookmarkFallbackBtn.querySelector('svg').style.stroke = 'currentColor';
+        bookmarkFallbackBtn.setAttribute('title', 'Remove Channel Bookmark (Smart Detection)');
+        
+      } else {
+        bookmarkFallbackBtn.style.background = 'rgba(0, 0, 0, 0.8)';
+        bookmarkFallbackBtn.style.backdropFilter = 'blur(4px)';
+        bookmarkFallbackBtn.querySelector('svg').style.fill = 'none';
+        bookmarkFallbackBtn.querySelector('svg').style.stroke = 'currentColor';
+        bookmarkFallbackBtn.setAttribute('title', 'Bookmark Channel (Smart Detection)');
+        
+      }
+    }
+  } else {
+    
+  }
+}
+
+// Handle responsive skeleton loading cards
+function setupSkeletonCards() {
+  const sectionContainer = document.getElementById(sectionId);
+  if (!sectionContainer) return;
+  
+  // Fix loading container view mode based on localStorage
+  const loadingContainer = document.getElementById(`youtube-loading-${sectionId}`);
+  if (loadingContainer) {
+    const storageKey = `viewMode-${sectionId}`;
+    const storedValue = localStorage.getItem(storageKey);
+    if (storedValue) {
+      if (storedValue === 'swipe') {
+        loadingContainer.classList.remove('grid-container');
+        loadingContainer.classList.add('slider');
+      } else {
+        loadingContainer.classList.remove('slider');
+        loadingContainer.classList.add('grid-container');
+      }
+    }
+  }
+  
+  const skeletonCards = sectionContainer.querySelectorAll('.skeleton-card');
+  const isSlider = sectionContainer.querySelector('.section-content.slider');
+  if (skeletonCards.length === 0) return;
+  
+  function updateSkeletonVisibility() {
+    const screenWidth = window.innerWidth;
+    
+    let cardsToShow;
+    
+    if (isSlider) {
+      // For slider mode, show fewer cards as they scroll horizontally
+      if (screenWidth < 38 * 16) { // mobile
+        cardsToShow = 2;
+      } else if (screenWidth < 48 * 16) { // tablet
+        cardsToShow = 3;
+      } else { // desktop
+        cardsToShow = 4;
+      }
+    } else {
+      // For grid mode, show more cards as they stack vertically
+      if (screenWidth < 38 * 16) { // mobile
+        cardsToShow = 3;
+      } else if (screenWidth < 48 * 16) { // tablet
+        cardsToShow = 4;
+      } else if (screenWidth < 64 * 16) { // desktop
+        cardsToShow = 6;
+      } else { // large desktop
+        cardsToShow = 8;
+      }
+    }
+    
+    // Show appropriate number of skeleton cards
+    skeletonCards.forEach((card, index) => {
+      card.style.display = index < cardsToShow ? 'flex' : 'none';
+    });
+  }
+  
+  // Initial setup
+  updateSkeletonVisibility();
+  
+  // Update on window resize
+  window.addEventListener('resize', updateSkeletonVisibility);
+}
+
+// Load videos when page loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setupSkeletonCards();
+    loadYouTubeVideos();
+    
+    // Robust initialization with retry mechanism
+    const initializeWithRetry = (attempt = 1) => {
+      try {
+        initializeVideoHandlers();
+        createPremiumButtons();
+        
+        // Check if all videos are properly initialized after a delay
+        setTimeout(() => {
+          const allContainers = document.querySelectorAll(`[data-section-id="${sectionId}"] .youtube-video-container`);
+          const initializedContainers = document.querySelectorAll(`[data-section-id="${sectionId}"] .youtube-video-container[data-handlers-initialized]`);
+          
+
+          
+          if (initializedContainers.length < allContainers.length && attempt < 3) {
+
+          } else if (attempt >= 3 && initializedContainers.length < allContainers.length) {
+
+            // Force event delegation to be available for any missed containers
+            const sectionContainer = document.querySelector(`[data-section-id="${sectionId}"]`);
+            if (sectionContainer && !sectionContainer._youtubeClickDelegationInitialized) {
+
+              sectionContainer._youtubeClickDelegationInitialized = false; // Reset to allow re-init
+              initializeVideoHandlers(); // This will set up delegation
+            }
+          } else {
+
+          }
+        }, 500);
+        
+      } catch (error) {
+        if (attempt < 3) {
+          setTimeout(() => initializeWithRetry(attempt + 1), 1000);
+        }
+      }
+    };
+    
+    initializeWithRetry();
+  });
+} else {
+  setupSkeletonCards();
+  loadYouTubeVideos();
+  
+  // Same robust initialization for non-loading state
+  const initializeWithRetry = (attempt = 1) => {
+    try {
+      initializeVideoHandlers();
+      createPremiumButtons();
+      
+      setTimeout(() => {
+        const allContainers = document.querySelectorAll(`[data-section-id="${sectionId}"] .youtube-video-container`);
+        const initializedContainers = document.querySelectorAll(`[data-section-id="${sectionId}"] .youtube-video-container[data-handlers-initialized]`);
+        
+
+        
+        // Check for the specific intermittent pattern the user reported
+        if (allContainers.length > 5) {
+          let clickableCount = 0;
+          let unclickableCount = 0;
+          
+          allContainers.forEach((container, index) => {
+            const thumbnail = container.querySelector('.youtube-thumbnail');
+            const isClickable = thumbnail && thumbnail.style.cursor === 'pointer' && thumbnail._currentClickHandler;
+            
+            if (isClickable) {
+              clickableCount++;
+            } else {
+              unclickableCount++;
+            }
+          });
+          
+          const failureRate = unclickableCount / allContainers.length;
+
+          
+          // If we have the intermittent pattern (some clickable, some not), force-fix everything
+          if (failureRate > 0.3 && failureRate < 0.8) {
+            window.forceFixAllVideos && window.forceFixAllVideos(sectionId);
+          }
+        }
+        
+        if (initializedContainers.length < allContainers.length && attempt < 3) {
+
+          initializeWithRetry(attempt + 1);
+        } else {
+
+        }
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Error during initialization attempt', attempt, ':', error);
+      if (attempt < 3) {
+        setTimeout(() => initializeWithRetry(attempt + 1), 1000);
+      }
+    }
+  };
+  
+  initializeWithRetry();
+}
+
+
+
+// Reload videos after navigation  
+document.addEventListener('astro:after-swap', () => {
+  loadYouTubeVideos();
+});
+
+// Add global event listener to stop all videos when requested by other components
+window.addEventListener('stopAllVideos', (event) => {
+  const customEvent = event;
+
+  
+  // Stop all videos in this YouTubeFeed
+  document.querySelectorAll('.youtube-video-container').forEach(container => {
+    const embed = container.querySelector('.youtube-embed');
+    const thumbnail = container.querySelector('.youtube-thumbnail');
+    const card = container.closest('.youtube-video-card');
+    const iframe = embed?.querySelector('iframe');
+    
+    if (embed && thumbnail) {
+      embed.style.display = 'none';
+      thumbnail.style.display = 'block';
+      if (card) {
+        card.classList.remove('playing');
+        card.style.border = '';
+        card.style.boxShadow = '';
+        card.style.transform = '';
+        card.style.background = '';
+        card.style.zIndex = '';
+        card.style.position = '';
+        card.style.outline = '';
+      }
+      // Stop iframe
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+          iframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+        } catch (e) {
+        }
+      }
+    }
+  });
+  
+  // Stop YouTube timer
+  stopYouTubeTimer();
+  
+  // Close any floating players
+  if (currentFloatingVideo) {
+    closeFloatingPlayer();
+  }
+});
+
+// Listen for video preference changes and update links accordingly
+window.addEventListener('video-preferences-changed', (event) => {
+
+});
+
+// Add debugging for localStorage changes
+if (typeof window !== 'undefined') {
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function(key, value) {
+    if (key === 'videoModePreference') {
+
+      // Dispatch a custom event for our handlers to pick up
+      setTimeout(() => {
+        updateAllVideoLinks();
+        // Also dispatch an event for any other listeners
+        window.dispatchEvent(new CustomEvent('video-preferences-changed', {
+          detail: { videoModePreference: value }
+        }));
+      }, 100);
+    }
+    originalSetItem.apply(this, arguments);
+  };
+  
+  // ADDITIONAL: Listen for storage events from other tabs/windows
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'videoModePreference') {
+      setTimeout(() => {
+        updateAllVideoLinks();
+      }, 100);
+    }
+  });
+  
+  
+  
+  // Add a function to force preference refresh
+  window.refreshVideoPreferences = function() {
+    updateAllVideoLinks();
+  };
+}
+
+// Function to update all video links based on current preference
+function updateAllVideoLinks() {
+
+  
+  // Find all video containers in this feed
+  const sectionContainer = document.querySelector(`[data-section-id="${sectionId}"]`);
+  if (!sectionContainer) return;
+  
+  const videoContainers = sectionContainer.querySelectorAll('.youtube-video-container[data-video-id]');
+  
+  videoContainers.forEach((container, index) => {
+    const videoId = container.getAttribute('data-video-id');
+    if (!videoId) return;
+    
+    // Find the thumbnail (which is the clickable element)
+    const thumbnail = container.querySelector('.youtube-thumbnail');
+    if (!thumbnail) return;
+    
+    // Remove old click handlers
+    const oldHandler = thumbnail._currentClickHandler;
+    if (oldHandler) {
+      thumbnail.removeEventListener('click', oldHandler);
+    }
+    
+    // Create new dynamic click handler that always goes to video page (popup mode removed)
+    const dynamicClickHandler = async () => {
+      
+      // FIRST: Always stop all other videos immediately on ANY click
+      stopAllOtherVideos(container);
+      
+      // Always navigate to video page (popup mode removed)
+      // Add playing class to show red border before navigation
+      const card = container.closest('.youtube-video-card');
+      if (card) {
+        card.classList.add('playing');
+      }
+      
+      // Extract video ID and navigate to video page
+      if (!videoId) {
+        console.error('❌ No video ID found');
+        return;
+      }
+      
+      // Build the video page URL
+      const videoPageUrl = `/video?videoId=${encodeURIComponent(videoId)}`;
+      
+      // Small delay to show the red border before navigation
+      setTimeout(() => {
+        window.location.href = videoPageUrl;
+      }, 150);
+    };
+    
+    // Store reference to new handler for future cleanup
+    thumbnail._currentClickHandler = dynamicClickHandler;
+    
+    // Attach new handler
+    thumbnail.addEventListener('click', dynamicClickHandler);
+    
+  });
+  
+}
+
+// Helper function to stop all videos except the target one
+function stopAllOtherVideos(targetContainer) {
+
+  
+  // CRITICAL: Stop ALL scroll monitoring and reset global state IMMEDIATELY
+  if (scrollCheckInterval) {
+    clearInterval(scrollCheckInterval);
+    scrollCheckInterval = null;
+  }
+  
+  // CRITICAL: Reset global playing container to prevent conflicts
+  if (currentPlayingContainer && currentPlayingContainer !== targetContainer) {
+    currentPlayingContainer = null;
+  }
+  
+  // STEP 1: NUCLEAR OPTION - Find ALL videos with iframes that aren't blank
+  const allVideoContainers = document.querySelectorAll('.youtube-video-container');
+  const activeVideos = [];
+  
+  allVideoContainers.forEach(container => {
+    const iframe = container.querySelector('iframe');
+    const videoId = container.getAttribute('data-video-id');
+    const targetVideoId = targetContainer?.getAttribute('data-video-id');
+    
+    // Skip if this is the target container
+    if (container === targetContainer || videoId === targetVideoId) {
+      return;
+    }
+    
+    // Check if this video has an active iframe
+    if (iframe && iframe.src && iframe.src !== 'about:blank') {
+      activeVideos.push({ container, iframe, videoId });
+    }
+  });
+  
+
+  
+  // STEP 2: Stop ALL active videos aggressively
+  activeVideos.forEach(({ container, iframe, videoId }) => {
+
+    
+    // Stop iframe immediately with multiple methods
+    try {
+      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      iframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+    } catch (e) {
+
+    }
+    
+    // Force blank the iframe
+    iframe.src = 'about:blank';
+    
+    // Clear any timers
+    if (videoId && activeVideoTimers.has(videoId)) {
+      const timerInfo = activeVideoTimers.get(videoId);
+      if (timerInfo.timer) {
+        clearTimeout(timerInfo.timer);
+      }
+      activeVideoTimers.delete(videoId);
+    }
+    
+    // Hide embed, show thumbnail
+    const embed = container.querySelector('.youtube-embed');
+    const thumbnail = container.querySelector('.youtube-thumbnail');
+    if (embed) embed.style.display = 'none';
+    if (thumbnail) thumbnail.style.display = 'block';
+    
+    // Remove ALL states - floating and regular
+    const card = container.closest('.youtube-video-card');
+    if (card) card.classList.remove('playing', 'floating-source');
+    container.classList.remove('playing', 'floating');
+    
+    // FORCE remove floating styles even if class wasn't removed
+    container.style.position = '';
+    container.style.top = '';
+    container.style.right = '';
+    container.style.left = '';
+    container.style.bottom = '';
+    container.style.width = '';
+    container.style.height = '';
+    container.style.zIndex = '';
+    container.style.transform = '';
+    
+    // Remove floating controls
+    const header = container.querySelector('.floating-header');
+    const closeBtn = container.querySelector('.floating-close');
+    const timerDisplay = container.querySelector('.floating-timer');
+    if (header) header.remove();
+    if (closeBtn) closeBtn.remove();
+    if (timerDisplay) timerDisplay.remove();
+    
+    // Remove drag handlers
+    removeDragHandlers(container);
+    
+
+  });
+  
+
+}
+
+</script>

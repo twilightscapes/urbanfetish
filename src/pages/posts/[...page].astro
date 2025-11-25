@@ -1,39 +1,62 @@
 ---
+export const prerender = true;
 import type { GetStaticPaths, Page } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getEntry } from 'astro:content';
 import Pagination from "@/components/Paginator.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
+import ViewModeSwitch from "@/components/ViewModeSwitch.jsx";
 import { getAllPosts, getUniqueTags, groupPostsByYear, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 
-
-
-
-
-const language = await getEntry('language', 'index');
-
-export const getStaticPaths = (async ({ paginate }) => {
-	const siteSettings = await getEntry('siteSettings', 'main');
-const { MAX_POSTS_PER_PAGE } = siteSettings.data;
-
-
-
-	const allPosts = await getAllPosts();
-	const allPostsByDate = sortMDByDate(allPosts);
-	const uniqueTags = getUniqueTags(allPosts);
-	return paginate(allPostsByDate, { pageSize: MAX_POSTS_PER_PAGE, props: { uniqueTags } });
-}) satisfies GetStaticPaths;
-
-interface Props {
-	page: Page<CollectionEntry<"post">>;
-	uniqueTags: string[];
+interface SiteSettings {
+  MAX_POSTS_PER_PAGE: number;
+  defaultView: 'grid' | 'swipe';
+  showTags: boolean;
+  showDates: boolean;
 }
 
-const { page, uniqueTags } = Astro.props;
+export const getStaticPaths = (async ({ paginate }) => {
+  const siteSettings = await getEntry('siteSettings', 'main');
+
+  // Define settings with fallbacks
+  const settings: SiteSettings = {
+    MAX_POSTS_PER_PAGE: siteSettings?.data?.MAX_POSTS_PER_PAGE ?? 10,
+    defaultView: siteSettings?.data?.defaultView ?? 'grid',
+    showTags: siteSettings?.data?.showTags ?? true,
+    showDates: siteSettings?.data?.showDates ?? true
+  };
+
+  const allPosts = await getAllPosts();
+  const allPostsByDate = sortMDByDate(allPosts);
+  const uniqueTags = getUniqueTags(allPosts);
+  
+  return paginate(allPostsByDate, { 
+    pageSize: settings.MAX_POSTS_PER_PAGE,
+    props: { 
+      uniqueTags, 
+      defaultView: settings.defaultView,
+      showTags: settings.showTags,
+      showDates: settings.showDates
+    } 
+  });
+}) satisfies GetStaticPaths;
+
+// Get language settings for the page content
+const language = await getEntry('language', 'index');
+
+interface Props {
+  page: Page<CollectionEntry<"post">>;
+  uniqueTags: string[];
+  defaultView: string;
+  showTags: boolean;
+  showDates: boolean;
+}
+
+const { page, uniqueTags, defaultView, showTags, showDates } = Astro.props;
 
 const meta = {
-	description: "Read my collection of posts and the things that interest me",
+	description: "Collection of posts",
 	title: "Posts",
 };
 
@@ -55,18 +78,23 @@ const paginationProps = {
 const groupedByYear = groupPostsByYear(page.data);
 const descYearKeys = Object.keys(groupedByYear).sort((a, b) => +b - +a);
 
-const siteSettings = await getEntry('siteSettings', 'main');
-const { defaultView, showTags, showDates } = siteSettings.data;
 ---
 
-<PageLayout meta={meta}>
-
-	
-		<br />
-<span class="prose prose-lg dark:prose-invert">
-		<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="">
+<PageLayout meta={meta} themeMode="user">
+	<br />
+	<span class="">
+		<div data-section-id="posts-page">
+			<div class="posts-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 1rem;">
+				<h1 class="title text-2xl" style="margin: 0; flex: 1;">Posts</h1>
+				<ViewModeSwitch 
+					sectionId="posts-page" 
+					defaultView={defaultView} 
+					client:load
+				/>
+			</div>
 			
-			<div class="sliderSpacer"></div>
+			<div class={`contentpanel section-content ${defaultView === 'swipe' ? 'slider' : 'grid-container'}`} style="">
+				<div class="sliderSpacer"></div>
 				{descYearKeys.map((yearKey) => (
 					<>
 						{typeof showDates !== 'undefined' && showDates && (
@@ -84,6 +112,7 @@ const { defaultView, showTags, showDates } = siteSettings.data;
 					<Pagination {...paginationProps} />
 				</div>
 			</div>
+		</div>
 		{typeof showTags !== 'undefined' && showTags && (
 <div class="">
 		{!!uniqueTags.length && (
@@ -105,9 +134,9 @@ const { defaultView, showTags, showDates } = siteSettings.data;
 						<path d="M17.573 18.407l2.834 -2.834a2.025 2.025 0 0 0 0 -2.864l-7.117 -7.116" />
 						<path d="M6 9h-.01" />
 					</svg>
-					{language.data.tags}
+					{language?.data?.tags ?? "Tags"}
 				</h2>
-				<ul class="flex flex-wrap gap-2 text-bgColor button" style="">
+				<ul class="flex flex-wrap gap-2 " style="">
 					{uniqueTags.map((tag) => (
 						<li>
 							<a
@@ -122,7 +151,7 @@ const { defaultView, showTags, showDates } = siteSettings.data;
 				</ul>
 				<span class="mt-4 block sm:text-start" style="width:170px; text-align: right; display:flex; justify-content: end;">
 					<a aria-label="View all blog categories" class="sm:hover:text-accent" href="/tags/">
-						{language.data.viewall} →
+						{language?.data?.viewall} →
 					</a>
 				</span>
 			</aside>

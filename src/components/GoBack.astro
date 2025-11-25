@@ -1,34 +1,153 @@
 ---
 import { getEntry } from 'astro:content';
 const language = await getEntry('language', 'index');
-
 ---
-
-<script>
-  const goBackButton = document.getElementById('gobacker');
-  if (goBackButton) {
-    goBackButton.addEventListener('click', () => {
-      history.back();
-    });
-
-    // Check if we can go back
-    if (window.history.length > 1) {
-      goBackButton.style.display = 'inline-flex';
-    } else {
-      goBackButton.style.display = 'none';
-    }
-  }
-</script>
-</script>
 
 <button
   id="gobacker"
+  type="button"
   class="flex w-10 h-10 p4 items-center justify-center rounded-md ring-zinc-400 hover:ring-2 transition-all"
-  style="display: none; bottom:0; flex-direction: column;"
+  style="display: none; bottom:1vh; flex-direction: column; touch-action: manipulation; -webkit-tap-highlight-color: transparent; isolation: isolate; position: relative; z-index: 9999;"
+  aria-label="Go Back"
+  data-astro-back
 >
-    <svg class="w-8 h-8" aria-label="Go Back" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M20 10v4h-9l3.5 3.5l-2.42 2.42L4.16 12l7.92-7.92L14.5 6.5L11 10z"/></svg>
+    <svg class="w-8 h-8" aria-label="Go Back" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="pointer-events: none;"><path fill="currentColor" d="M20 10v4h-9l3.5 3.5l-2.42 2.42L4.16 12l7.92-7.92L14.5 6.5L11 10z"/></svg>
   
-<span class="--theme-header" style="font-size:10px; font-weight: bold;">{language.data.goback}</span>
+<span class="--theme-header" style="font-size:10px; font-weight: bold; pointer-events: none;">{language?.data?.goback}</span>
 </button>
+
+<script>
+  // Store navigation state to avoid Safari about:blank issues
+  let navigationStack: string[] = [];
+  
+  function initGoBackButton() {
+    const goBackButton = document.getElementById('gobacker');
+    if (!goBackButton) return;
+
+    // Remove any existing listeners first
+    const newButton = goBackButton.cloneNode(true) as HTMLElement;
+    if (goBackButton.parentNode) {
+      goBackButton.parentNode.replaceChild(newButton, goBackButton);
+    } else {
+      return;
+    }
+    
+    // Track navigation for reliable back button
+    function trackNavigation() {
+      const currentUrl = window.location.href;
+      const storedStack = sessionStorage.getItem('nav-stack');
+      
+      if (storedStack) {
+        try {
+          navigationStack = JSON.parse(storedStack);
+        } catch (e) {
+          navigationStack = [];
+        }
+      }
+      
+      // Don't add the same URL consecutively
+      if (navigationStack.length === 0 || navigationStack[navigationStack.length - 1] !== currentUrl) {
+        navigationStack.push(currentUrl);
+        // Keep only last 10 entries to prevent memory issues
+        if (navigationStack.length > 10) {
+          navigationStack = navigationStack.slice(-10);
+        }
+        sessionStorage.setItem('nav-stack', JSON.stringify(navigationStack));
+      }
+    }
+    
+    // Track this page
+    trackNavigation();
+    
+    // Safe click handler that preserves scroll position
+    newButton.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+      
+
+      
+      setTimeout(() => {
+        try {
+          // Try native back navigation first (preserves scroll position)
+          if (window.history.length > 1) {
+            // For Safari, check if we have a valid referrer to avoid about:blank
+            if (document.referrer && 
+                document.referrer !== window.location.href &&
+                !document.referrer.includes('about:blank') &&
+                document.referrer.startsWith(window.location.origin)) {
+              
+              window.history.back();
+              return;
+            }
+            
+            // For non-Safari or when we have navigation stack
+            const storedStack = sessionStorage.getItem('nav-stack');
+            if (storedStack) {
+              try {
+                const stack = JSON.parse(storedStack);
+                const currentUrl = window.location.href;
+                const hasPreviousPage = stack.some((url: string) => url !== currentUrl);
+                
+                if (hasPreviousPage) {
+                  window.history.back();
+                  return;
+                }
+              } catch (e) {
+                // Fall through to fallback
+              }
+            }
+          }
+          
+          // Fallback only when history.back() would fail
+          window.location.href = '/';
+          
+        } catch (error) {
+          console.error('❌ Navigation error:', error);
+          window.location.href = '/';
+        }
+      }, 0);
+      
+      return false;
+    }, { capture: true, passive: false });
+
+    // Show button logic - much simpler now
+    const storedStack = sessionStorage.getItem('nav-stack');
+    let hasValidPrevious = false;
+    
+    if (storedStack) {
+      try {
+        const stack = JSON.parse(storedStack);
+        const currentUrl = window.location.href;
+        // Check if we have at least one different URL in our stack
+        hasValidPrevious = stack.some((url: string) => url !== currentUrl);
+      } catch (e) {
+        hasValidPrevious = false;
+      }
+    }
+    
+    // Also check referrer as fallback
+    const hasValidReferrer = document.referrer && 
+                            document.referrer !== window.location.href &&
+                            !document.referrer.includes('about:blank') &&
+                            document.referrer.startsWith(window.location.origin);
+    
+    if (hasValidPrevious || hasValidReferrer) {
+      newButton.style.display = 'inline-flex';
+    } else {
+      newButton.style.display = 'none';
+    }
+  }
+
+  // Initialize with proper timing
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGoBackButton, { once: true });
+  } else {
+    setTimeout(initGoBackButton, 0);
+  }
+
+  // Re-initialize after Astro page changes
+  document.addEventListener('astro:page-load', initGoBackButton, { once: true });
+</script>
 
 

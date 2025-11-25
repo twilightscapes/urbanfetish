@@ -1,0 +1,711 @@
+---
+// ChannelSubscribeButton.astro - Premium Feature: Subscribe to YouTube channels
+export interface Props {
+  channelHandle?: string;
+  channelUrl?: string;
+  channelTitle?: string;
+  size?: 'small' | 'medium' | 'large';
+  style?: 'button' | 'icon' | 'minimal';
+  showChannelName?: boolean;
+}
+
+const { 
+  channelHandle = '',
+  channelUrl = '',
+  channelTitle = '',
+  size = 'medium',
+  style = 'button',
+  showChannelName = true
+} = Astro.props;
+
+const componentId = `channel-sub-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class={`channel-subscribe-container ${size} ${style}`} data-component-id={componentId}>
+  <!-- Premium Gate (shown to basic members) -->
+  <div class="subscribe-premium-gate" style="display: none;">
+    <div class="premium-tooltip">
+      <div class="premium-tooltip-content">
+        <div class="premium-icon">📺</div>
+        <h4>Premium Feature</h4>
+        <p>Subscribe to channels and get personalized feeds with <strong>Premium</strong> membership</p>
+        <div class="premium-actions">
+          <a href="/membership" class="mini-upgrade-btn">
+            🔓 Upgrade - $9.99
+          </a>
+        </div>
+      </div>
+    </div>
+    <button class="subscribe-btn premium-locked" title="Premium Feature - Click to upgrade">
+      <span class="subscribe-icon">📺</span>
+      <span class="btn-text">Subscribe</span>
+      <span class="lock-icon">🔒</span>
+    </button>
+  </div>
+
+  <!-- Premium Member Controls -->
+  <div class="subscribe-premium-controls" style="display: none;">
+    <button class="subscribe-btn" data-channel-handle={channelHandle} data-channel-url={channelUrl} data-channel-title={channelTitle} title="Subscribe to channel">
+      <span class="subscribe-icon">📺</span>
+      <span class="btn-text">Subscribe</span>
+    </button>
+    
+    {showChannelName && channelTitle && (
+      <div class="channel-info">
+        <span class="channel-name">{channelTitle}</span>
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .channel-subscribe-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Size variations */
+  .channel-subscribe-container.small .subscribe-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .channel-subscribe-container.medium .subscribe-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .channel-subscribe-container.large .subscribe-btn {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  
+  /* Style variations */
+  .channel-subscribe-container.icon .btn-text {
+    display: none;
+  }
+  
+  .channel-subscribe-container.icon .subscribe-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .channel-subscribe-container.icon.small .subscribe-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .channel-subscribe-container.icon.large .subscribe-btn {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .channel-subscribe-container.minimal .subscribe-btn {
+    background: transparent;
+    border: none;
+    color: #666;
+    padding: 0.25rem;
+  }
+  
+  .channel-subscribe-container.minimal .subscribe-btn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+  }
+  
+  /* Base button styling */
+  .subscribe-btn {
+    background: #ff0000;
+    border: 2px solid #ff0000;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .subscribe-btn:hover {
+    background: #cc0000;
+    border-color: #cc0000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+  }
+  
+  .subscribe-btn.subscribed {
+    background: #666;
+    border-color: #666;
+    color: white;
+  }
+  
+  .subscribe-btn.subscribed .subscribe-icon {
+    color: #4caf50;
+  }
+  
+  .subscribe-btn.subscribed:hover {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+    transform: translateY(-1px) scale(1.02);
+  }
+  
+  .subscribe-btn.subscribed:hover .btn-text {
+    content: 'Unsubscribe';
+  }
+  
+  /* Premium locked styling */
+  .subscribe-btn.premium-locked {
+    background: #f5f5f5;
+    border-color: #ccc;
+    color: #999;
+    cursor: pointer;
+  }
+  
+  .subscribe-btn.premium-locked:hover {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+  }
+  
+  .subscribe-icon {
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+  }
+  
+  .subscribe-btn:hover .subscribe-icon {
+    transform: scale(1.1);
+  }
+  
+  .subscribe-btn.subscribed .subscribe-icon {
+    animation: subscribePulse 0.6s ease-in-out;
+  }
+  
+  .lock-icon {
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+  
+  @keyframes subscribePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Channel info */
+  .channel-info {
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+  
+  .channel-name {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+  }
+  
+  /* Premium tooltip */
+  .subscribe-premium-gate {
+    position: relative;
+  }
+  
+  .premium-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+  
+  .subscribe-premium-gate:hover .premium-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  
+  .premium-tooltip-content {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+    text-align: center;
+    min-width: 220px;
+    position: relative;
+  }
+  
+  .premium-tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #ff0000;
+  }
+  
+  .premium-tooltip .premium-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+  
+  .premium-tooltip h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: white;
+  }
+  
+  .premium-tooltip p {
+    margin: 0 0 1rem 0;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    line-height: 1.3;
+  }
+  
+  .mini-upgrade-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: inline-block;
+  }
+  
+  .mini-upgrade-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Loading state */
+  .subscribe-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  
+  .subscribe-btn.loading .subscribe-icon {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Success animation */
+  .subscribe-btn.success {
+    animation: successPulse 0.6s ease-in-out;
+  }
+  
+  @keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .premium-tooltip-content {
+      min-width: 200px;
+      padding: 0.75rem;
+    }
+    
+    .premium-tooltip h4 {
+      font-size: 0.9rem;
+    }
+    
+    .premium-tooltip p {
+      font-size: 0.8rem;
+    }
+    
+    .mini-upgrade-btn {
+      font-size: 0.75rem;
+      padding: 0.4rem 0.8rem;
+    }
+    
+    .channel-subscribe-container.icon .subscribe-btn {
+      width: 32px;
+      height: 32px;
+    }
+  }
+</style>
+
+<script>
+// Premium Channel Subscribe Button with Membership Integration
+class PremiumChannelSubscribeButton {
+  private componentId: string;
+  private container: HTMLElement | null = null;
+  private premiumGate: HTMLElement | null = null;
+  private premiumControls: HTMLElement | null = null;
+  private subscribeBtn: HTMLElement | null = null;
+  private channelData: any;
+
+  constructor(componentId: string) {
+    this.componentId = componentId;
+    this.container = document.querySelector(`[data-component-id="${componentId}"]`);
+    
+    if (!this.container) return;
+    
+    this.premiumGate = this.container.querySelector('.subscribe-premium-gate');
+    this.premiumControls = this.container.querySelector('.subscribe-premium-controls');
+    this.subscribeBtn = this.container.querySelector('.subscribe-btn');
+    
+    this.channelData = this.extractChannelData();
+    
+    this.init();
+  }
+  
+  extractChannelData() {
+    if (!this.container) {
+      return { handle: '', url: '', title: '' };
+    }
+    
+    const btn = this.container.querySelector('[data-channel-handle], [data-channel-url]') as HTMLElement | null;
+    
+    let handle = (btn as HTMLElement)?.dataset?.channelHandle || '';
+    let url = (btn as HTMLElement)?.dataset?.channelUrl || '';
+    let title = (btn as HTMLElement)?.dataset?.channelTitle || '';
+    
+    // Try to extract from URL if handle not provided
+    if (!handle && url) {
+      const match = url.match(/@([^/?&]+)|channel\/([^/?&]+)/);
+      handle = match ? (match[1] || match[2]) : '';
+    }
+    
+    // Try to find channel data from nearby elements
+    if (!title) {
+      const channelCard = this.container.closest('.channel-card, .video-card, .youtube-video') as HTMLElement | null;
+      title = channelCard?.querySelector('.channel-name, .video-author, .author')?.textContent?.trim() || '';
+    }
+    
+    return {
+      handle: handle.replace('@', ''),
+      url: url || (handle ? `https://www.youtube.com/@${handle.replace('@', '')}` : ''),
+      title: title
+    };
+  }
+  
+  async init() {
+    // Check membership and show appropriate UI
+    const hasPremiumAccess = await this.checkPremiumAccess();
+    
+    if (hasPremiumAccess) {
+      this.showPremiumControls();
+      this.updateSubscriptionState();
+      this.attachEventListeners();
+    } else {
+      this.showPremiumGate();
+    }
+    
+    // Listen for membership changes
+    window.addEventListener('membershipUpdated', () => {
+      this.init();
+    });
+    
+    // Listen for channel subscription updates
+    window.addEventListener('channelsUpdated', () => {
+      this.updateSubscriptionState();
+    });
+  }
+  
+  async checkPremiumAccess() {
+    try {
+      // Use existing membership check function
+      const membershipResult = await this.checkMembership();
+      
+      if (!membershipResult.valid) {
+        return false;
+      }
+      
+      // Check if access level is premium or unlimited
+      const accessLevel = membershipResult.accessLevel || 'basic';
+      return ['premium', 'unlimited'].includes(accessLevel);
+      
+    } catch (error) {
+      console.error('Error checking premium access:', error);
+      return false;
+    }
+  }
+  
+  // Reuse existing membership check logic
+  async checkMembership() {
+    const membershipCode = localStorage.getItem('membershipCode');
+    
+    if (!membershipCode) {
+      return { valid: false };
+    }
+    
+    // Check cache first
+    const cachedStatus = localStorage.getItem('membershipStatus');
+    const cacheTime = localStorage.getItem('membershipCacheTime');
+    
+    if (cachedStatus && cacheTime) {
+      const cacheAge = Date.now() - parseInt(cacheTime);
+      const cacheValidFor = 5 * 60 * 1000; // 5 minutes
+      
+      if (cacheAge < cacheValidFor) {
+        try {
+          const result = JSON.parse(cachedStatus);
+          if (result.valid) {
+            return result;
+          }
+        } catch (e) {
+        }
+      }
+    }
+    
+    // Make API call
+    try {
+      const response = await fetch('/.netlify/functions/validate-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: membershipCode, action: 'validate' })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.valid) {
+          // Cache the result
+          localStorage.setItem('membershipStatus', JSON.stringify(result));
+          localStorage.setItem('membershipCacheTime', Date.now().toString());
+          return result;
+        } else {
+          // Clean up invalid membership
+          localStorage.removeItem('membershipCode');
+          localStorage.removeItem('membershipStatus');
+          localStorage.removeItem('membershipCacheTime');
+          return { valid: false };
+        }
+      }
+    } catch (error) {
+      console.error('Error checking membership:', error);
+    }
+    
+    return { valid: false };
+  }
+  
+  showPremiumGate() {
+    if (this.premiumGate) this.premiumGate.style.display = 'block';
+    if (this.premiumControls) this.premiumControls.style.display = 'none';
+    
+    // Add click handler for upgrade
+    const premiumBtn = this.premiumGate?.querySelector('.subscribe-btn.premium-locked') as HTMLElement | null;
+    premiumBtn?.addEventListener('click', () => {
+      this.trackPremiumFeatureClick();
+    });
+  }
+  
+  showPremiumControls() {
+    if (this.premiumGate) this.premiumGate.style.display = 'none';
+    if (this.premiumControls) this.premiumControls.style.display = 'block';
+  }
+  
+  attachEventListeners() {
+    this.subscribeBtn?.addEventListener('click', () => {
+      this.toggleSubscription();
+    });
+  }
+  
+  updateSubscriptionState() {
+    if (!this.subscribeBtn || !this.channelData.handle) return;
+    
+    const isSubscribed = this.isChannelSubscribed(this.channelData.handle);
+    const subscribeIcon = this.subscribeBtn.querySelector('.subscribe-icon');
+    const btnText = this.subscribeBtn.querySelector('.btn-text');
+    
+    if (isSubscribed) {
+      this.subscribeBtn.classList.add('subscribed');
+      if (subscribeIcon) subscribeIcon.textContent = '✓';
+      if (btnText) btnText.textContent = 'Subscribed';
+      this.subscribeBtn.title = 'Unsubscribe from channel';
+    } else {
+      this.subscribeBtn.classList.remove('subscribed');
+      if (subscribeIcon) subscribeIcon.textContent = '📺';
+      if (btnText) btnText.textContent = 'Subscribe';
+      this.subscribeBtn.title = 'Subscribe to channel';
+    }
+  }
+  
+  isChannelSubscribed(channelHandle) {
+    try {
+      const subscriptions = localStorage.getItem('channelSubscriptions');
+      const subscriptionsArray = subscriptions ? JSON.parse(subscriptions) : [];
+      return subscriptionsArray.some(sub => sub.handle === channelHandle);
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+      return false;
+    }
+  }
+  
+  async toggleSubscription() {
+    if (!this.channelData.handle) {
+      this.showToast('Unable to subscribe: Channel not found', 'error');
+      return;
+    }
+    
+    // Show loading state
+    if (this.subscribeBtn) this.subscribeBtn.classList.add('loading');
+    
+    try {
+      const subscriptions = this.getChannelSubscriptions();
+      const existingIndex = subscriptions.findIndex(sub => sub.handle === this.channelData.handle);
+      
+      if (existingIndex > -1) {
+        // Unsubscribe
+        subscriptions.splice(existingIndex, 1);
+        this.showToast(`Unsubscribed from ${this.channelData.title || this.channelData.handle}`, 'success');
+      } else {
+        // Subscribe
+        const subscriptionData = {
+          handle: this.channelData.handle,
+          url: this.channelData.url,
+          title: this.channelData.title || this.channelData.handle,
+          subscribedAt: new Date().toISOString()
+        };
+        
+        subscriptions.unshift(subscriptionData); // Add to beginning
+        
+        // Limit to prevent localStorage bloat
+        if (subscriptions.length > 50) {
+          subscriptions.splice(50);
+        }
+        
+        this.showToast(`Subscribed to ${this.channelData.title || this.channelData.handle}!`, 'success');
+        if (this.subscribeBtn) {
+          this.subscribeBtn.classList.add('success');
+          setTimeout(() => this.subscribeBtn?.classList.remove('success'), 600);
+        }
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('channelSubscriptions', JSON.stringify(subscriptions));
+      
+      // Dispatch update event
+      window.dispatchEvent(new CustomEvent('channelsUpdated'));
+      
+      // Update UI
+      this.updateSubscriptionState();
+      
+    } catch (error) {
+      console.error('Error toggling subscription:', error);
+      this.showToast('Error updating subscription', 'error');
+    } finally {
+      // Remove loading state
+      if (this.subscribeBtn) this.subscribeBtn.classList.remove('loading');
+    }
+  }
+  
+  getChannelSubscriptions() {
+    try {
+      const subscriptions = localStorage.getItem('channelSubscriptions');
+      return subscriptions ? JSON.parse(subscriptions) : [];
+    } catch (error) {
+      console.error('Error loading channel subscriptions:', error);
+      return [];
+    }
+  }
+  
+  trackPremiumFeatureClick() {
+    // Track when users click on premium-locked features
+    
+    // Could send analytics event here
+    // gtag('event', 'premium_feature_click', { feature: 'channel_subscriptions' });
+  }
+  
+  showToast(message, type = 'success') {
+    // Check if there's already a toast
+    const existingToast = document.querySelector('.subscribe-toast');
+    if (existingToast) {
+      existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = 'subscribe-toast';
+    toast.textContent = message;
+    
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === 'success' ? '#ff0000' : '#ff6b6b'};
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10000;
+      font-size: 0.875rem;
+      max-width: 300px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(0)';
+    }, 100);
+    
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+}
+
+// Initialize channel subscribe buttons
+document.addEventListener('DOMContentLoaded', () => {
+  const subscribeContainers = document.querySelectorAll('.channel-subscribe-container[data-component-id]');
+  subscribeContainers.forEach(container => {
+    const componentId = (container as HTMLElement).dataset.componentId;
+    if (componentId) {
+      new PremiumChannelSubscribeButton(componentId);
+    }
+  });
+});
+
+// Also initialize when new content is dynamically added
+const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    mutation.addedNodes.forEach(node => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as Element;
+        const subscribeContainers = element.querySelectorAll('.channel-subscribe-container[data-component-id]');
+        subscribeContainers.forEach(container => {
+          const componentId = (container as HTMLElement).dataset.componentId;
+          if (componentId) {
+            new PremiumChannelSubscribeButton(componentId);
+          }
+        });
+      }
+    });
+  });
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+
+// Expose the class globally for use by other components
+(window as any).PremiumChannelSubscribeButton = PremiumChannelSubscribeButton;
+</script>

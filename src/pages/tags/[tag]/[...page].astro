@@ -1,9 +1,11 @@
 ---
+export const prerender = true;
 import type { GetStaticPaths, Page } from "astro";
 import type { CollectionEntry } from "astro:content";
 
 import Pagination from "@/components/Paginator.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
+import ViewModeSwitch from "@/components/ViewModeSwitch.jsx";
 import { getAllPosts, getUniqueTags, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
 import { getEntry } from 'astro:content';
@@ -16,21 +18,25 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 	const allPosts = await getAllPosts();
 	const allPostsByDate = sortMDByDate(allPosts);
 	const uniqueTags = getUniqueTags(allPostsByDate);
+	const siteSettings = await getEntry('siteSettings', 'main');
+	const defaultView = siteSettings?.data?.defaultView ?? 'grid';
 
 	return uniqueTags.flatMap((tag) => {
 		const filterPosts = allPostsByDate.filter((post) => post.data.tags.includes(tag));
 		return paginate(filterPosts, {
 			pageSize: 10,
 			params: { tag },
+			props: { defaultView }
 		});
 	});
 };
 
 interface Props {
 	page: Page<CollectionEntry<"post">>;
+	defaultView: string;
 }
 
-const { page } = Astro.props;
+const { page, defaultView } = Astro.props;
 const { tag } = Astro.params;
 
 const meta = {
@@ -54,33 +60,32 @@ const paginationProps = {
 };
 ---
 
-<PageLayout meta={meta}>
+<PageLayout meta={meta} themeMode="user">
 	<GoBack  />
 	<span class="prose prose-lg dark:prose-invert">
-<div class="container" style="padding:0 4%">
-
-	<h1 class="title flex items-center my-4" style="">
-		<!-- <a class=" sm:hover:underline" href="/tags/">{language.data.tags}</a> -->
-		<!-- <span class="me-3 ms-2">&nbsp;</span> -->
-		<span class="text-xl" style="text-transform: capitalize;">{tag}</span>
-	</h1>
-
-</div>
-
-
-	<section aria-label="Blog post list">
-		<div class="contentpanel grid-container panels">
-		<!-- <ul class="space-y-8"> -->
-			{
-				page.data.map((p) => (
-				
-						<PostPreview post={p} withDesc />
-					
-				))
-			}
+		<div data-section-id={`tag-${tag}-page`}>
+			<div class="tag-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 4%;">
+				<h1 class="title flex items-center my-4" style="margin: 0; flex: 1;">
+					<span class="text-xl" style="text-transform: capitalize;">{tag}</span>
+				</h1>
+				<ViewModeSwitch 
+					sectionId={`tag-${tag}-page`} 
+					defaultView={defaultView} 
+					client:load
+				/>
 			</div>
-		<!-- </ul> -->
-		<Pagination {...paginationProps} />
-	</section>
+
+			<section aria-label="Blog post list">
+				<div class={`contentpanel section-content ${defaultView === 'swipe' ? 'slider' : 'grid-container'}`}>
+					<div class="sliderSpacer"></div>
+					{
+						page.data.map((p) => (
+							<PostPreview post={p} withDesc />
+						))
+					}
+				</div>
+				<Pagination {...paginationProps} />
+			</section>
+		</div>
 </span>
 </PageLayout>

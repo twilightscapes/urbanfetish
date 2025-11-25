@@ -1,0 +1,2995 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import { getEntry } from 'astro:content';
+import MemberFavorites from "@/components/MemberFavorites.astro";
+import { getDefaultImage } from "../utils/getDefaultImage";
+
+// Note: Removed prerender to allow dynamic OG images based on URL parameters
+// The base /video page can still be accessed for PWA compatibility
+// export const prerender = true;
+
+// Get site settings for video time limit
+const siteSettings = await getEntry('siteSettings', 'main');
+const videoTimeLimitMinutes = siteSettings?.data?.videoTimeLimitMinutes ?? 1;
+
+// Timer is disabled if videoTimeLimitMinutes is -1
+const isTimerDisabled = videoTimeLimitMinutes === -1;
+
+// Get dynamic default image for use throughout the component
+const defaultImage = await getDefaultImage();
+
+// Extract video information from URL parameters for dynamic OG tags
+const videoParam = Astro.url.searchParams.get('video');
+const videoIdParam = Astro.url.searchParams.get('videoId'); // Check for videoId parameter too
+
+// Check if controls should be hidden via URL parameter
+const hideControlsMenu = Astro.url.searchParams.get('hideControlsMenu') === 'true';
+
+let videoId: string | null = null;
+let videoTitle = "Privacy First Video Player";  // Always use generic title for privacy
+let videoDescription = "Watch videos from YouTube, Vimeo, Twitch, Facebook, Dailymotion, and TikTok with no tracking or profiling";
+let videoThumbnail = defaultImage; // Use dynamic default image
+
+// Use the same extractVideoId function from YouTubeFeed.astro
+function extractVideoId(url) {
+  if (!url) return null;
+  
+  // Handle YouTube embed URLs
+  const embedMatch = url.match(/\/embed\/([a-zA-Z0-9_-]+)/);
+  if (embedMatch) return embedMatch[1];
+  
+  // Handle regular YouTube URLs
+  const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (watchMatch) return watchMatch[1];
+  
+  // Handle youtu.be URLs
+  const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (shortMatch) return shortMatch[1];
+  
+  return null;
+}
+
+// Server-side multi-platform detection
+function detectPlatformServerSide(url) {
+  if (!url) return { platform: null, id: null };
+  
+  // YouTube
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const id = extractVideoId(url);
+    return { platform: 'youtube', id };
+  }
+  
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch) {
+    return { platform: 'vimeo', id: vimeoMatch[1] };
+  }
+  
+  // Facebook - Enhanced pattern matching
+  const facebookMatch = url.match(/(?:facebook\.com|fb\.watch)\/(?:.*\/)?(?:videos?\/)?(?:.*\/)?(\d+)/);
+  if (facebookMatch) {
+    return { platform: 'facebook', id: facebookMatch[1], originalUrl: url };
+  }
+  
+  // Facebook watch URLs (non-numeric IDs)
+  const fbWatchMatch = url.match(/fb\.watch\/([a-zA-Z0-9_-]+)/);
+  if (fbWatchMatch) {
+    return { platform: 'facebook', id: fbWatchMatch[1], originalUrl: url, isShortUrl: true };
+  }
+
+  // Twitch - Enhanced pattern matching
+  const twitchVideoMatch = url.match(/(?:www\.)?twitch\.tv\/videos\/(\d+)/);
+  if (twitchVideoMatch) {
+    return { platform: 'twitch', id: twitchVideoMatch[1], type: 'video' };
+  }
+
+  // Twitch clips - multiple formats
+  const twitchClipMatch = url.match(/(?:www\.)?twitch\.tv\/\w+\/clip\/(\w+)|clips\.twitch\.tv\/(\w+)/);
+  if (twitchClipMatch) {
+    const clipId = twitchClipMatch[1] || twitchClipMatch[2];
+    return { platform: 'twitch', id: clipId, type: 'clip' };
+  }
+  
+  // Twitch live streams and channel videos
+  const twitchChannelMatch = url.match(/(?:www\.)?twitch\.tv\/([^\/\?]+)(?:\/video\/(\d+))?/);
+  if (twitchChannelMatch && !url.includes('/videos/') && !url.includes('/clip/')) {
+    // This is likely a live stream or channel
+    return { platform: 'twitch', id: twitchChannelMatch[1], type: 'channel' };
+  }
+  
+  // Dailymotion
+  const dailymotionMatch = url.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
+  if (dailymotionMatch) {
+    return { platform: 'dailymotion', id: dailymotionMatch[1] };
+  }
+  
+  // TikTok
+  const tiktokMatch = url.match(/tiktok\.com\/.*\/video\/(\d+)/);
+  if (tiktokMatch) {
+    return { platform: 'tiktok', id: tiktokMatch[1] };
+  }
+  
+  // If it's already just an ID, assume YouTube for backward compatibility
+  if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+    return { platform: 'youtube', id: url };
+  }
+  
+  return { platform: null, id: null };
+}
+
+if (videoParam || videoIdParam) {
+  // Try to detect platform and extract video ID from either parameter
+  const sourceParam = videoParam || videoIdParam;
+  
+  // Use multi-platform detection for server-side processing
+  const detected = detectPlatformServerSide(sourceParam);
+  
+  if (detected.platform && detected.id) {
+    videoId = detected.id;
+    // Keep generic title for privacy - don't expose video ID
+    videoDescription = `Watch this ${detected.platform} video with no tracking or profiling`;
+    
+    // Set appropriate thumbnail based on platform
+    if (detected.platform === 'youtube') {
+      videoThumbnail = `https://img.youtube.com/vi/${detected.id}/hqdefault.jpg`;
+    } else if (detected.platform === 'vimeo') {
+      // Vimeo thumbnails require API call, use default for now
+      videoThumbnail = defaultImage;
+    } else {
+      // Other platforms use default thumbnail
+      videoThumbnail = defaultImage;
+    }
+    
+  } else {
+    // Fallback to old behavior for backward compatibility
+    videoId = extractVideoId(sourceParam) || sourceParam;
+    
+    if (videoId) {
+      // Keep generic title for privacy - don't expose video ID
+      videoDescription = `Watch this video with no tracking or profiling`;
+      videoThumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    }
+  }
+}
+---
+<PageLayout 
+  title={videoTitle} 
+  description={videoDescription} 
+  themeMode="user"
+  ogImage={videoThumbnail}
+>
+<style>
+html{overflow-x: hidden !important;}
+
+input[type="text"], input[type="number"], input[type="email"], input[type="password"] {
+font-size: 16px !important;
+}
+
+  #menu-bar {
+    position: relative;
+    width: 100vw;
+    z-index: 10;
+    top:0;
+    background: rgba(27, 27, 27, 0.85);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 2vw;
+    padding: 2px 0;
+    justify-content: center;
+    font-family: sans-serif !important;
+    font-size:10px;
+  }
+  #menu-bar.hidden { display: none; }
+  .menu-input { min-width: 20px; max-width: 400px; padding: 4px; }
+  .menu-checkbox { margin-left: 8px; }
+  .menu-label { font-size: 0.95em; }
+
+    #checkboxes {
+justify-content: center !important;
+align-items: center !important;
+width: 100%;
+margin: 0 auto;
+text-align: center;
+}
+#checkboxes .menu-label {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center;
+width: 60px;
+}
+
+  #video-frame {
+    position: relative;
+    top: -; left: 0;
+    width: 100vw;
+    height: 79vh;
+    border: none;
+    z-index: 1;
+    display: none; 
+  }
+@media (max-width: 58rem) {
+  #bigbox{display:flex; flex-direction: column !important; padding:10px 0 0 0; gap:2vh;}
+  .menu-label { font-size: 1.8em; justify-content: center; align-items: center; align-content: center; }
+  #video-frame {height: 66vh;}
+/* #checkboxes .menu-label {width: 18vw;} */
+  
+}
+
+  #start-input, #stop-input {max-width:30px; border:0px solid red;}
+  #share-link { color: #fff; font-size: 0.9em; word-break: break-all; margin-left: 12px; }
+  #copy-btn { margin-left: 8px; }
+  
+  /* Membership status indicator */
+  #membership-status {
+    position: relative;
+    display: none;
+    /* min-width: 120px;
+    background: rgba(76, 175, 80, 0.9); */
+    color: white;
+    padding: 2px 4px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 20;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 120px;
+    margin:2px auto;
+  }
+  
+  #membership-status.free {
+    /* background: rgba(255, 193, 7, 0.9);
+    color: #333; */
+  }
+
+  /* Disabled toolbar elements */
+  .menu-input:disabled, .menu-checkbox:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+  }
+  
+  .menu-label:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Tooltip styling for restricted features */
+  .menu-input[title]:not([title=""]), 
+  .menu-checkbox[title]:not([title=""]) {
+    position: relative;
+  }
+
+  /* Premium Favorite/Bookmark Buttons Styling */
+  .video-actions-container {
+    display: flex; /* Temporarily show for debugging */
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid var(--theme-ui-colors-siteColor);
+    opacity: 0.5; /* Make it semi-transparent when not properly activated */
+  }
+
+  .video-actions-container.visible {
+    opacity: 1; /* Full opacity when properly activated */
+  }
+
+  .video-favorite-btn,
+  .video-bookmark-btn {
+    background: rgba(0, 0, 0, 0.8);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    font-size: 11px;
+  }
+
+  .video-favorite-btn:hover,
+  .video-bookmark-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    transform: translateY(-1px);
+  }
+
+  .video-favorite-btn.favorited {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #333;
+  }
+
+  .video-bookmark-btn.subscribed {
+    background: #ff0000;
+    color: white;
+  }
+
+  .video-actions-container svg {
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));
+  }
+
+  @media (max-width: 38rem) {
+    .video-actions-container {
+      gap: 6px;
+      padding: 2px 6px;
+    }
+    
+    .video-favorite-btn,
+    .video-bookmark-btn {
+      padding: 4px;
+    }
+  }
+
+  
+</style>
+
+{hideControlsMenu && (
+  <style>
+    #missioncontrol {
+      display: none !important;
+    }
+    #premium-favorites-container {
+      display: none !important;
+    }
+    #membership-status {
+      display: none !important;
+    }
+  </style>
+)}
+
+<script define:vars={{ videoTimeLimitMinutes, isTimerDisabled }}>
+// VideoPreferences is available globally from Base.astro layout
+// No need to import - it's already loaded
+
+// Utility: Extract YouTube video ID from URL or ID
+function extractVideoId(input) {
+  if (!input) return null;
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  let match = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  match = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  match = input.match(/\/(embed|v)\/([a-zA-Z0-9_-]{11})/);
+  if (match) return match[2];
+  match = input.match(/([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  return null;
+}
+
+// Smart thumbnail fallback system (same as YouTubeFeed)
+window.handleThumbnailError = function(img) {
+  const currentSrc = img.src;
+
+  // Extract video ID from current URL
+  const videoIdMatch = currentSrc.match(/\/vi\/([^\/]+)\//);
+  if (!videoIdMatch) {
+    console.error('❌ Could not extract video ID from thumbnail URL:', currentSrc);
+    // Fallback to default image for non-YouTube URLs
+    img.src = '/socialCard.webp';
+    return;
+  }
+  
+  const videoId = videoIdMatch[1];
+  
+  // Define fallback hierarchy (high-res to lower-res)
+  const fallbackSizes = [
+    'maxresdefault.jpg',    // 1280x720 (highest quality, but not always available)
+    'sddefault.jpg',        // 640x480 (high quality)
+    'hqdefault.jpg',        // 480x360 (medium quality, almost always available)
+    'mqdefault.jpg',        // 320x180 (lower quality)
+    'default.jpg'           // 120x90 (lowest quality, always available)
+  ];
+  
+  // Find current size in hierarchy
+  let currentIndex = -1;
+  for (let i = 0; i < fallbackSizes.length; i++) {
+    if (currentSrc.includes(fallbackSizes[i])) {
+      currentIndex = i;
+      break;
+    }
+  }
+  
+  // Strategy: If we're starting with hqdefault, first try to upgrade to higher quality
+  // If that fails, then fall back to lower quality
+  if (currentIndex === 2 && currentSrc.includes('hqdefault.jpg')) {
+    // First attempt: try maxresdefault (if we haven't tried it yet)
+    if (!img.dataset.triedMaxRes) {
+      img.dataset.triedMaxRes = 'true';
+      const maxResSrc = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      img.src = maxResSrc;
+      return;
+    }
+    // If maxres failed, try sddefault
+    if (!img.dataset.triedSdDefault) {
+      img.dataset.triedSdDefault = 'true';
+      const sdDefaultSrc = `https://img.youtube.com/vi/${videoId}/sddefault.jpg`;
+      img.src = sdDefaultSrc;
+      return;
+    }
+  }
+  
+  // Standard fallback: try next lower resolution
+  if (currentIndex >= 0 && currentIndex < fallbackSizes.length - 1) {
+    const nextSize = fallbackSizes[currentIndex + 1];
+    const newSrc = `https://img.youtube.com/vi/${videoId}/${nextSize}`;
+    img.src = newSrc;
+  } else {
+    console.error('❌ All thumbnail fallbacks failed for video:', videoId);
+    // Use default placeholder image
+    img.src = '/socialCard.webp';
+  }
+};
+
+// Multi-platform video detection and handling
+function detectPlatform(url) {
+  if (!url) return { platform: null, id: null };
+  
+  // YouTube
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const id = extractVideoId(url);
+    return { platform: 'youtube', id };
+  }
+  
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch) {
+    return { platform: 'vimeo', id: vimeoMatch[1] };
+  }
+  
+  // Facebook - Enhanced pattern matching
+  const facebookMatch = url.match(/(?:facebook\.com|fb\.watch)\/(?:.*\/)?(?:videos?\/)?(?:.*\/)?(\d+)/);
+  if (facebookMatch) {
+    return { platform: 'facebook', id: facebookMatch[1] };
+  }
+  
+  // Facebook watch URLs
+  const fbWatchMatch = url.match(/fb\.watch\/([a-zA-Z0-9_-]+)/);
+  if (fbWatchMatch) {
+    return { platform: 'facebook', id: fbWatchMatch[1] };
+  }
+
+  // Twitch - Enhanced pattern matching
+  const twitchVideoMatch = url.match(/(?:www\.)?twitch\.tv\/videos\/(\d+)/);
+  if (twitchVideoMatch) {
+    return { platform: 'twitch', id: twitchVideoMatch[1], type: 'video' };
+  }
+
+  // Twitch clips - multiple formats
+  const twitchClipMatch = url.match(/(?:www\.)?twitch\.tv\/\w+\/clip\/(\w+)|clips\.twitch\.tv\/(\w+)/);
+  if (twitchClipMatch) {
+    const clipId = twitchClipMatch[1] || twitchClipMatch[2];
+    return { platform: 'twitch', id: clipId, type: 'clip' };
+  }
+  
+  // Twitch live streams and channel videos
+  const twitchChannelMatch = url.match(/(?:www\.)?twitch\.tv\/([^\/\?]+)(?:\/video\/(\d+))?/);
+  if (twitchChannelMatch && !url.includes('/videos/') && !url.includes('/clip/')) {
+    // This is likely a live stream or channel
+    return { platform: 'twitch', id: twitchChannelMatch[1], type: 'channel' };
+  }
+  
+  // Dailymotion
+  const dailymotionMatch = url.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
+  if (dailymotionMatch) {
+    return { platform: 'dailymotion', id: dailymotionMatch[1] };
+  }
+  
+  // TikTok
+  const tiktokMatch = url.match(/tiktok\.com\/.*\/video\/(\d+)/);
+  if (tiktokMatch) {
+    return { platform: 'tiktok', id: tiktokMatch[1] };
+  }
+  
+  // If it's already just an ID, assume YouTube for backward compatibility
+  if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+    return { platform: 'youtube', id: url };
+  }
+  
+  return { platform: null, id: null };
+}
+
+function generateEmbedUrl(platform, id, options) {
+  options = options || {};
+  const autoplay = options.autoplay || false;
+  const controls = options.controls !== false; // default true
+  const mute = options.mute || false;
+  const start = options.start || null;
+  const stop = options.stop || null;
+  const loop = options.loop || false;
+  const type = options.type || null;
+  const originalUrl = options.originalUrl || null;
+  const isShortUrl = options.isShortUrl || false;
+  
+  switch (platform) {
+    case 'youtube':
+      // Build base URL with essential parameters
+      let url = `https://www.youtube-nocookie.com/embed/${id}?`;
+      
+      // Core functionality parameters
+      url += `autoplay=${autoplay ? 1 : 0}`;
+      url += `&controls=${controls ? 1 : 0}`;
+      url += `&mute=${mute ? 1 : 0}`;
+      
+      // Enable JS API for start/stop time controls functionality
+      url += `&enablejsapi=1`;
+      url += `&playsinline=1`;
+      url += `&origin=${encodeURIComponent(window.location.origin)}`;
+      
+      // Clean, minimal interface
+      url += `&modestbranding=1`;
+      url += `&rel=0`;
+      url += `&showinfo=0`;
+      url += `&fs=0`;
+      url += `&cc_load_policy=0`;
+      url += `&disablekb=1`;
+      url += `&iv_load_policy=3`;
+      
+      // Time parameters
+      if (start) url += `&start=${Math.floor(parseFloat(start))}`;
+      if (stop) url += `&end=${Math.floor(parseFloat(stop))}`;
+      
+      // Loop handling - YouTube's native loop doesn't work with start/end parameters
+      // We'll handle looping via JavaScript for segments
+      if (loop && !start && !stop) {
+        // Only use native loop for full video (no custom segment)
+        url += `&loop=1&playlist=${id}`;
+      }
+      
+      return url;
+      
+    case 'vimeo':
+      let vimeoUrl = `https://player.vimeo.com/video/${id}?autoplay=${autoplay ? 1 : 0}&muted=${mute ? 1 : 0}`;
+      if (start) vimeoUrl += `#t=${start}s`;
+      return vimeoUrl;
+      
+    case 'facebook':
+      // Facebook embedding is highly restricted. Try multiple approaches.
+      // Note: Many Facebook videos are not embeddable due to privacy settings
+      let fbEmbedUrl;
+      if (isShortUrl || originalUrl?.includes('fb.watch')) {
+        // For fb.watch URLs, use the full URL
+        const fbWatchUrl = originalUrl || `https://fb.watch/${id}`;
+        fbEmbedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(fbWatchUrl)}&show_text=false&autoplay=${autoplay}&mute=${mute ? 1 : 0}&width=560&height=315`;
+      } else {
+        // For regular Facebook video URLs
+        const fbUrl = originalUrl || `https://www.facebook.com/watch/?v=${id}`;
+        fbEmbedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(fbUrl)}&show_text=false&autoplay=${autoplay}&mute=${mute ? 1 : 0}&width=560&height=315`;
+      }
+      return fbEmbedUrl;
+      
+    case 'twitch':
+      if (type === 'clip') {
+        return `https://clips.twitch.tv/embed?clip=${id}&parent=${window.location.hostname}&autoplay=${autoplay}&muted=${mute}`;
+      } else if (type === 'channel') {
+        // For live streams/channels
+        return `https://player.twitch.tv/?channel=${id}&parent=${window.location.hostname}&autoplay=${autoplay}&muted=${mute}`;
+      } else {
+        // For videos
+        return `https://player.twitch.tv/?video=${id}&parent=${window.location.hostname}&autoplay=${autoplay}&muted=${mute}`;
+      }
+      
+    case 'dailymotion':
+      return `https://www.dailymotion.com/embed/video/${id}?autoplay=${autoplay ? 1 : 0}&mute=${mute ? 1 : 0}&ui-start-screen-info=false&ui-logo=false`;
+      
+    case 'tiktok':
+      return `https://www.tiktok.com/embed/v2/${id}`;
+      
+    default:
+      return '';
+  }
+}
+
+// Track video usage for trending videos
+async function trackVideoUsage(url) {
+  if (!url) return;
+  
+  // Skip tracking for now to avoid build warnings
+  // TODO: Re-implement when trending system is ready
+}
+
+// Timer-based playback limitation
+let playbackInterval = null;
+let elapsedTime = 0; // in seconds
+let lastPlayTimestamp = null;
+let timerRunning = false;
+let upgradeShown = false;
+
+// PLAYBACK_LIMIT_SEC is set to Infinity if timer is disabled (passed via define:vars)
+const PLAYBACK_LIMIT_SEC = isTimerDisabled ? Infinity : Math.max(0, videoTimeLimitMinutes) * 60; // Convert minutes to seconds, or Infinity if disabled
+
+// Convenience function for backwards compatibility
+async function checkMembership() {
+  const result = await globalThis.checkUnifiedMembershipStatus();
+  return result.isValid || result.valid;
+}
+
+function setMembership(membershipCode) {
+  localStorage.setItem('membershipCode', membershipCode);
+  localStorage.removeItem('membershipStatus');
+  localStorage.removeItem('membershipCacheTime');
+}
+
+function resetMembership() {
+  localStorage.removeItem('membershipCode');
+  localStorage.removeItem('membershipStatus');
+  localStorage.removeItem('membershipCacheTime');
+  location.reload();
+}
+
+async function updateMembershipStatus() {
+  const statusEl = document.getElementById('membership-status');
+  if (!statusEl) return;
+  
+  const isValid = await checkMembership();
+  
+  // if (isValid) {
+  //   statusEl.textContent = '✅ Premium';
+  //   statusEl.className = '';
+  // } else {
+  //   statusEl.textContent = `⚠️ Free (${videoTimeLimitMinutes} min limit)`;
+  //   statusEl.className = 'free';
+  // }
+}
+
+async function checkToolbarAccess() {
+  const menuBarEl = document.getElementById('menu-bar');
+  if (!menuBarEl) return;
+  
+  // Check if toolbar should be hidden via URL parameter
+  const params = new URLSearchParams(window.location.search);
+  const hideControlsMenu = params.get('hideControlsMenu') === 'true';
+  
+  if (hideControlsMenu) {
+    menuBarEl.style.display = 'none';
+    
+    // Also hide the missioncontrol element at the bottom
+    const missionControlEl = document.getElementById('missioncontrol');
+    if (missionControlEl) {
+      missionControlEl.style.display = 'none';
+    }
+    
+    return; // Exit early if toolbar should be hidden
+  }
+  
+  const membershipResult = await checkMembership();
+  let accessLevel = 'basic';
+  
+  if (membershipResult) {
+    // Use the unified membership function
+    try {
+      const membershipStatus = await globalThis.checkUnifiedMembershipStatus();
+      
+      if (membershipStatus && (membershipStatus.isValid || membershipStatus.valid)) {
+        accessLevel = membershipStatus.tier || membershipStatus.accessLevel || 'basic';
+      }
+    } catch (e) {
+      console.error('Error getting membership tier:', e);
+    }
+  }
+  
+  // Show toolbar for all users but restrict features based on level
+  menuBarEl.style.display = 'flex';
+  
+  // Get toolbar elements
+  const startInput = document.getElementById('start-input');
+  const stopInput = document.getElementById('stop-input');
+  const loopCheckbox = document.getElementById('loop-checkbox');
+  const muteCheckbox = document.getElementById('mute-checkbox');
+  const controlsCheckbox = document.getElementById('controls-checkbox');
+  const autoplayCheckbox = document.getElementById('autoplay-checkbox');
+  const hideCheckbox = document.getElementById('hide-menu-checkbox');
+  
+  // Set descriptive tooltips for all elements first
+  const elementDescriptions = [
+    { el: startInput, description: 'Set custom start time (in seconds) to begin video playback at a specific point' },
+    { el: stopInput, description: 'Set custom stop time (in seconds) to end video playback at a specific point' },
+    { el: loopCheckbox, description: 'Enable video looping to automatically replay when it ends' },
+    { el: muteCheckbox, description: 'Mute video audio by default when video loads' },
+    { el: controlsCheckbox, description: 'Show or hide YouTube player controls (play/pause buttons, timeline)' },
+    { el: autoplayCheckbox, description: 'Automatically start playing video when page loads' },
+    { el: hideCheckbox, description: 'Hide branding and remove toolbar for shared links' }
+  ];
+  
+  // Reset all elements to enabled state and set descriptive tooltips
+  elementDescriptions.forEach(({ el, description }) => {
+    if (el) {
+      el.disabled = false;
+      el.style.opacity = '1';
+      el.style.cursor = 'pointer';
+      el.title = description;
+    }
+  });
+  
+  // Apply restrictions based on access level
+  if (accessLevel === 'premium') {
+    // Basic: Only paste URL, copy link, and clear
+    const restrictedElements = [
+      { el: startInput, description: 'Set custom start times to create video clips (Unlimited+ feature)' },
+      { el: stopInput, description: 'Set custom stop times to create video clips (Unlimited+ feature)' },
+      { el: loopCheckbox, description: 'Control video looping (Unlimited+ feature)' },
+      { el: muteCheckbox, description: 'Control video audio (Unlimited+ feature)' },
+      { el: controlsCheckbox, description: 'Show/hide video controls (Unlimited+ feature)' },
+      { el: autoplayCheckbox, description: 'Control video autoplay (Unlimited+ feature)' },
+      { el: hideCheckbox, description: 'Hide branding and remove toolbar for shared links (Premium feature)' }
+    ];
+    
+    restrictedElements.forEach(({ el, description }) => {
+      if (el) {
+        el.disabled = true;
+        el.style.opacity = '0.5';
+        el.style.cursor = 'not-allowed';
+        el.title = description;
+      }
+    });
+    
+    
+  } else if (accessLevel === 'unlimited') {
+    // Unlimited: Everything except hide checkbox (keep descriptive tooltips for enabled features)
+    if (hideCheckbox) {
+      hideCheckbox.disabled = true;
+      hideCheckbox.style.opacity = '0.5';
+      hideCheckbox.style.cursor = 'not-allowed';
+      hideCheckbox.title = 'Hide branding and remove toolbar for shared links (Premium feature)';
+    }
+    
+    
+  } else if (accessLevel === 'basic') {
+    // Premium: Full access to everything (keep descriptive tooltips)
+  }
+}
+
+async function startPlaybackTimer() {
+  // Skip timer if it's disabled (videoTimeLimitMinutes = -1)
+  if (isTimerDisabled) {
+    return;
+  }
+  
+  // Skip timer if user has membership
+  const hasValidMembership = await checkMembership();
+  if (hasValidMembership) {
+    return;
+  }
+  
+  if (timerRunning) {
+    return;
+  }
+  
+  timerRunning = true;
+  lastPlayTimestamp = Date.now();
+  
+  if (playbackInterval) {
+    clearInterval(playbackInterval);
+  }
+  
+  playbackInterval = setInterval(() => {
+    if (!timerRunning) return;
+    
+    const now = Date.now();
+    if (lastPlayTimestamp) {
+      const deltaSec = (now - lastPlayTimestamp) / 1000;
+      elapsedTime += deltaSec;
+      lastPlayTimestamp = now;
+      
+    }
+    
+    if (elapsedTime >= PLAYBACK_LIMIT_SEC && !upgradeShown) {
+      upgradeShown = true;
+      showUpgradeMessage();
+      stopPlaybackTimer();
+    }
+  }, 250);
+}
+
+function stopPlaybackTimer() {
+  if (playbackInterval) {
+    clearInterval(playbackInterval);
+    playbackInterval = null;
+  }
+  timerRunning = false;
+  lastPlayTimestamp = null;
+}
+
+function resetPlaybackTimer() {
+  stopPlaybackTimer();
+  elapsedTime = 0;
+  timerRunning = false;
+  lastPlayTimestamp = null;
+  upgradeShown = false;
+  hideUpgradeMessage();
+}
+
+function showUpgradeMessage() {
+  const videoFrame = document.getElementById('video-frame');
+  if (videoFrame) {
+    // Pause the YouTube video using postMessage API
+    videoFrame.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+    // Hide the video frame
+    videoFrame.style.display = 'none';
+  }
+  
+  // Create or update upgrade message
+  let upgradeMessage = document.getElementById('upgrade-message');
+  if (!upgradeMessage) {
+    upgradeMessage = document.createElement('div');
+    upgradeMessage.id = 'upgrade-message';
+    upgradeMessage.style.cssText = `
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100vw;
+      height: calc(90vh - 60px);
+      background: rgba(0, 0, 0, 0.95);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      font-size: 1.5em;
+      text-align: center;
+      padding: 20px;
+    `;
+    document.body.appendChild(upgradeMessage);
+  }
+  
+  upgradeMessage.innerHTML = `
+    <div style="max-width: 800px;">
+      <h2 style="margin-bottom: 20px; font-size: clamp(1rem, 2vw, 1rem);">${isTimerDisabled ? 'Viewing Limit' : `${videoTimeLimitMinutes}-Minute Limit`} Reached</h2>
+      <p style="margin-bottom: 30px;">Your free viewing time has expired.</p>
+      <p style="margin-bottom: 30px; font-size: 1.1em; color: #4CAF50;">
+        🎬 Get unlimited video access for just <strong>$9.99</strong> (one-time payment)
+      </p>
+
+      <br />
+
+    </div>
+  `;
+  upgradeMessage.style.display = 'flex';
+  
+  // Add click handler for upgrade button
+  const upgradeBtn = document.getElementById('upgrade-btn');
+  if (upgradeBtn) {
+    upgradeBtn.addEventListener('click', initializeStripePayment);
+  }
+}
+
+// Stripe payment integration
+function initializeStripePayment() {
+  // TODO: Implement Stripe integration when needed
+  alert('Payment system not yet configured. Please contact support.');
+}
+
+function createStripeCheckout() {
+  // TODO: Implement when Stripe is properly configured
+}
+
+function hideUpgradeMessage() {
+  const videoFrame = document.getElementById('video-frame');
+  // Note: Don't force videoFrame to be visible here - let updateVideoAndLink() handle visibility
+  // The video src and visibility will be restored when updateVideoAndLink() is called
+  
+  const upgradeMessage = document.getElementById('upgrade-message');
+  if (upgradeMessage) {
+    upgradeMessage.style.display = 'none';
+  }
+}
+
+// Function to setup iframe message listener for video events
+function setupVideoEventListeners() {
+  const videoFrameEl = document.getElementById('video-frame');
+  if (!videoFrameEl) return;
+
+  // Remove any existing listeners
+  window.removeEventListener('message', handleVideoMessage);
+  
+  // Add new listener
+  window.addEventListener('message', handleVideoMessage);
+  
+  // Request initial state when iframe loads
+  videoFrameEl.addEventListener('load', () => {
+    setTimeout(() => {
+      videoFrameEl.contentWindow?.postMessage('{"event":"listening","id":"' + Math.random() + '"}', '*');
+    }, 1000);
+  });
+}
+
+// Apply user video preferences - copied from YouTubeFeed.astro
+function applyVideoPreferences() {
+  // Check if this is a shared link with explicit mute parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasExplicitMute = urlParams.has('mute');
+  
+  // If URL has explicit mute parameter, respect it and don't override
+  if (hasExplicitMute) {
+    return; // Don't override URL parameters
+  }
+  
+  const preferences = window.VideoPreferences?.getPreferences() || { muted: false };
+  
+  // Apply to the video iframe
+  const videoFrame = document.getElementById('video-frame');
+  
+  if (videoFrame && videoFrame.src && (videoFrame.src.includes('youtube.com/embed/') || videoFrame.src.includes('youtube-nocookie.com/embed/'))) {
+    const currentSrc = videoFrame.src;
+    const url = new URL(currentSrc);
+    
+    // Update mute parameter
+    if (preferences.muted) {
+      url.searchParams.set('mute', '1');
+    } else {
+      url.searchParams.delete('mute');
+    }
+    
+    // Only update if different
+    if (videoFrame.src !== url.toString()) {
+      videoFrame.src = url.toString();
+    }
+  }
+}
+
+function handleVideoMessage(event) {
+  // Only accept messages from trusted video platforms
+  const trustedOrigins = [
+    'https://www.youtube.com',
+    'https://www.youtube-nocookie.com',
+    'https://player.vimeo.com',
+    'https://player.twitch.tv',
+    'https://clips.twitch.tv',
+    'https://www.facebook.com',
+    'https://www.dailymotion.com',
+    'https://www.tiktok.com'
+  ];
+  
+  if (!trustedOrigins.includes(event.origin)) return;
+  
+  try {
+    let data;
+    if (typeof event.data === 'string') {
+      // Try to parse as JSON
+      if (event.data.indexOf('{') === 0) {
+        data = JSON.parse(event.data);
+      } else {
+        return; // Skip non-JSON messages
+      }
+    } else {
+      data = event.data;
+    }
+    
+    // Handle YouTube API events
+    if (event.origin === 'https://www.youtube.com' || event.origin === 'https://www.youtube-nocookie.com') {
+      if (data.event === 'video-progress' && data.info) {
+        // Playing state
+        if (!timerRunning) {
+          startPlaybackTimer();
+        } else {
+          lastPlayTimestamp = Date.now();
+        }
+      } else if (data.event === 'onStateChange' && typeof data.info === 'number') {
+        const playerState = data.info;
+        
+        if (playerState === 1) { // Playing
+          // Apply video preferences when video starts (like YouTubeFeed does)
+          applyVideoPreferences();
+          
+          if (!timerRunning) {
+            startPlaybackTimer();
+          } else {
+            lastPlayTimestamp = Date.now();
+          }
+        } else if (playerState === 0) { // Ended
+          stopPlaybackTimer();
+          
+          // Handle manual restart for custom looping if YouTube's end parameter doesn't work
+          if (shouldUseCustomLoop()) {
+            const startInputEl = document.getElementById('start-input');
+            if (startInputEl && 'value' in startInputEl && startInputEl.value) {
+              const startTime = parseFloat(startInputEl.value);
+              const videoFrame = document.getElementById('video-frame');
+              
+              if (videoFrame && 'contentWindow' in videoFrame && !isCustomLooping) {
+                isCustomLooping = true;
+                
+                try {
+                  // Seek to start and play
+                  videoFrame.contentWindow?.postMessage(
+                    `{"event":"command","func":"seekTo","args":[${startTime}, true]}`,
+                    '*'
+                  );
+                  
+                  setTimeout(() => {
+                    videoFrame.contentWindow?.postMessage(
+                      '{"event":"command","func":"playVideo","args":""}',
+                      '*'
+                    );
+                    isCustomLooping = false;
+                  }, 100);
+                } catch (e) {
+                  isCustomLooping = false;
+                }
+              }
+            }
+          }
+        } else if (playerState === 2) { // Paused
+          stopPlaybackTimer();
+        }
+      }
+    }
+    
+    // Handle Vimeo events (if needed in future)
+    // if (event.origin === 'https://player.vimeo.com') {
+    //   // Vimeo event handling
+    // }
+    
+  } catch (e) {
+  }
+}
+
+// Update only the video URL while preserving current control settings
+function updateVideoOnly() {
+  const videoInputEl = document.getElementById('video-input');
+  const startInputEl = document.getElementById('start-input');
+  const stopInputEl = document.getElementById('stop-input');
+  const loopCheckboxEl = document.getElementById('loop-checkbox');
+  const muteCheckboxEl = document.getElementById('mute-checkbox');
+  const controlsCheckboxEl = document.getElementById('controls-checkbox');
+  const autoplayCheckboxEl = document.getElementById('autoplay-checkbox');
+  const hideMenuCheckboxEl = document.getElementById('hide-menu-checkbox');
+  const videoFrameEl = document.getElementById('video-frame');
+  const shareLinkEl = document.getElementById('share-link');
+
+  const videoInput = videoInputEl ? videoInputEl.value.trim() : '';
+  const start = startInputEl ? startInputEl.value.trim() : '';
+  const stop = stopInputEl ? stopInputEl.value.trim() : '';
+  const loop = loopCheckboxEl ? loopCheckboxEl.checked : true;
+  
+  // IMPORTANT: Use checkbox value which respects URL parameters
+  // For shared links, URL parameters take precedence over user preferences
+  let mute = muteCheckboxEl ? muteCheckboxEl.checked : false;
+  
+  // Only apply user preferences if no URL parameter was set
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.has('mute') && window.VideoPreferences) {
+    const preferences = window.VideoPreferences.getPreferences();
+    mute = preferences.muted;
+  }
+  
+  const controls = controlsCheckboxEl ? controlsCheckboxEl.checked : true;
+  const autoplay = autoplayCheckboxEl ? autoplayCheckboxEl.checked : false;
+  const hideMenu = hideMenuCheckboxEl ? hideMenuCheckboxEl.checked : false;
+
+  // Use multi-platform detection instead of just extractVideoId
+  const detected = detectPlatform(videoInput);
+  
+  // Show/hide bookmark button based on platform (only YouTube supports RSS feeds)
+  const bookmarkBtn = document.getElementById('video-bookmark-btn');
+  if (bookmarkBtn) {
+    if (detected.platform === 'youtube' && detected.id) {
+      bookmarkBtn.style.display = 'flex';
+      bookmarkBtn.title = 'Bookmark YouTube Channel';
+    } else {
+      bookmarkBtn.style.display = 'none';
+    }
+  }
+  
+  // Reset timer when video changes
+  if (detected.platform && detected.id) {
+    resetPlaybackTimer();
+    // Track video usage for trending
+    trackVideoUsage(videoInput);
+    
+    // Start fallback timer after video loads (only for platforms that support it)
+    if (detected.platform === 'youtube') {
+      setTimeout(async () => {
+        const hasValidMembership = await checkMembership();
+        if (!hasValidMembership && !timerRunning) {
+          await startPlaybackTimer();
+        }
+      }, 3000); // Give video time to load and start playing
+    }
+  } else {
+    stopPlaybackTimer();
+  }
+  
+  let embedUrl = '';
+  if (detected.platform && detected.id) {
+    embedUrl = generateEmbedUrl(detected.platform, detected.id, {
+      autoplay: autoplay,
+      controls: controls,
+      mute: mute,
+      start: start,
+      stop: stop,
+      loop: loop,
+      type: detected.type, // For Twitch clips/videos
+      originalUrl: detected.originalUrl, // For Facebook URLs
+      isShortUrl: detected.isShortUrl // For fb.watch URLs
+    });
+  }
+  if (videoFrameEl && 'src' in videoFrameEl) {
+    if (embedUrl && embedUrl.trim() !== '') {
+      videoFrameEl.src = embedUrl;
+      videoFrameEl.style.display = 'block'; // Show the video frame
+    } else {
+      videoFrameEl.src = '';
+      videoFrameEl.style.display = 'none'; // Hide when no video
+    }
+    
+    // Start time polling for YouTube videos
+    setTimeout(() => {
+      startVideoTimePolling();
+      
+      // If we're supposed to be custom looping, ensure polling is active
+      if (shouldUseCustomLoop()) {
+        // Restart polling with custom loop frequency
+        stopVideoTimePolling();
+        setTimeout(() => {
+          startVideoTimePolling();
+        }, 1000);
+      }
+      
+      // Fallback autoplay attempt for shared links
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('autoplay') === 'true' && urlParams.get('mute') === 'true') {
+        setTimeout(() => {
+          try {
+            if (videoFrameEl && 'contentWindow' in videoFrameEl && videoFrameEl.contentWindow) {
+              videoFrameEl.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            }
+          } catch (e) {
+            // Silently handle errors
+          }
+        }, 1000);
+      }
+    }, 2000); // Give video time to load
+  }
+
+  // Build query string - preserve current settings
+  const params = new URLSearchParams();
+  if (videoInput) params.set('video', videoInput);
+  if (start) params.set('start', start);
+  if (stop) params.set('stop', stop);
+  if (loop) params.set('loop', 'true');
+  if (mute) params.set('mute', 'true');
+  if (controls) params.set('controls', 'true');
+  if (autoplay) params.set('autoplay', 'true');
+  if (hideMenu) params.set('hideControlsMenu', 'true');
+  const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  if (shareLinkEl) shareLinkEl.textContent = shareUrl;
+}
+
+// Update video and query string
+function updateVideoAndLink() {
+  const videoInputEl = document.getElementById('video-input');
+  const startInputEl = document.getElementById('start-input');
+  const stopInputEl = document.getElementById('stop-input');
+  const loopCheckboxEl = document.getElementById('loop-checkbox');
+  const muteCheckboxEl = document.getElementById('mute-checkbox');
+  const controlsCheckboxEl = document.getElementById('controls-checkbox');
+  const autoplayCheckboxEl = document.getElementById('autoplay-checkbox');
+  const hideMenuCheckboxEl = document.getElementById('hide-menu-checkbox');
+  const videoFrameEl = document.getElementById('video-frame');
+  const shareLinkEl = document.getElementById('share-link');
+  const platformIndicatorEl = document.getElementById('platform-indicator');
+
+  const videoInput = videoInputEl ? videoInputEl.value.trim() : '';
+  const start = startInputEl ? startInputEl.value.trim() : '';
+  const stop = stopInputEl ? stopInputEl.value.trim() : '';
+  const loop = loopCheckboxEl ? loopCheckboxEl.checked : true;
+  
+  // IMPORTANT: Use checkbox value which respects URL parameters
+  // For shared links, URL parameters take precedence over user preferences
+  let mute = muteCheckboxEl ? muteCheckboxEl.checked : false;
+  
+  // Only apply user preferences if no URL parameter was set
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.has('mute') && window.VideoPreferences) {
+    const preferences = window.VideoPreferences.getPreferences();
+    mute = preferences.muted;
+  }
+  
+  const controls = controlsCheckboxEl ? controlsCheckboxEl.checked : true;
+  const autoplay = autoplayCheckboxEl ? autoplayCheckboxEl.checked : false;
+  const hideMenu = hideMenuCheckboxEl ? hideMenuCheckboxEl.checked : false;
+
+  // Detect platform and get video info
+  const detected = detectPlatform(videoInput);
+  
+  // Update platform indicator
+  if (platformIndicatorEl) {
+    if (detected.platform && detected.id) {
+      let platformName = detected.platform.charAt(0).toUpperCase() + detected.platform.slice(1);
+      if (detected.type && detected.type === 'clip') platformName += ' Clip';
+      platformIndicatorEl.textContent = platformName;
+      platformIndicatorEl.style.display = 'block';
+      
+      // Color code by platform
+      switch (detected.platform) {
+        case 'youtube':
+          platformIndicatorEl.style.background = 'rgba(255, 0, 0, 0.3)';
+          break;
+        case 'vimeo':
+          platformIndicatorEl.style.background = 'rgba(26, 183, 234, 0.3)';
+          break;
+        case 'twitch':
+          platformIndicatorEl.style.background = 'rgba(145, 70, 255, 0.3)';
+          break;
+        case 'facebook':
+          platformIndicatorEl.style.background = 'rgba(24, 119, 242, 0.3)';
+          break;
+        case 'dailymotion':
+          platformIndicatorEl.style.background = 'rgba(0, 173, 239, 0.3)';
+          break;
+        case 'tiktok':
+          platformIndicatorEl.style.background = 'rgba(255, 0, 80, 0.3)';
+          break;
+        default:
+          platformIndicatorEl.style.background = 'rgba(0,0,0,0.3)';
+      }
+    } else {
+      platformIndicatorEl.style.display = 'none';
+    }
+  }
+  
+  // Show/hide bookmark button based on platform (only YouTube supports RSS feeds)
+  const bookmarkBtn = document.getElementById('video-bookmark-btn');
+  if (bookmarkBtn) {
+    if (detected.platform === 'youtube' && detected.id) {
+      bookmarkBtn.style.display = 'flex';
+      bookmarkBtn.title = 'Bookmark YouTube Channel';
+    } else {
+      bookmarkBtn.style.display = 'none';
+    }
+  }
+  
+  // Reset timer when video changes
+  if (detected.platform && detected.id) {
+    resetPlaybackTimer();
+    // Track video usage for trending
+    trackVideoUsage(videoInput);
+    
+    // Start fallback timer after video loads (only for platforms that support it)
+    if (detected.platform === 'youtube') {
+      setTimeout(async () => {
+        const hasValidMembership = await checkMembership();
+        if (!hasValidMembership && !timerRunning) {
+          await startPlaybackTimer();
+        }
+      }, 3000); // Give video time to load and start playing
+    }
+  } else {
+    stopPlaybackTimer();
+  }
+  
+  let embedUrl = '';
+  if (detected.platform && detected.id) {
+    embedUrl = generateEmbedUrl(detected.platform, detected.id, {
+      autoplay: autoplay,
+      controls: controls,
+      mute: mute,
+      start: start,
+      stop: stop,
+      loop: loop,
+      type: detected.type, // For Twitch clips/videos
+      originalUrl: detected.originalUrl, // For Facebook URLs
+      isShortUrl: detected.isShortUrl // For fb.watch URLs
+    });
+  }
+  // Show/hide iframe based on whether we have a video
+  if (videoFrameEl && 'src' in videoFrameEl) {
+    if (embedUrl && embedUrl.trim() !== '') {
+      videoFrameEl.src = embedUrl;
+      videoFrameEl.style.display = 'block';
+    } else {
+      videoFrameEl.src = '';
+      videoFrameEl.style.display = 'none';
+    }
+  }
+
+  // Build query string
+  const params = new URLSearchParams();
+  if (videoInput) params.set('video', videoInput);
+  if (start) params.set('start', start);
+  if (stop) params.set('stop', stop);
+  if (loop) params.set('loop', 'true');
+  if (mute) params.set('mute', 'true');
+  if (controls) params.set('controls', 'true');
+  if (autoplay) params.set('autoplay', 'true');
+  if (hideMenu) params.set('hideControlsMenu', 'true');
+  const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  if (shareLinkEl) shareLinkEl.textContent = shareUrl;
+}
+
+// Share dialog functionality
+function openShareDialog() {
+  const shareLinkEl = document.getElementById('share-link');
+  const shareUrl = shareLinkEl && 'textContent' in shareLinkEl ? shareLinkEl.textContent : '';
+  
+  if (!shareUrl || shareUrl.trim() === '') {
+    // If no URL is generated yet, generate it first
+    updateVideoAndLink();
+    setTimeout(() => openShareDialog(), 100);
+    return;
+  }
+  
+  // Create share dialog if it doesn't exist
+  let shareDialog = document.getElementById('share-dialog');
+  if (!shareDialog) {
+    shareDialog = document.createElement('div');
+    shareDialog.id = 'share-dialog';
+    shareDialog.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    `;
+    
+    shareDialog.innerHTML = `
+      <div style="
+        background: var(--theme-surface, #1a1a1a);
+        color: var(--theme-text, #fff);
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--theme-border, #333);
+        position: relative;
+      ">
+        <button id="close-share-dialog" style="
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: none;
+          border: none;
+          color: var(--theme-text-secondary, #aaa);
+          font-size: 24px;
+          cursor: pointer;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: all 0.2s ease;
+        " onmouseover="this.style.background='var(--theme-hover, #333)'" onmouseout="this.style.background='none'">
+          ×
+        </button>
+        
+        <h3 style="margin: 0 0 1.5rem 0; color: white; font-size: 1.5rem;">
+          🔗 Share Video
+        </h3>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: white;">
+            Share URL:
+          </label>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input 
+              id="share-url-input" 
+              type="text" 
+              readonly 
+              value="${shareUrl}"
+              style="
+                flex: 1;
+                padding: 12px;
+                border: 1px solid var(--theme-border, #333);
+                border-radius: 6px;
+                background: var(--theme-input-bg, #2a2a2a);
+                color: white;
+                font-family: monospace;
+                font-size: 14px;
+                outline: none;
+              "
+            />
+            <button 
+              id="copy-share-url" 
+              style="
+                background: #4CAF50;
+                color: #ffffff;
+                border: none;
+                padding: 12px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                white-space: nowrap;
+              "
+              onmouseover="this.style.transform='translateY(-1px)'"
+              onmouseout="this.style.transform='translateY(0)'"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: white">
+            Share via:
+          </label>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="share-platform-btn" data-platform="bluesky" style="
+              background: #00A8E8;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              Bluesky
+            </button>
+
+
+            <button class="share-platform-btn" data-platform="twitter" style="
+              background: #000;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              X
+            </button>
+            <button class="share-platform-btn" data-platform="facebook" style="
+              background: #4267B2;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              Facebook
+            </button>
+            <button class="share-platform-btn" data-platform="reddit" style="
+              background: #FF4500;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              Reddit
+            </button>
+            
+            <button class="share-platform-btn" data-platform="email" style="
+              background: #34495e;
+              color: white;
+              border: none;
+              padding: 10px 16px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 14px;
+              font-weight: 600;
+              transition: all 0.2s ease;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            ">
+              Email
+            </button>
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <div style="
+            background: var(--theme-info-bg, #1e3a8a20);
+            border: 1px solid var(--theme-info-border, #3b82f6);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 14px;
+            color: white;
+          ">
+            💡 <strong>Tip:</strong> This link preserves all your current video settings including start/stop times, autoplay, and controls preferences.
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button id="share-dialog-close" style="
+            background: var(--theme-secondary, #666);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+          ">
+            Close
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(shareDialog);
+    
+    // Add event listeners
+    document.getElementById('close-share-dialog').addEventListener('click', closeShareDialog);
+    document.getElementById('share-dialog-close').addEventListener('click', closeShareDialog);
+    document.getElementById('copy-share-url').addEventListener('click', copyShareUrl);
+    
+    // Add platform share listeners
+    document.querySelectorAll('.share-platform-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const platform = e.target.closest('.share-platform-btn').dataset.platform;
+        shareToplatform(platform, shareUrl);
+      });
+      
+      // Add hover effects
+      btn.addEventListener('mouseover', () => {
+        btn.style.transform = 'translateY(-1px)';
+        btn.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+      });
+      btn.addEventListener('mouseout', () => {
+        btn.style.transform = 'translateY(0)';
+        btn.style.boxShadow = 'none';
+      });
+    });
+    
+    // Close dialog when clicking outside
+    shareDialog.addEventListener('click', (e) => {
+      if (e.target === shareDialog) {
+        closeShareDialog();
+      }
+    });
+    
+    // Close dialog with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && shareDialog.style.display === 'flex') {
+        closeShareDialog();
+      }
+    });
+  }
+  
+  // Update the URL in case it changed
+  const shareUrlInput = document.getElementById('share-url-input');
+  if (shareUrlInput) {
+    shareUrlInput.value = shareUrl;
+  }
+  
+  // Show the dialog
+  shareDialog.style.display = 'flex';
+  
+  // Focus on the URL input for easy copying
+  setTimeout(() => {
+    if (shareUrlInput) {
+      shareUrlInput.select();
+    }
+  }, 100);
+}
+
+function closeShareDialog() {
+  const shareDialog = document.getElementById('share-dialog');
+  if (shareDialog) {
+    shareDialog.style.display = 'none';
+  }
+}
+
+function copyShareUrl() {
+  const shareUrlInput = document.getElementById('share-url-input');
+  const copyBtn = document.getElementById('copy-share-url');
+  
+  if (shareUrlInput && shareUrlInput.value) {
+    navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+      if (copyBtn) {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.style.background = '#22c55e';
+        
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = '#4CAF50';
+        }, 2000);
+      }
+    }).catch(err => {
+      console.error('Failed to copy URL:', err);
+      if (copyBtn) {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '❌ Failed';
+        copyBtn.style.background = '#ef4444';
+        
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = '#4CAF50';
+        }, 2000);
+      }
+    });
+  }
+}
+
+function shareToplatform(platform, url) {
+  // Use generic share text instead of exposing the original video URL
+  const shareText = encodeURIComponent('Check out this privacy-first video player!');
+  const shareUrl = encodeURIComponent(url);
+  
+  let shareLink = '';
+  
+  switch (platform) {
+    case 'twitter':
+      shareLink = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+      break;
+    case 'facebook':
+      shareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+      break;
+    case 'reddit':
+      shareLink = `https://reddit.com/submit?url=${shareUrl}&title=${shareText}`;
+      break;
+    case 'bluesky':
+      shareLink = `https://bsky.app/intent/compose?text=${shareText}%20${shareUrl}`;
+      break;
+    case 'email':
+      shareLink = `mailto:?subject=${shareText}&body=Check out this privacy-first video: ${url}`;
+      break;
+    default:
+      return;
+  }
+  
+  window.open(shareLink, '_blank', 'width=600,height=400');
+}
+
+// Legacy function for backward compatibility
+function copyShareLink() {
+  openShareDialog();
+}
+
+// On load: initialize from query string
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  
+  // Check for membership activation token
+  const membershipToken = params.get('membership');
+  if (membershipToken) {
+    setMembership(membershipToken);
+    updateMembershipStatus();
+    checkToolbarAccess();
+    
+    // Remove the token from URL for cleaner sharing
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.delete('membership');
+    window.history.replaceState({}, '', newUrl);
+  }
+  
+  // Check for membership reset
+  const resetMembershipParam = params.get('reset_membership');
+  if (resetMembershipParam === 'true') {
+    resetMembership();
+    return;
+  }
+  
+  const videoInputEl = document.getElementById('video-input');
+  const startInputEl = document.getElementById('start-input');
+  const stopInputEl = document.getElementById('stop-input');
+  const loopCheckboxEl = document.getElementById('loop-checkbox');
+  const muteCheckboxEl = document.getElementById('mute-checkbox');
+  const controlsCheckboxEl = document.getElementById('controls-checkbox');
+  const autoplayCheckboxEl = document.getElementById('autoplay-checkbox');
+  const hideMenuCheckboxEl = document.getElementById('hide-menu-checkbox');
+  const menuBarEl = document.getElementById('menu-bar');
+
+  // Check if this is a user navigation (has video preference stored) vs a shared link
+  const hasStoredVideoPreference = localStorage.getItem('video-preferences') !== null || localStorage.getItem('videoPreference_muted') !== null;
+  // A shared link typically has multiple explicit parameters set, especially hideControlsMenu or explicit mute/autoplay overrides
+  const isSharedLink = params.has('hideControlsMenu') || 
+                       (params.has('mute') && params.has('autoplay') && params.has('controls')) ||
+                       (params.has('mute') && !hasStoredVideoPreference);
+  
+  if (videoInputEl) videoInputEl.value = params.get('video') || params.get('videoId') || '';
+  if (startInputEl) startInputEl.value = params.get('start') || '';
+  if (stopInputEl) stopInputEl.value = params.get('stop') || '';
+  if (loopCheckboxEl) loopCheckboxEl.checked = params.get('loop') === 'true';
+  
+  // Handle checkbox parameters - URL parameters take precedence when explicitly set
+  if (muteCheckboxEl) {
+    if (params.has('mute')) {
+      muteCheckboxEl.checked = params.get('mute') === 'true';
+    } else {
+      // Use user preference or smart default when no URL parameter
+      let userMutePreference = null;
+      
+      if (window.VideoPreferences) {
+        userMutePreference = window.VideoPreferences.isMuted();
+      } else {
+        // Fallback to legacy localStorage check
+        try {
+          const storedPrefs = localStorage.getItem('video-preferences');
+          if (storedPrefs) {
+            const parsed = JSON.parse(storedPrefs);
+            userMutePreference = parsed.muted;
+          }
+        } catch (e) {
+          // No JSON preferences found
+        }
+        
+        // Additional fallback to legacy system
+        if (userMutePreference === null) {
+          const legacyPref = localStorage.getItem('videoPreference_muted');
+          if (legacyPref !== null) {
+            userMutePreference = legacyPref === 'true';
+          }
+        }
+      }
+      
+      if (userMutePreference !== null) {
+        muteCheckboxEl.checked = userMutePreference;
+      } else {
+        // Default to unmuted for better UX unless autoplay is explicitly enabled
+        const autoplayEnabled = params.get('autoplay') === 'true';
+        muteCheckboxEl.checked = autoplayEnabled;
+      }
+    }
+  }
+  
+  if (controlsCheckboxEl) {
+    controlsCheckboxEl.checked = params.has('controls') ? params.get('controls') === 'true' : true; // Default true
+  }
+  
+  if (autoplayCheckboxEl) {
+    autoplayCheckboxEl.checked = params.has('autoplay') ? params.get('autoplay') === 'true' : false; // Default false
+  }
+  
+  if (hideMenuCheckboxEl) {
+    hideMenuCheckboxEl.checked = params.get('hideControlsMenu') === 'true';
+  }
+
+  // Setup video event listeners
+  setupVideoEventListeners();
+  
+  // Update membership status display
+  updateMembershipStatus();
+  
+  // Show membership status if user is logged in
+  const statusEl = document.getElementById('membership-status');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+  }
+  
+  // Check toolbar access for premium members only
+  checkToolbarAccess();
+  
+  updateVideoAndLink();
+
+  // Track video if loaded via URL parameter (from homepage form)
+  const initialVideoUrl = params.get('video') || params.get('videoId');
+  if (initialVideoUrl) {
+    trackVideoUsage(initialVideoUrl);
+    
+    // Scroll to top when a video is loaded via URL parameters
+    // This ensures the video player is visible when navigating from MemberFavorites
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 100); // Small delay to ensure page is fully loaded
+  }
+
+  // Add listeners - separate handling for video URL vs other controls
+  // Video URL input should only update the video, not affect audio/control settings
+  if (videoInputEl) {
+    videoInputEl.addEventListener('change', updateVideoOnly);
+    videoInputEl.addEventListener('input', updateVideoOnly); // Also respond to typing
+  }
+  
+  // Control inputs (start, stop, loop, controls, autoplay, hide) should update video settings
+  [startInputEl, stopInputEl, loopCheckboxEl, controlsCheckboxEl, autoplayCheckboxEl, hideMenuCheckboxEl].forEach(el => {
+    if (el) {
+      el.addEventListener('change', updateVideoAndLink);
+    }
+  });
+  
+  // Add special listener for mute checkbox to save user preference
+  if (muteCheckboxEl) {
+    muteCheckboxEl.addEventListener('change', (e) => {
+      // Save user's mute preference using the existing VideoPreferences system
+      if (window.VideoPreferences) {
+        window.VideoPreferences.setMuted(e.target.checked);
+      } else {
+        // Fallback to legacy system if VideoPreferences not available
+        localStorage.setItem('videoPreference_muted', e.target.checked.toString());
+      }
+      
+      updateVideoAndLink();
+    });
+  }
+
+  const copyBtnEl = document.getElementById('copy-btn');
+  if (copyBtnEl) copyBtnEl.addEventListener('click', openShareDialog);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const clearBtn = document.getElementById('clear-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      const videoInputEl = document.getElementById('video-input');
+      const startInputEl = document.getElementById('start-input');
+      const stopInputEl = document.getElementById('stop-input');
+      const loopCheckboxEl = document.getElementById('loop-checkbox');
+      const muteCheckboxEl = document.getElementById('mute-checkbox');
+      const controlsCheckboxEl = document.getElementById('controls-checkbox');
+      const autoplayCheckboxEl = document.getElementById('autoplay-checkbox');
+      const hideMenuCheckboxEl = document.getElementById('hide-menu-checkbox');
+
+      if (videoInputEl) videoInputEl.value = '';
+      if (startInputEl) startInputEl.value = '';
+      if (stopInputEl) stopInputEl.value = '';
+      if (loopCheckboxEl) loopCheckboxEl.checked = true;
+      if (muteCheckboxEl) muteCheckboxEl.checked = true;
+      if (controlsCheckboxEl) controlsCheckboxEl.checked = true;
+      if (autoplayCheckboxEl) autoplayCheckboxEl.checked = true;
+      if (hideMenuCheckboxEl) hideMenuCheckboxEl.checked = false;
+
+      // Reset the timer when clearing
+      resetPlaybackTimer();
+      updateVideoAndLink();
+    });
+  }
+});
+</script>
+
+<script>
+// Utility function for extracting video IDs (needed in this scope)
+function extractVideoId(input) {
+  if (!input) return null;
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  let match = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  match = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  match = input.match(/\/(embed|v)\/([a-zA-Z0-9_-]{11})/);
+  if (match) return match[2];
+  match = input.match(/([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  return null;
+}
+
+// Multi-platform video detection (duplicate for this script scope)
+function detectPlatform(url) {
+  if (!url) return { platform: null, id: null };
+  
+  // YouTube
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const id = extractVideoId(url);
+    return { platform: 'youtube', id };
+  }
+  
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch) {
+    return { platform: 'vimeo', id: vimeoMatch[1] };
+  }
+  
+  // Facebook - Enhanced pattern matching
+  const facebookMatch = url.match(/(?:facebook\.com|fb\.watch)\/(?:.*\/)?(?:videos?\/)?(?:.*\/)?(\d+)/);
+  if (facebookMatch) {
+    return { platform: 'facebook', id: facebookMatch[1] };
+  }
+  
+  // Facebook watch URLs
+  const fbWatchMatch = url.match(/fb\.watch\/([a-zA-Z0-9_-]+)/);
+  if (fbWatchMatch) {
+    return { platform: 'facebook', id: fbWatchMatch[1] };
+  }
+
+  // Twitch - Enhanced pattern matching
+  const twitchVideoMatch = url.match(/(?:www\.)?twitch\.tv\/videos\/(\d+)/);
+  if (twitchVideoMatch) {
+    return { platform: 'twitch', id: twitchVideoMatch[1], type: 'video' };
+  }
+
+  // Twitch clips - multiple formats
+  const twitchClipMatch = url.match(/(?:www\.)?twitch\.tv\/\w+\/clip\/(\w+)|clips\.twitch\.tv\/(\w+)/);
+  if (twitchClipMatch) {
+    const clipId = twitchClipMatch[1] || twitchClipMatch[2];
+    return { platform: 'twitch', id: clipId, type: 'clip' };
+  }
+  
+  // Twitch live streams and channel videos
+  const twitchChannelMatch = url.match(/(?:www\.)?twitch\.tv\/([^\/\?]+)(?:\/video\/(\d+))?/);
+  if (twitchChannelMatch && !url.includes('/videos/') && !url.includes('/clip/')) {
+    // This is likely a live stream or channel
+    return { platform: 'twitch', id: twitchChannelMatch[1], type: 'channel' };
+  }
+  
+  // Dailymotion
+  const dailymotionMatch = url.match(/dailymotion\.com\/video\/([a-zA-Z0-9]+)/);
+  if (dailymotionMatch) {
+    return { platform: 'dailymotion', id: dailymotionMatch[1] };
+  }
+  
+  // TikTok
+  const tiktokMatch = url.match(/tiktok\.com\/.*\/video\/(\d+)/);
+  if (tiktokMatch) {
+    return { platform: 'tiktok', id: tiktokMatch[1] };
+  }
+  
+  // If it's already just an ID, assume YouTube for backward compatibility
+  if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
+    return { platform: 'youtube', id: url };
+  }
+  
+  return { platform: null, id: null };
+}
+
+// Premium Favorites Section Display - Now always visible
+document.addEventListener('DOMContentLoaded', async () => {
+  
+  const premiumContainer = document.getElementById('premium-favorites-container');
+  if (!premiumContainer) {
+    return;
+  }
+  
+  // Always show the container - let MemberFavorites component handle member/non-member states
+  premiumContainer.style.display = 'block';
+  
+  // Check if user came here via #member anchor and scroll to it
+  if (window.location.hash === '#member') {
+    setTimeout(() => {
+      const memberAnchor = document.getElementById('member');
+      if (memberAnchor) {
+        memberAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 500);
+  }
+});
+
+// Add global debug function for membership testing
+(window as any).debugMembership = async function() {
+  try {
+    // Use unified membership check (same as Base.astro)
+    const status = await globalThis.checkUnifiedMembershipStatus();
+    alert(`Membership Status:\n\nValid: ${status.isValid}\nTier: ${status.tier || 'free'}\nSource: ${status.source || 'localStorage'}\n\nCheck console for full details.`);
+    return status;
+  } catch (error: any) {
+    console.error('Debug membership failed:', error);
+    alert('Debug failed: ' + error.message);
+  }
+};
+
+
+
+
+// Manual test function for debugging
+(window as any).testVideoActions = function() {
+  initializeVideoActions();
+};
+
+
+
+(window as any).checkMembershipDebug = function() {
+  // console.log('🧪 DEBUGGING MEMBERSHIP STATUS');
+  
+  // Check localStorage items
+  const membershipEmail = localStorage.getItem('membershipEmail');
+  const membershipStatus = localStorage.getItem('membershipStatus');
+  const membershipCode = localStorage.getItem('membershipCode');
+  const cacheTime = localStorage.getItem('membershipCacheTime');
+  
+
+  
+  // Try to parse status
+  if (membershipStatus) {
+    try {
+      const parsed = JSON.parse(membershipStatus);
+
+    } catch (e) {
+      console.error('🧪 ERROR PARSING STATUS:', e);
+    }
+  }
+  
+  // Test unified membership system
+  if (typeof window !== 'undefined') {
+    globalThis.checkUnifiedMembershipStatus().then(result => {
+    }).catch(err => {
+      console.error('🎯 Unified membership check error:', err);
+    });
+  }
+};
+
+
+// Immediate initialization attempt
+setTimeout(() => {
+  const container = document.getElementById('video-actions-container');
+  if (container) {
+  }
+}, 100);
+
+// Premium Video Actions for Main Player
+async function initializeVideoActions() {
+  
+  // First, check if the elements exist
+  const actionsContainer = document.getElementById('video-actions-container');
+  const favoriteBtn = document.getElementById('video-favorite-btn');
+  const bookmarkBtn = document.getElementById('video-bookmark-btn');
+  
+  if (!actionsContainer) {
+    console.error('❌ VIDEO PAGE: video-actions-container not found!');
+    return;
+  }
+  
+  // Check if user is premium using unified system
+  let isPremium = false;
+  
+  try {
+    const status = await globalThis.checkUnifiedMembershipStatus();
+    // Check for premium tier specifically (favorites require premium, not unlimited)
+    isPremium = status && (status.isValid || status.valid) && (status.tier === 'premium' || status.accessLevel === 'premium');
+  } catch (e) {
+    console.error('Error checking membership status:', e);
+  }
+  
+  if (!isPremium) {
+    // Check legacy system
+    const membershipCode = localStorage.getItem('membershipCode');
+    if (membershipCode) {
+      try {
+        const response = await fetch('/.netlify/functions/validate-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: membershipCode, action: 'validate' })
+        });
+        const result = await response.json();
+        isPremium = result.isValid && result.tier === 'premium';
+      } catch (error) {
+        console.error('Error validating membership:', error);
+      }
+    }
+  }
+  
+  
+  if (!isPremium) {
+    actionsContainer.style.display = 'none'; // Hide for non-premium users
+    return;
+  }
+  
+  // Show the video actions container
+  if (actionsContainer) {
+    actionsContainer.classList.add('visible');
+  }
+  
+  // Set up event listeners for the buttons
+  if (favoriteBtn) {
+    favoriteBtn.addEventListener('click', handleVideoFavorite);
+  }
+  
+  if (bookmarkBtn) {
+    bookmarkBtn.addEventListener('click', handleChannelBookmark);
+  }
+  
+  // Update button states when video changes
+  setTimeout(updateVideoActionStates, 500);
+  
+}
+
+// Function to extract better video titles and metadata from oEmbed APIs when possible
+async function extractVideoMetadata(videoUrl, platform, videoId) {
+  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+  
+  try {
+    switch (platform.toLowerCase()) {
+      case 'vimeo': {
+        try {
+          // Use Vimeo's oEmbed API to get title and author
+          const oembedUrl = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`;
+          const response = await fetch(oembedUrl);
+          if (response.ok) {
+            const data = await response.json();
+            return {
+              title: data.title || `Vimeo Video ${videoId}`,
+              author: data.author_name || 'Vimeo Channel',
+              thumbnail: data.thumbnail_url || '/socialCard.webp'
+            };
+          }
+        } catch (error) {
+          console.warn('Failed to fetch Vimeo metadata:', error);
+        }
+        break;
+      }
+      
+      case 'dailymotion': {
+        try {
+          // Use Dailymotion's oEmbed API to get title and author
+          const oembedUrl = `https://www.dailymotion.com/services/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
+          const response = await fetch(oembedUrl);
+          if (response.ok) {
+            const data = await response.json();
+            return {
+              title: data.title || `Dailymotion Video ${videoId}`,
+              author: data.author_name || 'Dailymotion Channel',
+              thumbnail: data.thumbnail_url || `https://www.dailymotion.com/thumbnail/video/${videoId}`
+            };
+          }
+        } catch (error) {
+          console.warn('Failed to fetch Dailymotion metadata:', error);
+        }
+        // Fallback to constructed data
+        return {
+          title: `Dailymotion Video ${videoId}`,
+          author: 'Dailymotion Channel',
+          thumbnail: `https://www.dailymotion.com/thumbnail/video/${videoId}`
+        };
+      }
+      
+      case 'youtube': {
+        return {
+          title: `YouTube Video ${videoId}`,
+          author: 'YouTube Channel',
+          thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+        };
+      }
+      
+      case 'facebook': {
+        // Facebook doesn't have a public oEmbed API that works without authentication
+        // But we can provide better default metadata
+        return {
+          title: `Facebook Video ${videoId}`,
+          author: 'Facebook User',
+          thumbnail: '/socialCard.webp'
+        };
+      }
+      
+      case 'twitch': {
+        // Twitch doesn't have a simple oEmbed API, but we can provide better metadata
+        const twitchType = videoUrl.includes('/clip/') ? 'Clip' : 
+                          videoUrl.includes('/videos/') ? 'Video' : 'Stream';
+        return {
+          title: `Twitch ${twitchType} ${videoId}`,
+          author: 'Twitch Creator',
+          thumbnail: '/socialCard.webp'
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Error extracting video metadata:', error);
+  }
+  
+  // Default fallback
+  return {
+    title: `${platformName} Video ${videoId}`,
+    author: `${platformName} Channel`,
+    thumbnail: '/socialCard.webp'
+  };
+}
+
+// Function to extract better video titles from URLs when possible
+function extractVideoTitle(videoUrl, platform, videoId) {
+  // For most platforms, we can't easily extract the title without API calls
+  // But we can provide more descriptive default titles
+  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+  
+  switch (platform.toLowerCase()) {
+    case 'vimeo':
+      return `Vimeo Video ${videoId}`;
+    case 'dailymotion':
+      return `Dailymotion Video ${videoId}`;
+    case 'twitch':
+      return `Twitch Video ${videoId}`;
+    case 'facebook':
+      return `Facebook Video ${videoId}`;
+    case 'tiktok':
+      return `TikTok Video ${videoId}`;
+    default:
+      return `${platformName} Video ${videoId}`;
+  }
+}
+
+// Function to extract platform-specific thumbnails
+async function extractThumbnailForPlatform(videoUrl, platform, videoId) {
+  if (!videoUrl || !platform || !videoId) {
+    return '/socialCard.webp'; // Fallback
+  }
+
+  try {
+    switch (platform.toLowerCase()) {
+      case 'youtube': {
+        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      }
+      
+      case 'vimeo': {
+        try {
+          // Use Vimeo's oEmbed API to get thumbnail
+          const oembedUrl = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`;
+          const response = await fetch(oembedUrl);
+          if (response.ok) {
+            const data = await response.json();
+            return data.thumbnail_url || '/socialCard.webp';
+          }
+        } catch (error) {
+          console.warn('Failed to fetch Vimeo thumbnail:', error);
+        }
+        return '/socialCard.webp';
+      }
+      
+      case 'twitch': {
+        // Twitch thumbnails are complex and require API calls
+        return '/socialCard.webp';
+      }
+      
+      case 'facebook': {
+        // Facebook thumbnails require API access
+        return '/socialCard.webp';
+      }
+      
+      case 'dailymotion': {
+        // Extract Dailymotion video ID and construct thumbnail URL
+        return `https://www.dailymotion.com/thumbnail/video/${videoId}`;
+      }
+      
+      case 'tiktok': {
+        // TikTok thumbnails require special handling
+        return '/socialCard.webp';
+      }
+      
+      default:
+        return '/socialCard.webp';
+    }
+  } catch (error) {
+    console.error('Error extracting thumbnail:', error);
+    return '/socialCard.webp';
+  }
+}
+
+async function handleVideoFavorite() {
+  const videoInputEl = document.getElementById('video-input') as HTMLInputElement;
+  const videoInput = videoInputEl?.value?.trim();
+  if (!videoInput) {
+    alert('Please paste a video URL first');
+    return;
+  }
+  
+  // Use multi-platform detection instead of just YouTube
+  const detected = detectPlatform(videoInput);
+  if (!detected.platform || !detected.id) {
+    alert('Invalid video URL or unsupported platform');
+    return;
+  }
+  
+  try {
+    let videoData: any = {};
+    
+    // For YouTube, use the existing API
+    if (detected.platform === 'youtube') {
+      videoData = await fetchVideoData(detected.id);
+    } else {
+      // For other platforms, try to get metadata from oEmbed or construct basic data
+      const metadata = await extractVideoMetadata(videoInput, detected.platform, detected.id);
+      videoData = {
+        title: metadata.title,
+        thumbnail: metadata.thumbnail,
+        author: metadata.author
+      };
+    }
+    
+    const favoriteBtn = document.getElementById('video-favorite-btn');
+    
+    // Use the same localStorage system as MemberFavorites
+    const favorites = JSON.parse(localStorage.getItem('memberFavorites') || '[]');
+    
+    // Create a unique identifier that includes platform info
+    const uniqueId = `${detected.platform}:${detected.id}`;
+    const favoriteIndex = favorites.findIndex((fav: any) => 
+      (fav.videoId === detected.id && fav.platform === detected.platform) || 
+      fav.uniqueId === uniqueId
+    );
+    
+    if (favoriteIndex > -1) {
+      // Remove from favorites
+      favorites.splice(favoriteIndex, 1);
+      localStorage.setItem('memberFavorites', JSON.stringify(favorites));
+      favoriteBtn?.classList.remove('favorited');
+      // alert('Removed from favorites');
+    } else {
+      // Create platform-appropriate URL
+      let videoUrl = videoInput;
+      if (detected.platform === 'youtube') {
+        videoUrl = `https://www.youtube.com/watch?v=${detected.id}`;
+      }
+      
+      // Add to favorites with platform information
+      const favorite = {
+        uniqueId: uniqueId,
+        videoId: detected.id,
+        platform: detected.platform,
+        title: videoData.title || `${detected.platform.charAt(0).toUpperCase() + detected.platform.slice(1)} Video ${detected.id}`,
+        thumbnail: videoData.thumbnail || '/socialCard.webp',
+        channelTitle: videoData.author || `${detected.platform.charAt(0).toUpperCase() + detected.platform.slice(1)} Channel`,
+        url: videoUrl,
+        dateAdded: new Date().toISOString()
+      };
+      
+      favorites.unshift(favorite); // Add to beginning like FavoritesManager does
+      localStorage.setItem('memberFavorites', JSON.stringify(favorites));
+      favoriteBtn?.classList.add('favorited');
+      // alert('Added to favorites!');
+    }
+    
+    // Trigger storage event to update MemberFavorites component
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'memberFavorites',
+      newValue: localStorage.getItem('memberFavorites')
+    }));
+    
+  } catch (error) {
+    console.error('Error handling favorite:', error);
+    alert('Error managing favorites. Please try again.');
+  }
+}
+
+async function handleChannelBookmark() {
+  const videoInputEl = document.getElementById('video-input') as HTMLInputElement;
+  const videoInput = videoInputEl?.value?.trim();
+  if (!videoInput) {
+    alert('Please paste a video URL first');
+    return;
+  }
+  
+  // Use multi-platform detection instead of just YouTube
+  const detected = detectPlatform(videoInput);
+  if (!detected.platform || !detected.id) {
+    alert('Invalid video URL or unsupported platform');
+    return;
+  }
+  
+  try {
+    let channelData: any = {};
+    
+    if (detected.platform === 'youtube') {
+      // For YouTube, use the existing API to get channel information
+      const videoData = await fetchVideoData(detected.id);
+      
+      if (!videoData.channelId) {
+        alert('Unable to determine YouTube channel information for this video. Please try a different video URL.');
+        return;
+      }
+      
+      channelData = {
+        channelId: videoData.channelId,
+        channelName: videoData.author,
+        platform: 'youtube',
+        channelUrl: `https://www.youtube.com/channel/${videoData.channelId}`
+      };
+    } else {
+      // For other platforms, create basic channel data from the URL
+      let channelId = '';
+      let channelName = '';
+      let channelUrl = videoInput;
+      
+      switch (detected.platform) {
+        case 'vimeo':
+          // Extract user from Vimeo URL patterns
+          const vimeoUserMatch = videoInput.match(/vimeo\.com\/(?:video\/\d+.*by\/)?(\w+)/);
+          channelId = vimeoUserMatch ? vimeoUserMatch[1] : 'unknown';
+          channelName = `Vimeo User: ${channelId}`;
+          channelUrl = `https://vimeo.com/${channelId}`;
+          break;
+          
+        case 'dailymotion':
+          // Try to extract uploader info (this is limited without API)
+          channelId = 'dailymotion-user';
+          channelName = 'Dailymotion Channel';
+          channelUrl = videoInput;
+          break;
+          
+        case 'twitch':
+          // Extract channel from Twitch URL
+          const twitchMatch = videoInput.match(/twitch\.tv\/(\w+)/);
+          channelId = twitchMatch ? twitchMatch[1] : 'unknown';
+          channelName = `Twitch: ${channelId}`;
+          channelUrl = `https://www.twitch.tv/${channelId}`;
+          break;
+          
+        case 'facebook':
+          // Facebook is tricky, use generic info
+          channelId = 'facebook-page';
+          channelName = 'Facebook Page';
+          channelUrl = videoInput;
+          break;
+          
+        case 'tiktok':
+          // Extract user from TikTok URL
+          const tiktokMatch = videoInput.match(/tiktok\.com\/@(\w+)/);
+          channelId = tiktokMatch ? tiktokMatch[1] : 'unknown';
+          channelName = `TikTok: @${channelId}`;
+          channelUrl = `https://www.tiktok.com/@${channelId}`;
+          break;
+          
+        default:
+          channelId = 'unknown-channel';
+          channelName = `${detected.platform.charAt(0).toUpperCase() + detected.platform.slice(1)} Channel`;
+          channelUrl = videoInput;
+      }
+      
+      channelData = {
+        channelId,
+        channelName,
+        platform: detected.platform,
+        channelUrl
+      };
+    }
+    
+    const bookmarkBtn = document.getElementById('video-bookmark-btn');
+    
+    // Use direct localStorage manipulation (like the existing favorites code)
+    const channels = JSON.parse(localStorage.getItem('memberChannels') || '[]');
+    
+    // Check if channel is already bookmarked using multi-platform logic
+    const existingChannelIndex = channels.findIndex((ch: any) => {
+      // New format with platform support
+      if (channelData.platform && ch.platform) {
+        return ch.channelId === channelData.channelId && ch.platform === channelData.platform;
+      }
+      // Legacy format (YouTube only)
+      return ch.channelId === channelData.channelId;
+    });
+    
+    if (existingChannelIndex > -1) {
+      // Remove bookmark
+      channels.splice(existingChannelIndex, 1);
+      localStorage.setItem('memberChannels', JSON.stringify(channels));
+      bookmarkBtn?.classList.remove('subscribed');
+      alert(`Removed ${channelData.channelName} from bookmarked channels`);
+    } else {
+      // Add bookmark with platform information
+      const channel = {
+        uniqueChannelId: `${channelData.platform}:${channelData.channelId}`,
+        channelId: channelData.channelId,
+        platform: channelData.platform,
+        channelName: channelData.channelName,
+        channelUrl: channelData.channelUrl,
+        dateAdded: new Date().toISOString()
+      };
+      
+      channels.unshift(channel); // Add to beginning
+      localStorage.setItem('memberChannels', JSON.stringify(channels));
+      bookmarkBtn?.classList.add('subscribed');
+      alert(`Added ${channelData.channelName} to bookmarked channels!`);
+    }
+    
+    // Trigger storage event to update MemberFavorites component
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'memberChannels',
+      newValue: localStorage.getItem('memberChannels')
+    }));
+    
+  } catch (error) {
+    console.error('Error handling channel bookmark:', error);
+    alert('Error managing channel bookmarks. Please try again.');
+  }
+}
+
+async function fetchVideoData(videoId: string) {
+  try {
+    
+    // Use the same API endpoint that MemberFavorites uses for channel resolution
+    const response = await fetch('/api/youtube-feed', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        action: 'resolve',
+        input: `https://www.youtube.com/watch?v=${videoId}`
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch video data: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
+    // Return data in the format expected by the bookmark system
+    return {
+      title: data.videoTitle || `Video ${videoId}`,
+      thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+      author: data.name || 'Unknown Channel',
+      channelId: data.channelId || null,
+      published: new Date().toLocaleDateString(),
+      duration: '',
+      views: ''
+    };
+  } catch (error) {
+    console.error('Error fetching video data:', error);
+    // Return fallback data but with null channelId to indicate failure
+    return {
+      title: `Video ${videoId}`,
+      thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+      author: 'Unknown Channel',
+      channelId: null,
+      published: new Date().toLocaleDateString(),
+      duration: '',
+      views: ''
+    };
+  }
+}
+
+async function updateVideoActionStates() {
+  const videoInputEl = document.getElementById('video-input') as HTMLInputElement;
+  const videoInput = videoInputEl?.value?.trim();
+  if (!videoInput) {
+    // Hide buttons if no video
+    const favoriteBtn = document.getElementById('video-favorite-btn');
+    const bookmarkBtn = document.getElementById('video-bookmark-btn');
+    if (favoriteBtn) favoriteBtn.style.display = 'none';
+    if (bookmarkBtn) bookmarkBtn.style.display = 'none';
+    return;
+  }
+  
+  // Use multi-platform detection instead of extractVideoId
+  const detected = detectPlatform(videoInput);
+  if (!detected.id) return;
+  
+  try {
+    // Show favorite button for all platforms
+    const favoriteBtn = document.getElementById('video-favorite-btn');
+    if (favoriteBtn) favoriteBtn.style.display = 'flex';
+    
+    // Show bookmark button only for YouTube
+    const bookmarkBtn = document.getElementById('video-bookmark-btn');
+    if (bookmarkBtn) {
+      if (detected.platform === 'youtube') {
+        bookmarkBtn.style.display = 'flex';
+      } else {
+        bookmarkBtn.style.display = 'none';
+      }
+    }
+    
+    // Update favorite button state using platform-aware video ID
+    const favorites = JSON.parse(localStorage.getItem('memberFavorites') || '[]');
+    const isFavorited = favorites.some((fav: any) => fav.videoId === detected.id);
+    if (favoriteBtn) {
+      if (isFavorited) {
+        favoriteBtn.classList.add('favorited');
+      } else {
+        favoriteBtn.classList.remove('favorited');
+      }
+    }
+    
+    // Update bookmark button state (only for YouTube)
+    if (detected.platform === 'youtube' && bookmarkBtn) {
+      const videoData = await fetchVideoData(detected.id);
+      if (videoData.channelId) {
+        const channels = JSON.parse(localStorage.getItem('memberChannels') || '[]');
+        const isBookmarked = channels.some((ch: any) => ch.channelId === videoData.channelId);
+        if (isBookmarked) {
+          bookmarkBtn.classList.add('subscribed');
+        } else {
+          bookmarkBtn.classList.remove('subscribed');
+        }
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error updating video action states:', error);
+  }
+}
+
+// Initialize video actions when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  // Wait longer for membership status to be established
+  setTimeout(() => {
+    initializeVideoActions();
+  }, 2000); // Increased from 1000ms to 2000ms
+});
+
+// Also try initialization after window load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    initializeVideoActions();
+  }, 1000);
+});
+
+// And one more immediate attempt
+setTimeout(() => {
+  initializeVideoActions();
+}, 3000);
+
+// Current video time tracking for start/stop functionality
+let currentVideoTime = 0;
+let videoTimeInterval: number | null = null;
+let isCustomLooping = false;
+
+// Check if we should be doing custom looping
+function shouldUseCustomLoop() {
+  const loopCheckboxEl = document.getElementById('loop-checkbox');
+  const startInputEl = document.getElementById('start-input');
+  const stopInputEl = document.getElementById('stop-input');
+  
+  return loopCheckboxEl && 'checked' in loopCheckboxEl && loopCheckboxEl.checked && 
+         startInputEl && 'value' in startInputEl && startInputEl.value && 
+         stopInputEl && 'value' in stopInputEl && stopInputEl.value && 
+         parseFloat(String(startInputEl.value)) >= 0 && 
+         parseFloat(String(stopInputEl.value)) > parseFloat(String(startInputEl.value));
+}
+let customLoopEnabled = false;
+let loopStartTime = 0;
+let loopEndTime = 0;
+
+// Function to start polling video time for YouTube videos
+function startVideoTimePolling() {
+  // Clear any existing interval
+  if (videoTimeInterval) {
+    window.clearInterval(videoTimeInterval);
+  }
+  
+  const videoFrame = document.getElementById('video-frame') as HTMLIFrameElement;
+  if (!videoFrame || !videoFrame.src) return;
+
+  const url = new URL(videoFrame.src);
+  
+  // Only poll for YouTube videos
+  if (url.hostname.includes('youtube')) {
+    // Use more frequent polling when custom looping is needed
+    const pollInterval = shouldUseCustomLoop() ? 250 : 1000; // 4x per second vs 1x per second
+    
+    videoTimeInterval = window.setInterval(() => {
+      try {
+        videoFrame.contentWindow?.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
+      } catch (e) {
+        // Silently handle errors
+      }
+    }, pollInterval);
+  }
+}
+
+// Function to stop polling video time
+function stopVideoTimePolling() {
+  if (videoTimeInterval) {
+    window.clearInterval(videoTimeInterval);
+    videoTimeInterval = null;
+  }
+}
+
+// Function to get current video time from different platforms
+function getCurrentVideoTime() {
+  const videoFrame = document.getElementById('video-frame') as HTMLIFrameElement;
+  if (!videoFrame || !videoFrame.src) {
+    return 0;
+  }
+
+  const url = new URL(videoFrame.src);
+  
+  // For YouTube videos, try multiple approaches
+  if (url.hostname.includes('youtube')) {
+    try {
+      // Try to request current time immediately
+      videoFrame.contentWindow?.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
+      
+      // If we have a recent time, use it
+      if (currentVideoTime > 0) {
+        return currentVideoTime;
+      }
+      
+      // Try to get time from URL if available (for seeking)
+      const urlParams = new URLSearchParams(url.search);
+      const urlTime = urlParams.get('t') || urlParams.get('start');
+      if (urlTime) {
+        const timeInSeconds = parseInt(urlTime);
+        if (!isNaN(timeInSeconds)) {
+          return timeInSeconds;
+        }
+      }
+      
+      return 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+  
+  // For other platforms, return best guess (last known time)
+  return currentVideoTime;
+}
+
+// Function to set current video time in input field
+function setTimeInInput(inputId: string) {
+  const currentTime = getCurrentVideoTime();
+  const inputEl = document.getElementById(inputId) as HTMLInputElement;
+  
+  if (inputEl && currentTime > 0) {
+    // Convert seconds to whole seconds and update input
+    const timeInSeconds = Math.floor(currentTime);
+    inputEl.value = timeInSeconds.toString();
+    
+    // Show feedback
+    inputEl.style.background = 'rgba(0, 255, 0, 0.2)';
+    setTimeout(() => {
+      inputEl.style.background = 'rgba(0,0,0,.2)';
+    }, 1000);
+    
+    // Trigger change event to update URL
+    inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+  } else if (inputEl) {
+    // Show warning if no time available
+    inputEl.style.background = 'rgba(255, 165, 0, 0.2)';
+    inputEl.placeholder = 'No time';
+    setTimeout(() => {
+      inputEl.style.background = 'rgba(0,0,0,.2)';
+      inputEl.placeholder = inputId === 'start-input' ? 'Start' : 'Stop';
+    }, 1500);
+  }
+}
+
+// Enhanced video message handler to track current time
+function handleVideoTimeUpdate(event) {
+  try {
+    let data;
+    if (typeof event.data === 'string') {
+      if (event.data.indexOf('{') === 0) {
+        data = JSON.parse(event.data);
+      } else {
+        return;
+      }
+    } else {
+      data = event.data;
+    }
+    
+    // Handle YouTube API time updates
+    if (event.origin === 'https://www.youtube.com' || event.origin === 'https://www.youtube-nocookie.com') {
+      let timeUpdated = false;
+      
+      // Handle direct getCurrentTime response
+      if (typeof data === 'number') {
+        currentVideoTime = data;
+        timeUpdated = true;
+      }
+      // Handle various YouTube API response formats
+      else if (data.event === 'infoDelivery' && data.info && typeof data.info.currentTime === 'number') {
+        currentVideoTime = data.info.currentTime;
+        timeUpdated = true;
+      } else if (data.event === 'video-progress' && data.info && typeof data.info.currentTime === 'number') {
+        currentVideoTime = data.info.currentTime;
+        timeUpdated = true;
+      } else if (data.info && typeof data.info.currentTime === 'number') {
+        currentVideoTime = data.info.currentTime;
+        timeUpdated = true;
+      } else if (typeof data.currentTime === 'number') {
+        currentVideoTime = data.currentTime;
+        timeUpdated = true;
+      }
+      
+      // Check for custom looping when time updates
+      if (timeUpdated && shouldUseCustomLoop()) {
+        checkCustomLoop();
+      }
+    }
+  } catch (e) {
+    // Silently handle parsing errors
+  }
+}
+
+// Handle custom looping for video segments
+function checkCustomLoop() {
+  const stopInputEl = document.getElementById('stop-input');
+  const startInputEl = document.getElementById('start-input');
+  
+  if (!stopInputEl || !('value' in stopInputEl) || !stopInputEl.value || 
+      !startInputEl || !('value' in startInputEl) || !startInputEl.value) return;
+  
+  const stopTime = parseFloat(String(stopInputEl.value));
+  const startTime = parseFloat(String(startInputEl.value));
+  
+  // If we've reached or passed the stop time, loop back to start
+  if (currentVideoTime >= stopTime) {
+    const videoFrame = document.getElementById('video-frame');
+    
+    if (videoFrame && 'contentWindow' in videoFrame && videoFrame.contentWindow && !isCustomLooping) {
+      isCustomLooping = true;
+      
+      try {
+        // Seek back to start time
+        const iframe = videoFrame as any;
+        iframe.contentWindow?.postMessage(
+          `{"event":"command","func":"seekTo","args":[${startTime}, true]}`,
+          '*'
+        );
+        
+        // Reset flag after a short delay
+        setTimeout(() => {
+          isCustomLooping = false;
+        }, 500);
+      } catch (e) {
+        isCustomLooping = false;
+      }
+    }
+  }
+}
+
+// Initialize start/stop time click handlers
+function initializeTimeInputHandlers() {
+  const startInput = document.getElementById('start-input') as HTMLInputElement;
+  const stopInput = document.getElementById('stop-input') as HTMLInputElement;
+  
+  if (startInput) {
+    startInput.addEventListener('focus', () => {
+      setTimeInInput('start-input');
+    });
+    
+    startInput.addEventListener('click', (e) => {
+      // If input is empty, set current time
+      if (!startInput.value.trim()) {
+        e.preventDefault();
+        setTimeInInput('start-input');
+      }
+    });
+    
+    startInput.title = 'Click to set current video time as start time';
+  }
+  
+  if (stopInput) {
+    stopInput.addEventListener('focus', () => {
+      setTimeInInput('stop-input');
+    });
+    
+    stopInput.addEventListener('click', (e) => {
+      // If input is empty, set current time
+      if (!stopInput.value.trim()) {
+        e.preventDefault();
+        setTimeInInput('stop-input');
+      }
+    });
+    
+    stopInput.title = 'Click to set current video time as stop time';
+  }
+  
+  // Add enhanced message listener for time tracking
+  window.addEventListener('message', handleVideoTimeUpdate);
+}
+
+// Update button states when video input changes
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize click-to-set-time functionality
+  initializeTimeInputHandlers();
+  
+  // Clean up time polling when page unloads
+  window.addEventListener('beforeunload', () => {
+    stopVideoTimePolling();
+  });
+  
+  const videoInputEl = document.getElementById('video-input') as HTMLInputElement;
+  if (videoInputEl) {
+    // Stop polling when video input changes
+    videoInputEl.addEventListener('input', () => {
+      stopVideoTimePolling();
+      setTimeout(updateVideoActionStates, 500); // Debounce
+    });
+    videoInputEl.addEventListener('change', updateVideoActionStates);
+  }
+});
+
+console.info('🛡️ Privacy-focused YouTube embed: API disabled, tracking minimized');
+</script>
+<div class="video videopage">
+<div id="menu-bar">
+  <div id="bigbox" style="display: flex; ">
+    <div id="timers" style="display: flex; flex-direction:row; gap: 10px; align-items: center; flex: 1; min-width: 300px; padding:0 10px 0 5px;">
+      <input type="text" id="video-input" class="menu-input" placeholder="Paste Video URL here..." style="padding: .5vh .2vw; min-width:105px; flex: 1; max-width: 500px; text-align:center; font-size: clamp(.6rem,1vw,1rem); transition: all .4s ease-in-out; background:rgba(0,0,0,.2); color:#ddd; outline:1px solid #999; border:1px solid var(--theme-ui-colors-siteColor);" aria-label="Paste Video URL from supported platforms" />
+      <!-- <div id="platform-indicator" style="min-width: 60px; padding: 0.3vh 0.5vw; font-size: 10px; background: rgba(0,0,0,0.3); color: #aaa; border-radius: 3px; text-align: center; display: none;"></div> -->
+      <input type="text" id="start-input" class="menu-input" placeholder="Start" style="padding: .5vh .2vw; min-width:40px; width: 40px; flex-shrink: 0; text-align:center; font-size: clamp(.6rem,1vw,1rem); transition: all .4s ease-in-out; background:rgba(0,0,0,.2); color:#ddd; outline:1px solid #999; border:1px solid var(--theme-ui-colors-siteColor);" aria-label="Video Start Time" title="Click to set current video time as start time" />
+      <input type="text" id="stop-input" class="menu-input" placeholder="Stop" style="padding: .5vh .2vw; min-width:40px; width: 40px; flex-shrink: 0; text-align:center; font-size: clamp(.6rem,1vw,1rem); transition: all .4s ease-in-out; background:rgba(0,0,0,.2); color:#ddd; outline:1px solid #999; border:1px solid var(--theme-ui-colors-siteColor);" aria-label="Video Stop Time" title="Click to set current video time as stop time" />
+    </div>
+
+    <div id="checkboxes" style="display: flex; flex-direction:row; gap: 8px; align-items: center; padding:0 5px 5px 0; justify-content:center; background:rgba(0,0,0,.1); outline:0px solid #777; border-radius:var(--theme-ui-colors-borderRadius); font-size:clamp(.5rem,1.2vw,1rem);">
+      <label class="menu-label">Loop<br />
+        <input type="checkbox" id="loop-checkbox" class="menu-checkbox" checked />
+      </label>
+      <label class="menu-label">Mute<br />
+        <input type="checkbox" id="mute-checkbox" class="menu-checkbox" checked />
+      </label>
+      <label class="menu-label">Controls<br />
+        <input type="checkbox" id="controls-checkbox" class="menu-checkbox" checked />
+      </label>
+      <label class="menu-label">Autoplay<br />
+        <input type="checkbox" id="autoplay-checkbox" class="menu-checkbox" checked />
+      </label>
+      <label class="menu-label">Hide<br />
+        <input type="checkbox" id="hide-menu-checkbox" class="menu-checkbox" />
+      </label>
+    </div>
+
+    <div id="pastebox" style="display: none; flex-direction:row; gap: 2vw; align-items: center; justify-content:center; width:100%;">
+      <span id="share-link"></span>
+    </div>
+
+
+  <div style="display: flex; flex-direction:row; gap: 0; align-items: center; justify-content:center; width:100%;">
+    <button id="copy-btn" class="button print" aria-label="Create Link" style="display: flex; gap: .5vw; justify-content: center; padding: .6vh 3vw; width: auto; min-width: 60px; max-width: 100px; margin: 2px auto; text-align: center; outline: 1px solid #6B1D1D; font-size: 11px; font-weight: light; text-shadow: 0 0px 0 #444; background:rgb(69, 160, 73);">
+      Share Video
+    </button>
+
+    <button id="clear-btn" aria-label="Clear Form" style="margin-left: 5px; padding: .6vh .5vw; min-width:60px; font-size:14px; outline:none; border:none;background:transparent; color:#ddd">
+      Clear
+    </button>
+    
+    <!-- Membership Status Display -->
+    <!-- <div id="membership-status" style="display: none;">
+<a href="/membership" aria-label="Membership" name="Membership">
+    <svg aria-label="Membership" width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="Member Icon" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="16" cy="16" r="15" stroke="#4CAF50" stroke-width="2" fill="#fff"/>
+  <circle cx="16" cy="13" r="5" fill="#4CAF50"/>
+  <ellipse cx="16" cy="22" rx="7" ry="4" fill="#4CAF50"/>
+</svg></a>
+    </div> -->
+
+    <!-- Premium Video Actions - Only visible to Premium members -->
+    <div id="video-actions-container" class="video-actions-container">
+      <button id="video-favorite-btn" class="video-favorite-btn" title="Add to Favorites">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12,2 15,8 22,9 17,14 18,21 12,18 6,21 7,14 2,9 9,8"></polygon>
+        </svg>
+      </button>
+      
+      <button id="video-bookmark-btn" class="video-bookmark-btn" title="Bookmark Channel/Creator">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </button>
+    </div>
+
+    
+</div>
+
+  
+  </div>
+</div>
+<iframe 
+  title="Video Privacy Player" 
+  id="video-frame" 
+  allow="autoplay; fullscreen; camera; microphone; encrypted-media" 
+  allowfullscreen
+  referrerpolicy="origin"
+  sandbox="allow-scripts allow-same-origin allow-presentation"
+></iframe>
+
+</div>
+
+
+
+<!-- <div id="premium-favorites-container">
+  <MemberFavorites 
+    maxVideos={20}
+    showTitles={true}
+    sectionTitle="Your Favorites"
+  />
+</div> -->
+<a name="member" id="member" ></a>
+<br /><br /><br />
+
+</PageLayout>

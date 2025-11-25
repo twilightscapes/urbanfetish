@@ -1,0 +1,481 @@
+---
+import { getEntry, render } from 'astro:content';
+import YouTubeEmbed from './YouTubeEmbed.astro';
+import { renderMarkdown } from '../utils/utils.ts';
+
+interface Props {
+  slug: string;
+  sectionWidth?: 'narrow' | 'normal' | 'wide' | 'full';
+}
+
+const { slug, sectionWidth = 'normal' } = Astro.props;
+
+
+
+// Load the content block
+let contentBlock;
+try {
+  contentBlock = await getEntry('pitches', slug);
+  if (!contentBlock) {
+    return null;
+  }
+} catch (error) {
+  return null;
+}
+
+// Try to load secondary content from separate file if it exists
+let secondaryContentText = '';
+try {
+  // Only run filesystem operations in Node.js environment (server-side)
+  if (typeof process !== 'undefined' && process.versions && process.versions.node) {
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    const secondaryContentPath = path.join(process.cwd(), 'src/content/pitches', slug, 'secondaryContent.mdoc');
+    if (fs.existsSync(secondaryContentPath)) {
+      secondaryContentText = fs.readFileSync(secondaryContentPath, 'utf-8');
+    } else {
+      // No secondary content file found
+    }
+  }
+} catch (error) {
+  console.error('Error loading secondary content:', error);
+}
+
+const { 
+  title,
+  content,
+  layout = 'single',
+  contentAlignment = 'left',
+  spacing = 'normal',
+  bottomSpacing = 'none',
+  customClass = '',
+  featuredImage,
+  imageAlt,
+  imagePosition = 'top',
+  cta,
+  ctaPosition = 'after-content',
+  ctaAlignment = 'left',
+  showTitle = true,
+  youtube,
+  videoPosition = 'top',
+  tagline,
+  subheading1
+} = contentBlock.data;
+
+
+
+// Simple markdown-to-HTML converter for fallback - now using enhanced marked plugin
+function processMarkdown(text: string): string {
+  if (!text) return '';
+  
+  // Use the enhanced markdown renderer from utils which includes proper line break handling
+  return renderMarkdown(text);
+}
+
+// Content rendering - handle both markdoc and fallback content
+let actualContent = '';
+let actualSecondaryContent = '';
+let renderedContent: any = null;
+
+if (slug === 'video-header') {
+  actualContent = `<p>Todd Lambert is a photographer and web developer based in the United States. He has been active in the industry for several years and has gained a reputation for his creative and technically proficient work. Lambert's photography work often focuses on landscapes and nature, and he has been published in a variety of magazines and websites.</p>
+
+<p>In addition to his photography work, Lambert is also an experienced web developer. He has created websites for a wide range of clients, including businesses, nonprofits, and individuals. Lambert's web development work is known for its clean design, intuitive navigation, and user-friendly interface.</p>
+
+<p>Overall, Todd Lambert is a talented photographer and web developer who has made a name for himself in both fields. His work demonstrates a strong commitment to quality and a passion for creativity and innovation.</p>`;
+} else {
+  if (content && typeof content === 'string') {
+
+  } else {
+
+  }
+}
+
+// Handle main content rendering
+let renderedMainContent: any = null;
+
+// Check if content is a markdoc object that needs rendering
+if (content && typeof content === 'object' && content !== null) {
+  try {
+    const renderedMain = await render(content);
+    if (renderedMain && renderedMain.Content) {
+      renderedMainContent = renderedMain.Content;
+
+    }
+  } catch (renderError) {
+
+  }
+}
+
+// Handle secondary content for two-column layouts
+let renderedSecondaryContent: any = null;
+
+if (layout === 'two-column' || layout === 'two-column-equal') {
+  // Use the secondary content from file if available
+  if (secondaryContentText && secondaryContentText.trim()) {
+    actualSecondaryContent = processMarkdown(secondaryContentText);
+    // console.log('Secondary content loaded and processed for:', slug);
+  } else {
+    // console.log('No secondary content found for:', slug);
+  }
+}
+
+
+
+// Load CTA if specified
+let ctaData;
+if (cta) {
+  try {
+    ctaData = await getEntry('CTAs', cta);
+
+  } catch (error) {
+
+  }
+}
+
+// Generate CSS classes
+const widthClasses = {
+  narrow: 'max-w-2xl mx-auto',
+  normal: 'max-w-7xl mx-auto',  // Increased from 6xl to 7xl for even better video display
+  wide: 'max-w-7xl mx-auto',   // Increased from 6xl to 7xl
+  full: 'w-full'
+};
+
+const spacingClasses = {
+  none: 'py-0 px-0',
+  compact: 'py-4 px-4',
+  normal: 'py-0 px-6',
+  spacious: 'py-12 px-8',
+  'extra-spacious': 'py-16 px-10'
+};
+
+const bottomSpacingClasses = {
+  none: '',
+  small: 'mb-4',
+  medium: 'mb-8',
+  large: 'mb-12',
+  'extra-large': 'mb-16'
+};
+
+const ctaAlignmentClasses = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right'
+};
+
+const alignmentClasses = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right'
+};
+
+const layoutClasses = {
+  single: 'grid grid-cols-1',
+  'two-column': 'grid grid-cols-1 lg:grid-cols-5 gap-8', // 60/40 split (3/2 columns)
+  'two-column-equal': 'grid grid-cols-1 lg:grid-cols-2 gap-8' // 50/50 split
+};
+
+const imagePositionClasses = {
+  top: 'flex-col',
+  bottom: 'flex-col-reverse',
+  left: 'flex-row',
+  right: 'flex-row-reverse'
+};
+
+const containerClasses = [
+  'content-block',
+  widthClasses[sectionWidth],
+  spacingClasses[spacing] || spacingClasses.normal,
+  alignmentClasses[contentAlignment] || alignmentClasses.left,
+  bottomSpacingClasses[bottomSpacing] || bottomSpacingClasses.none,
+  customClass
+].filter(Boolean).join(' ');
+
+// Helper function to generate CTA button classes
+function getCTAButtonClasses(style = 'primary') {
+  const ctaClasses = {
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+    secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
+    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white'
+  };
+  return ctaClasses[style] || ctaClasses.primary;
+}
+---
+
+
+
+
+<section class={containerClasses}>
+
+
+
+  {showTitle && title && (
+    <header class="content-block-header mb-6">
+      <h2 class="text-2xl lg:text-3xl font-bold">{title}</h2>
+      {/* {ctaPosition === 'after-title' && ctaData?.data && (
+        <div class={`cta-container cta-after-title mt-6 ${ctaAlignmentClasses[ctaAlignment] || ctaAlignmentClasses.left}`}>
+          <a 
+            href={ctaData.data.ctaUrl && ctaData.data.ctaUrl.trim() ? ctaData.data.ctaUrl : '#'}
+            class={`inline-block px-6 py-3 rounded-lg font-semibold transition-colors duration-200 ${getCTAButtonClasses(ctaData.data.style)}`}
+          >
+            {ctaData.data.title}
+          </a>
+        </div>
+      )} */}
+    </header>
+  )}
+
+  <div class={`content-wrapper ${layoutClasses[layout]}`}>
+    {/* Video Handling - Top/Left positions */}
+    {youtube?.discriminant && youtube.value && (videoPosition === 'top' || videoPosition === 'left') && (
+      <div class={`video-embed ${videoPosition === 'left' ? 'lg:col-span-1' : 'col-span-full'} mb-6`}>
+        <YouTubeEmbed 
+          url={youtube.value.url}
+          title={youtube.value.title}
+          controls={youtube.value.controls}
+          useCustomPlayer={youtube.value.useCustomPlayer}
+          mute={youtube.value.mute}
+          autoplay={youtube.value.mute}
+          loop={youtube.value.loop}
+          start={youtube.value.start}
+          end={youtube.value.end}
+          clickToLoad={youtube.value.clickToLoad}
+          data-preserve-settings="true"
+        />
+      </div>
+    )}
+    
+    {/* Featured Image Handling */}
+    {featuredImage && (imagePosition === 'top' || imagePosition === 'left') && (
+      <div class={`featured-image ${imagePosition === 'left' ? 'lg:col-span-1' : 'col-span-full'} mb-6`}>
+        <img 
+          src={featuredImage} 
+          alt={imageAlt || title || 'Content block image'} 
+          class="w-full h-auto rounded-lg"
+        />
+          {ctaPosition === 'after-title' && ctaData?.data && (
+        <div class={`cta-container cta-after-title mt-6 ${ctaAlignmentClasses[ctaAlignment] || ctaAlignmentClasses.left}`} style="position:absolute">
+          <a 
+            href={ctaData.data.ctaUrl && ctaData.data.ctaUrl.trim() ? ctaData.data.ctaUrl : '#'}
+            class={`inline-block px-6 py-3 rounded-lg font-semibold transition-colors duration-200 ${getCTAButtonClasses(ctaData.data.style)}`}
+          >
+            {ctaData.data.title}
+          </a>
+        </div>
+      )}
+      </div>
+
+    )}
+
+    {/* Main Content Area */}
+    <div class={`main-content ${layout === 'two-column' ? 'lg:col-span-3' : layout === 'two-column-equal' ? 'lg:col-span-1' : 'col-span-full'}`}>
+      {tagline && (
+        <div class="tagline mb-4">
+          <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">{tagline}</p>
+        </div>
+      )}
+      
+      {subheading1 && (
+        <div class="subheading mb-4">
+          <h3 class="text-xl font-medium text-gray-800 dark:text-gray-200">{subheading1}</h3>
+        </div>
+      )}
+      
+      {/* Render content - handle both body (for .mdoc files), markdoc content field, and YAML content field */}
+      {(contentBlock.body || content || renderedMainContent) && (
+        <div class="prose prose-lg max-w-none dark:prose-invert">
+          {contentBlock.body ? (
+            <div set:html={processMarkdown(contentBlock.body)} />
+          ) : renderedMainContent ? (
+            <renderedMainContent />
+          ) : typeof content === 'string' ? (
+            <div set:html={processMarkdown(content)} />
+          ) : (
+            <div>Content type not supported: {typeof content}</div>
+          )}
+        </div>
+      )}
+      
+      {!contentBlock.body && !content && (
+        // <div class="prose prose-lg max-w-none dark:prose-invert">
+        //   <p><em>No content available for this content block.</em></p>
+        // </div>
+        ''
+      )}
+      
+      <!-- {ctaPosition === 'after-content' && ctaData?.data && (
+        <div class={`cta-container cta-after-content mt-6 ${ctaAlignmentClasses[ctaAlignment] || ctaAlignmentClasses.left}`}>
+          <a 
+            href={ctaData.data.ctaUrl && ctaData.data.ctaUrl.trim() ? ctaData.data.ctaUrl : '#'}
+            class={`inline-block px-6 py-3 rounded-lg font-semibold transition-colors duration-200 ${getCTAButtonClasses(ctaData.data.style)}`}
+          >
+            {ctaData.data.title}
+          </a>
+        </div>
+      )} -->
+    </div>
+
+    {/* Secondary Content (for two-column layouts) */}
+    {(layout === 'two-column' || layout === 'two-column-equal') && (actualSecondaryContent || renderedSecondaryContent) && (
+      <div class={`secondary-content ${layout === 'two-column' ? 'lg:col-span-2' : 'lg:col-span-1'}`}>
+        {renderedSecondaryContent ? (
+          <div class="prose prose-lg max-w-none dark:prose-invert">
+            <renderedSecondaryContent />
+          </div>
+        ) : (
+          <div class="prose prose-lg max-w-none dark:prose-invert" set:html={actualSecondaryContent} />
+        )}
+      </div>
+    )}
+
+    {/* Video Handling - Bottom/Right positions */}
+    {youtube?.discriminant && youtube.value && (videoPosition === 'bottom' || videoPosition === 'right') && (
+      <div class={`video-embed ${videoPosition === 'right' ? 'lg:col-span-1' : 'col-span-full'} mt-6`}>
+        <YouTubeEmbed 
+          url={youtube.value.url}
+          title={youtube.value.title}
+          controls={youtube.value.controls}
+          useCustomPlayer={youtube.value.useCustomPlayer}
+          mute={youtube.value.mute}
+          autoplay={youtube.value.mute}
+          loop={youtube.value.loop}
+          start={youtube.value.start}
+          end={youtube.value.end}
+          clickToLoad={youtube.value.clickToLoad}
+          data-preserve-settings="true"
+        />
+      </div>
+    )}
+    
+    {/* Featured Image (bottom/right positions) */}
+    {featuredImage && (imagePosition === 'bottom' || imagePosition === 'right') && (
+      <div class={`featured-image ${imagePosition === 'right' ? 'lg:col-span-1' : 'col-span-full'} mt-6`}>
+        <img 
+          src={featuredImage} 
+          alt={imageAlt || title || 'Content block image'} 
+          class="w-full h-auto rounded-lg"
+        />
+      </div>
+    )}
+  </div>
+
+  {/* Bottom CTA */}
+  {ctaPosition === 'bottom' && ctaData?.data && ctaData.data.ctaUrl && (
+    <div class={`cta-container cta-bottom mt-6 ${ctaAlignmentClasses[ctaAlignment] || ctaAlignmentClasses.left}`}>
+      <a 
+        href={ctaData.data.ctaUrl}
+        class={`inline-block px-6 py-3 rounded-lg font-semibold transition-colors duration-200 ${getCTAButtonClasses(ctaData.data.style)}`}
+      >
+        {ctaData.data.title}
+      </a>
+    </div>
+  )}
+</section>
+
+<style>
+  .content-block {
+    @apply relative;
+  }
+  
+  .content-block-header h2 {
+    @apply mb-4;
+  }
+  
+  .prose {
+    @apply leading-relaxed;
+    
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply font-bold mb-4 mt-6 first:mt-0;
+  }
+  
+  .prose h1 { @apply text-3xl; }
+  .prose h2 { @apply text-2xl; }
+  .prose h3 { @apply text-xl; }
+  .prose h4 { @apply text-lg; }
+  
+  .prose p {
+    @apply mb-4 last:mb-0;
+  }
+  
+  .prose ul, .prose ol {
+    @apply mb-4 pl-6;
+  }
+  
+  .prose li {
+    @apply mb-2;
+  }
+  
+  .prose a {
+    @apply text-blue-600 hover:text-blue-800 underline;
+  }
+  
+  .prose img {
+    @apply rounded-lg mb-4 max-w-full h-auto max-h-96 object-contain mx-auto;
+    max-width: min(100%, 600px); /* Never wider than 600px or container width */
+  }
+  
+  /* Smaller images on mobile */
+  @media (max-width: 768px) {
+    .prose img {
+      @apply max-h-64;
+      max-width: min(100%, 400px);
+    }
+  }
+  
+  /* Content block specific image sizing */
+  .content-section img {
+    @apply max-w-full h-auto rounded-lg mb-4 mx-auto;
+    max-width: min(100%, 500px);
+    max-height: 300px;
+    object-fit: contain;
+  }
+  
+  /* Even smaller in secondary content column */
+  .secondary-content img {
+    max-width: min(100%, 400px);
+    max-height: 250px;
+  }
+  
+  /* Video embed styling */
+  .video-embed {
+    @apply mb-6;
+  }
+  
+  .video-embed:last-child {
+    @apply mb-0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      @apply grid-cols-1 gap-4;
+    }
+  }
+  
+  /* Custom spacing for different layouts */
+  .grid-cols-5 .main-content {
+    @apply lg:pr-4;
+  }
+  
+  .grid-cols-3 .main-content {
+    @apply lg:pr-4;
+  }
+  
+  .grid-cols-2 .main-content {
+    @apply lg:pr-4;
+  }
+  
+  .secondary-content {
+    @apply lg:pl-4;
+  }
+  
+  /* Ensure grid-cols-5 is available */
+  .grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .cta-after-title {position:absolute; bottom:20%; right: 80px;}
+</style>

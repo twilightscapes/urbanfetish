@@ -1,12 +1,26 @@
 showRobots: true
 siteUrl: https://urbanfetish.com
-name: UrbanFetish
-shortName: UrbanFetish
+title: Urban Exploration Art and Photography by Todd Lambert
+description: >-
+  Urban Exploration Art and Photography by Todd Lambert
+name: Urban Fetish
+shortName: Urban Fetish
+location: >-
+  https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d154546.6032849972!2d-88.94227414957832!3d30.442437545968502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1762658647112!5m2!1sen!2sus
+showMap: false
+showName: false
+showPhone: false
+showMessage: true
+showUpload: false
+showExtraField: false
+extraFieldLabel: Extra Field
+showExtraField2: false
+extraFieldLabel2: Extra Field 2
+formContent: 'For all inquiries, please complete the form below: '
 screenshot: /images/pwa/screenshot.png
-description: 'Urban Fetish - Abandoned Decay Photography Magazine '
-themeColor: rgba(0, 0, 0, 1)
+themeColor: rgba(1, 2, 0, 1)
 backgroundColor: rgba(0, 0, 0, 1)
-startUrl: /
+startUrl: /map
 display: standalone
 icon192: /images/pwa/icon192.png
 icon512: /images/pwa/icon512.png

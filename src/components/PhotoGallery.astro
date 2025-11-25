@@ -1,23 +1,61 @@
 ---
 import { Image } from 'astro:assets';
-import { createReader } from '@keystatic/core/reader';
-import keystaticConfig from '../../keystatic.config';
-import GalleryLightbox from './GalleryLightbox.jsx';
 import { getEntry } from 'astro:content';
+import GalleryLightbox from './GalleryLightbox.jsx';
 
-import Switch from "@/components/Switch.jsx";
+interface Props {
+  sectionId?: string;
+}
 
-const language = await getEntry('language', 'index');
-const reader = createReader(process.cwd(), keystaticConfig);
-const photoSettings = await reader.singletons.photoSettings.read();
-const defaultDirectory = photoSettings?.defaultDirectory || 'all';
-const galleryMode = photoSettings?.galleryMode || 'directory';
+const { sectionId = 'photo-gallery' } = Astro.props;
+
+
+// Default values
+const DEFAULT_SETTINGS = {
+  defaultView: 'grid',
+  showHeader: true
+};
+
+const DEFAULT_LANGUAGE = {
+  allimages: 'All Images'
+};
+
+let siteSettingsData = DEFAULT_SETTINGS;
+let languageData = DEFAULT_LANGUAGE;
+
+try {
+  const settings = await getEntry('siteSettings', 'main');
+  if (settings?.data) {
+    siteSettingsData = { ...DEFAULT_SETTINGS, ...settings.data };
+  }
+} catch (error) {
+  console.warn('Site settings not found, using defaults');
+}
+
+try {
+  const language = await getEntry('language', 'index');
+  if (language?.data) {
+    languageData = { ...DEFAULT_LANGUAGE, ...language.data };
+  }
+} catch (error) {
+  console.warn('Language settings not found, using defaults');
+}
+
+const { defaultView } = siteSettingsData;
+
+// Set photo gallery default view: swipe for desktop, grid for mobile
+const isMobile = false; // Will be determined client-side
+const photoDefaultView = 'swipe'; // Default to swipe for desktop
+
+const photoSettings = await getEntry('photoSettings', 'index');
+const defaultDirectory = photoSettings?.data?.defaultDirectory || 'all';
+const galleryMode = photoSettings?.data?.galleryMode || 'directory';
 
 
 const imageFiles = import.meta.glob('/public/images/photos/**/*.{jpg,jpeg,png,gif,webp,avif}', { eager: true });
 let allImages;
 if (galleryMode === 'keystatic') {
-  allImages = photoSettings?.galleryImages?.map((item) => ({
+  allImages = photoSettings?.data?.galleryImages?.map((item) => ({
     src: item.image,
     alt: item.caption || '',
     title: item.caption || '',
@@ -34,7 +72,7 @@ if (galleryMode === 'keystatic') {
   }));
 }
 
-const directories = [
+const directories = ([
   'all',
   defaultDirectory,
   ...new Set(
@@ -42,7 +80,7 @@ const directories = [
       .map(img => img.directory)
       .filter(dir => dir !== defaultDirectory)
   )
-].filter(Boolean).sort((a, b) => {
+] as string[]).filter(Boolean).sort((a, b) => {
   if (a === 'all') return -1;
   if (b === 'all') return 1;
   if (a === defaultDirectory) return -1;
@@ -50,53 +88,59 @@ const directories = [
   return a.localeCompare(b);
 });
 
-const showCaptions = photoSettings?.showCaptions ?? true;
-const showGallerySelector = photoSettings?.showGallerySelector && galleryMode === 'directory';
-const showSwitch = photoSettings?.showSwitch;
+const showCaptions = photoSettings?.data?.showCaptions ?? true;
+const showGallerySelector = photoSettings?.data?.showGallerySelector && galleryMode === 'directory';
 
-const siteSettings = await getEntry('siteSettings', 'main');
-const { defaultView } = siteSettings.data;
+const images = allImages.map(img => ({
+  src: img.src,
+  caption: img.title, 
+}));
+
+// Pre-process images for the client component
+const processedImages = allImages.map(image => ({
+  src: image.src, // Use original high-quality source for lightbox
+  alt: image.alt || '',
+  title: image.title || '',
+  // Only include data needed by GalleryLightbox
+}));
 ---
 
 
 
 
-  <div class="cattags" style={{ width: '', display: 'flex', justifyContent:'center', gap: '0', color: '' }}>
-    
-    {showGallerySelector && (
-    <select aria-label="View Available Galleries" id="directorySelect" name="directorySelect" style={{ background: '', border: '1px solid #000', borderRadius: 'var(--border-radius)', padding: '8px', boxShadow: '0px 0px 0px 1px #000', opacity:'.9', color:'#fff' }}>
+<div data-section-id={sectionId} style="position: relative; padding-bottom: 10vh;">
+
+<!-- Gallery selector - fixed positioned to stay visible -->
+{showGallerySelector && (
+  <div class="cattags gallery-selector-sticky" style={{ position: 'fixed', top: '0', left: '0', right: '0', width: '80%', display: 'grid', placeSelf:'top', justifyContent:'', zIndex: '1', background: '', padding: '0', borderRadius: 'var(--border-radius)', margin:'0 auto', }}>
+  Choose A Gallery:  <select aria-label="View Available Galleries" id="directorySelect" name="directorySelect" value={defaultDirectory} style={{ background: '', border: '1px solid #000', borderRadius: 'var(--border-radius)', padding: '8px', boxShadow: '0px 0px 0px 1px #000', opacity:'.9', color:'#fff' }}>
       {directories.map((dir) => (
-        <option value={dir} selected={dir === defaultDirectory}>
-          {dir === 'all' ? language.data.allimages : dir}
+        <option value={dir}>
+          {dir === 'all' ? languageData.allimages : dir}
         </option>
       ))}
     </select>
-    )}
-    
-    {showSwitch && (
-    <div class="switcher" style={{marginTop:'10px'}}><Switch client:load defaultView={defaultView} /></div>
-    )}
   </div>
+)}
 
+<div class={`homegallery contentpanel ${photoDefaultView === 'swipe' ? 'slider' : 'grid-container'}`} style="padding-top:20px;" data-default-view={photoDefaultView}>
 
-
-
-
-<div class={`homegallery contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="padding-top:20px;">
   <div class="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }} />
 
 
   
-  {allImages.map((image) => (
+  {allImages.map((image, index) => (
     <div class="post-card1" data-directory={image.directory}>
-      <Image 
-        src={image.src ?? ''} 
-        alt={image.alt ?? ''}
-        width={800}
-        height={600}
-        class="object-contain rounded-image"
-        // style="border-radius: 20px;"
-      />
+      <div class="image-wrapper">
+        <img 
+          data-src={image.src ?? ''} 
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3C/svg%3E"
+          alt={image.alt ?? ''}
+          class="object-contain rounded-image lazy"
+          style="border-radius: var(--border-radius);"
+          data-image-index={index}
+        />
+      </div>
       {showCaptions && (
         <div class="image-caption">
           <h2>{image.title}</h2>
@@ -105,8 +149,14 @@ const { defaultView } = siteSettings.data;
     </div>
   ))}
 </div>
+</div>
 
-<GalleryLightbox client:only="react" images={allImages} showCaptions={showCaptions} />
+<!-- Pass only processed data to client component -->
+<GalleryLightbox 
+  client:only="react" 
+  images={processedImages} 
+  showCaptions={showCaptions} 
+/>
 
 
 
@@ -114,14 +164,22 @@ const { defaultView } = siteSettings.data;
 
 <style>
 
-
 .post-card1 {
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
   border-radius: var(--border-radius);
 }
 img{border-radius: var(--border-radius) !important;}
+
+/* Lazy loading images - show placeholder background */
+img.lazy {
+  background: #222 !important;
+  min-height: 200px;
+  width: 100%;
+  height: 100%;
+}
+
+img.loaded {
+  background: transparent !important;
+}
 
 .image-caption {
   margin-top: 8px;
@@ -130,11 +188,114 @@ img{border-radius: var(--border-radius) !important;}
 }
 
 .post-card1.hidden {
-  display: none;
+  display: none !important;
 }
 
 .post-card1.visible {
   display: block;
+}
+
+/* Override for slider mode - visible items need flex display */
+.homegallery.slider .post-card1.visible,
+[data-section-id*="gallery"] .homegallery.slider .post-card1.visible {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.homegallery.slider .post-card1.visible .image-wrapper,
+[data-section-id*="gallery"] .homegallery.slider .post-card1.visible .image-wrapper {
+  height: var(--gallery-slide-height) !important;
+  width: auto !important;
+  /* max-height: 40vh !important; */
+}
+
+.homegallery.slider .post-card1.visible .image-wrapper img,
+[data-section-id*="gallery"] .homegallery.slider .post-card1.visible .image-wrapper img {
+  height: 100% !important;
+  width: auto !important;
+  object-fit: contain !important;
+}
+
+
+.homegallery.slider,
+[data-section-id*="gallery"] .homegallery.slider,
+[data-section-id*="gallery"] .section-content .homegallery.slider,
+div[data-section-id*="gallery"] div.section-content div.homegallery.slider {
+  display: flex !important;
+  flex-direction: row !important;
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
+  gap: 5vw !important;
+  padding: 0 2% !important;
+  width: 100% !important;
+  scroll-snap-type: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.homegallery.slider .post-card1,
+[data-section-id*="gallery"] .homegallery.slider .post-card1,
+[data-section-id*="gallery"] .section-content .homegallery.slider .post-card1,
+div[data-section-id*="gallery"] div.section-content div.homegallery.slider .post-card1 {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: fit-content !important;
+  margin-bottom: 0 !important;
+}
+
+/* Layout: ensure post-card contains an image wrapper and caption below */
+.post-card1 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Grid mode: fixed aspect ratio for the image area, caption stays below */
+.homegallery.grid-container .post-card1 .image-wrapper,
+[data-section-id*="gallery"] .homegallery.grid-container .post-card1 .image-wrapper {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+.homegallery.grid-container .post-card1 .image-wrapper img,
+[data-section-id*="gallery"] .homegallery.grid-container .post-card1 .image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* crop to fill */
+  display: block;
+}
+
+/* Slider (swipe) mode: allow images to keep natural proportions but limit height; caption visible below */
+.homegallery.slider .post-card1,
+[data-section-id*="gallery"] .homegallery.slider .post-card1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Use a fixed slide height so portrait and landscape images match height in swipe mode */
+.homegallery.slider,
+[data-section-id*="gallery"] .homegallery.slider {
+  --gallery-slide-height: 70vh; /* adjust default slide height here */
+}
+
+.homegallery.slider .post-card1 .image-wrapper,
+[data-section-id*="gallery"] .homegallery.slider .image-wrapper {
+  width: auto;
+  height: var(--gallery-slide-height);
+  display: block;
+}
+
+.homegallery.slider .post-card1 .image-wrapper img,
+[data-section-id*="gallery"] .homegallery.slider .image-wrapper img {
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 @media(max-width:48rem) {
@@ -142,44 +303,199 @@ img{border-radius: var(--border-radius) !important;}
   body:has(.header) #directorySelect{left:0 !important; right:0 !important; }
 }
 </style>
-<script define:vars={{ defaultDirectory }}>
+<script define:vars={{ defaultDirectory, sectionId }}>
+  let imageObserver = null;
+  let fallbackTimer = null;
+
+  // Lazy load images - simply load all visible images
+  function lazyLoadImages(forceViewportLoad = false) {
+    // Clear any pending fallback timer
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
+
+    // Disconnect existing observer if any
+    if (imageObserver) {
+      imageObserver.disconnect();
+      imageObserver = null;
+    }
+
+    // Load all visible lazy images immediately
+    const images = document.querySelectorAll(`[data-section-id="${sectionId}"] .post-card1.visible img.lazy, [data-section-id="${sectionId}"] .post-card1:not(.hidden) img.lazy`);
+    // console.log('lazyLoadImages: Found', images.length, 'visible lazy images to load');
+    
+    images.forEach(img => {
+      const src = img.getAttribute('data-src');
+      // Only set src if it hasn't been set yet (still has placeholder)
+      if (src && (!img.src || img.src.includes('data:image/svg'))) {
+        img.src = src;
+        
+        // Handler to unblur when loaded
+        const handleLoad = () => {
+          img.classList.remove('lazy');
+          img.classList.add('loaded');
+          img.style.filter = '';
+          img.style.removeProperty('filter');
+        };
+        
+        // If already loaded (cached), unblur immediately
+        if (img.complete && img.naturalHeight !== 0) {
+          handleLoad();
+        } else {
+          // Otherwise wait for load event
+          img.addEventListener('load', handleLoad, { once: true });
+        }
+      }
+    });
+  }
+
   function filterImages(selectedDir) {
-    const galleryContainer = document.querySelector('.contentpanel');
-    if (!galleryContainer) return;
+    const galleryContainer = document.querySelector(`[data-section-id="${sectionId}"] .homegallery`);
+    if (!galleryContainer) {
+      return;
+    }
     
     const images = galleryContainer.querySelectorAll('.post-card1');
     
     images.forEach((image) => {
       if (image instanceof HTMLElement) {
         const imageDir = image.dataset.directory;
-        if (selectedDir === 'all' || imageDir === selectedDir) {
-          image.style.display = 'block';
+        const shouldShow = selectedDir === 'all' || imageDir === selectedDir;
+        
+        if (shouldShow) {
+          image.style.display = '';
+          image.style.visibility = '';
+          image.style.position = '';
+          image.style.left = '';
+          image.classList.remove('hidden');
+          image.classList.add('visible');
         } else {
           image.style.display = 'none';
+          image.style.visibility = 'hidden';
+          image.style.position = 'absolute';
+          image.style.left = '-9999px';
+          image.classList.add('hidden');
+          image.classList.remove('visible');
         }
       }
     });
   }
 
   function initializeGallery() {
+    // Check if mobile and adjust view accordingly
+    const isMobile = window.innerWidth <= 768;
+    const galleryContainer = document.querySelector(`[data-section-id="${sectionId}"] .homegallery`);
+    
+    if (galleryContainer) {
+      const needsSlider = !isMobile;
+      const hasSlider = galleryContainer.classList.contains('slider');
+      
+      // Only modify classes if they need to change
+      if (needsSlider && !hasSlider) {
+        // Desktop: use swipe mode (default)
+        galleryContainer.classList.remove('grid-container');
+        galleryContainer.classList.add('slider');
+      } else if (!needsSlider && hasSlider) {
+        // Mobile: use grid mode
+        galleryContainer.classList.remove('slider');
+        galleryContainer.classList.add('grid-container');
+      }
+      
+      // Ensure wheel/drag scroll functionality is added when in swipe mode
+      try {
+        if (typeof window !== 'undefined' && window.ViewModeSwitchScrollFunctions) {
+          if (galleryContainer.classList.contains('slider')) {
+            window.ViewModeSwitchScrollFunctions.addScrollFunctionality(galleryContainer);
+          } else {
+            window.ViewModeSwitchScrollFunctions.removeScrollFunctionality(galleryContainer);
+          }
+        }
+      } catch (err) {
+        // Silent error handling
+      }
+    }
+    
     // Use defaultDirectory instead of reading from select
     filterImages(defaultDirectory);
+    
+    // Initialize lazy loading after filtering completes
+    setTimeout(() => {
+      lazyLoadImages();
+    }, 150);
+    
+    // Ensure the select reflects the active default directory
+    try {
+      const sel = document.getElementById('directorySelect');
+      if (sel && sel instanceof HTMLSelectElement) {
+        sel.value = defaultDirectory;
+      }
+    } catch (err) {
+      // Silent error handling
+    }
   }
 
   // Wait for both DOM and images to load
   window.addEventListener('load', initializeGallery);
 
+  // Listen for view mode changes to re-filter images
+  window.addEventListener('viewModeChanged', (event) => {
+    // console.log('viewModeChanged event received:', event.detail);
+    if (event.detail?.sectionId === sectionId) {
+      const galleryContainer = document.querySelector(`[data-section-id="${sectionId}"] .homegallery`);
+      const directorySelect = document.getElementById('directorySelect');
+      const selectorContainer = document.querySelector('.cattags');
+      
+      // console.log('Gallery container found:', galleryContainer);
+      // console.log('Current classes:', galleryContainer?.className);
+      
+      // Fix: Use viewMode instead of mode to match ViewModeSwitch dispatch
+      if (galleryContainer && event.detail?.viewMode) {
+        // Switch between grid-container and slider classes
+        galleryContainer.classList.remove('grid-container', 'slider');
+        galleryContainer.classList.add(event.detail.viewMode === 'swipe' ? 'slider' : 'grid-container');
+        
+        // console.log('Updated classes:', galleryContainer.className);
+        
+        // Update selector z-index based on mode
+        if (selectorContainer) {
+          selectorContainer.style.zIndex = event.detail.viewMode === 'grid' ? '1' : '20';
+        }
+        // Add/remove shared scroll functionality (wheel/drag)
+        try {
+          if (typeof window !== 'undefined' && window.ViewModeSwitchScrollFunctions) {
+            if (event.detail.viewMode === 'swipe') {
+              window.ViewModeSwitchScrollFunctions.addScrollFunctionality(galleryContainer);
+            } else {
+              window.ViewModeSwitchScrollFunctions.removeScrollFunctionality(galleryContainer);
+            }
+          }
+        } catch (err) {
+          // Silent error handling
+        }
+      }
+      
+      if (directorySelect && directorySelect instanceof HTMLSelectElement) {
+        filterImages(directorySelect.value);
+        // Load all newly visible images
+        setTimeout(() => lazyLoadImages(), 50);
+      }
+    }
+  });
+
   const directorySelect = document.getElementById('directorySelect');
   directorySelect?.addEventListener('change', (event) => {
     if (event.target instanceof HTMLSelectElement) {
       filterImages(event.target.value);
-      scrollToTop();
+      // Load all newly visible images
+      setTimeout(() => lazyLoadImages(), 50);
+      // Don't automatically scroll to top - let user stay where they are
     }
   });
 
   function scrollToTop() {
-    const target = document.querySelector('.contentpanel');
-    if (target?.classList.contains('horizontal-slider')) {
+    const target = document.querySelector(`[data-section-id="${sectionId}"] .homegallery`);
+    if (target?.classList.contains('slider')) {
       target.scrollTo({ left: 0, behavior: 'smooth' });
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,0 +1,14 @@
+---
+import { renderMarkdown } from "../utils/utils";
+
+interface Props {
+  content: string;
+  className?: string;
+}
+
+const { content, className = "prose prose-lg dark:prose-invert max-w-none" } = Astro.props;
+---
+
+<div class={className}>
+  <Fragment set:html={renderMarkdown(content)} />
+</div>

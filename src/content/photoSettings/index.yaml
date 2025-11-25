@@ -1,9 +1,5 @@
 galleryMode: directory
-showCaptions: true
-showBioOnPhotos: false
-showFaqsOnPhotos: false
-showTestimonialsOnPhotos: false
+showCaptions: false
 defaultDirectory: Favorites
 showGallerySelector: true
-showSwitch: true
 galleryImages: []

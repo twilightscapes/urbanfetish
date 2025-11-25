@@ -1,22 +1,40 @@
 ---
-import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
+import { type CollectionEntry, getCollection } from "astro:content";
+import BlogPost from "@/layouts/BlogPost.astro";
 
-import PostLayout from "@/layouts/BlogPost.astro";
-import { getAllPosts } from "@/data/post";
+export async function getStaticPaths() {
+	const posts = await getCollection("post");
 
-export const getStaticPaths = (async () => {
-	const blogEntries = await getAllPosts();
-	return blogEntries.map((entry) => ({
-		params: { slug: entry.slug },
-		props: { entry },
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
 	}));
-}) satisfies GetStaticPaths;
+}
 
-type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+// For server mode, fetch the post dynamically if not provided via static paths
+const { slug } = Astro.params;
+let post: CollectionEntry<"post"> | undefined;
 
-const { entry } = Astro.props;
-const { Content } = await entry.render();
+if (Astro.props.post) {
+	// Static mode - post provided via getStaticPaths
+	post = Astro.props.post;
+} else {
+	// Server mode - fetch post dynamically
+	const posts = await getCollection("post");
+	post = posts.find((p) => p.slug === slug);
+}
+
+if (!post) {
+	return Astro.redirect("/404");
+}
+
+type Props = {
+	post?: CollectionEntry<"post">;
+};
+
+const { Content } = await post.render();
 ---
-	<PostLayout post={entry as any}>
-		<Content />
-	</PostLayout>
+
+<BlogPost post={post!}>
+	<Content />
+</BlogPost>

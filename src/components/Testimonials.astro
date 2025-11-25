@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import { getEntry } from 'astro:content';
+
 interface Testimonial {
   id: string;
   collection: "testimonials";
@@ -14,45 +14,62 @@ interface Testimonial {
     image?: string;
   };
 }
-const testimonials = await getCollection('testimonials');
-const sortedTestimonials = testimonials.sort((a: Testimonial, b: Testimonial) => (a.data.order ?? 0) - (b.data.order ?? 0));
 
-const siteSettings = await getEntry('siteSettings', 'main');
-if (!siteSettings) {
-  throw new Error('Site settings are required but not found');
+export interface Props {
+  sectionId?: string;
+  testimonials?: Testimonial[];
 }
-const { defaultView } = siteSettings.data;
+
+const { sectionId = "testimonials", testimonials: passedTestimonials } = Astro.props;
+
+// Use passed testimonials or fetch them
+const testimonials = passedTestimonials || await getCollection('testimonials');
+const sortedTestimonials = testimonials.sort((a: Testimonial, b: Testimonial) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
-
-<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} style="padding:0;" >
-  <div class="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }} />
-  {sortedTestimonials.map((testimonial: Testimonial) => (
+{sortedTestimonials.map((testimonial: Testimonial) => {
+  // Use filename as name if name field is missing
+  const displayName = testimonial.data.name || testimonial.id;
+  
+  return (
     <div class="quotecard post-card12" >
-      <div class="flexbutt" style="justify-center:center; vertical-align:center; margin:0 auto; text-align:center;">
+      <div class="" style="justify-center:center; vertical-align:center; margin:0 auto; text-align:center;">
+        {/* Title (Name) at the top */}
+        {displayName && (
+          <h3 class="w-full text-[clamp(1rem,1.4vw,1.8rem)] font-bold theme-accent" style="margin: 0 0 1rem 0;">
+            {displayName}
+          </h3>
+        )}
+        
+        {/* Image */}
         {testimonial.data.image && (
-          <div class="flexcheek">
+          <div class="" style="margin-bottom: 1rem;">
           <Image
             src={testimonial.data.image}
             loading="lazy"
-            alt={`${testimonial.data.name ?? 'Testimonial'} Image`}
+            alt={`${displayName ?? 'Testimonial'} Image`}
             width={200}
             height={100}
             style="max-height:140px;"
-            class="max-h-[140px] relative object-contain mx-auto flexcheek"
+            class="max-h-[140px] relative object-contain mx-auto"
           />
-          {testimonial.data.name && <div>{testimonial.data.name}</div>}
           </div>
         )}
-      
         
+        {/* Quote */}
         {testimonial.data.quote && (
-          <blockquote class="w-full relative text-[clamp(.8rem,1vw,1.5rem)] flexcheek">
+          <blockquote class="w-full relative text-[clamp(.8rem,1vw,1.5rem)]" style="margin-bottom: 0.5rem;">
             {testimonial.data.quote}
-            {testimonial.data.location && <span>- {testimonial.data.location}</span>}
           </blockquote>
+        )}
+        
+        {/* Location/Attribution */}
+        {testimonial.data.location && (
+          <div class="w-full text-[clamp(.7rem,0.9vw,1.2rem)] opacity-70" style="margin: 0;">
+            {testimonial.data.location}
+          </div>
         )}
       </div>
     </div>
-  ))}
-</div>
+  );
+})}

@@ -1,372 +1,55 @@
 ---
-import PostPreview from "@/components/blog/PostPreview.astro";
-import { getAllPosts, sortMDByDate } from "@/data/post";
 import PageLayout from "@/layouts/Base.astro";
-import Faqs from "@/components/Faqs.astro";
-import Testimonials from '../components/Testimonials.astro';
-import Feature from "@/components/Feature.astro";
-import Bio from "@/components/Bio.astro";
+import DynamicPageRenderer from "@/components/DynamicPageRenderer.astro";
 import { getEntry } from 'astro:content';
-import keystaticConfig from '../../keystatic.config';
-import { createReader } from '@keystatic/core/reader';
-import CTAs from '@/components/CTAs.astro';
-
-import InfoBlock from "@/components/InfoBlock.astro";
-import Resume from '@/components/Resume.astro';
-
-import PhotoSection from "@/components/PhotoGallery.astro"
-const siteSettings = await getEntry('siteSettings', 'main');
-const pwaSettings = await getEntry('pwaSettings', 'index');
-const homeContent = await getEntry('homepage', 'index');
-const language = await getEntry('language', 'index');
-
-
-
-
-
-
-
-if (!siteSettings || !pwaSettings || !homeContent || !language) {
-  throw new Error('Required content settings not found');
+// import Features from "@/components/features.astro"
+// import Video from "@/components/ChannelSubscribeButton.astro"
+// Get the existing "home" page data (your template-based homepage)
+// This reads from your existing home.mdoc page configuration
+let homePage;
+try {
+  homePage = await getEntry('pages', 'home');
+} catch (e) {
+  console.warn('Could not load home page configuration:', e);
 }
 
+// Use template-based home page configuration
+let sections = [];
+let pwaSettings, siteSettings;
 
-
-
-const { defaultView, MAX_POSTS, showCheck } = siteSettings.data;
-import App from '@/components/App.astro';
-const reader = createReader(process.cwd(), keystaticConfig);
-
-const resumeSettings = await getEntry('resumeSettings', 'index');
-
-const homepage = await reader.singletons.home.read();
-const cta = homeContent.data.cta ? await getEntry('ctas', homeContent.data.cta) : null;
-const showResume = homepage?.showResume ?? false;
-
-const homeCTA = homeContent.data.cta ? await getEntry('ctas', homeContent.data.cta) : null;
-
-type PitchData = {
-  slug: string;
-  tagline: string;
-  text1: string;
-  text2: string;
-  text3: string;
-  subheading1: string;
-  subheading2: string;
-  subheading3: string;
-  image: string | null;
-  imageAlt: string;
-  description: string;
-  title: string | null;
-  showTitle: boolean;
-  divider: string | null;
-  divider2: string | null;
-  showTwocol: boolean; // Add this line
-}
-const selectedPitchSlug = homepage?.pitch;
-const selectedPitchSlug2 = homepage?.pitch2;
-const selectedPitchSlug3 = homepage?.pitch3;
-
-let selectedPitch: PitchData | undefined;
-let selectedPitch2: PitchData | undefined;
-let selectedPitch3: PitchData | undefined;
-
-if (selectedPitchSlug) {
-  const pitchData = await reader.collections.pitches.read(selectedPitchSlug);
-  if (pitchData) {
-    selectedPitch = {
-      slug: selectedPitchSlug,
-      tagline: pitchData.tagline ?? '',
-      showTitle: !!pitchData.showTitle,
-      text1: pitchData.text1 ?? '',
-      text2: pitchData.text2 ?? '',
-      text3: pitchData.text3 ?? '',
-      subheading1: pitchData.subheading1 ?? '',
-      subheading2: pitchData.subheading2 ?? '',
-      subheading3: pitchData.subheading3 ?? '',
-      image: pitchData.image ?? null,
-      imageAlt: pitchData.imageAlt ?? '',
-      description: pitchData.description ?? '',
-      title: pitchData.title ?? null,
-      divider: pitchData.divider ?? null,
-      divider2: pitchData.divider2 ?? null,
-      showTwocol: !!pitchData.showTwocol, // Add this line
-    };
-  }
+if (homePage && homePage.data.useTemplateSystem && homePage.data.sections) {
+  // Use the template-based home page configuration
+  sections = homePage.data.sections;
+} else {
+  console.warn('Home page template system not configured');
+  sections = [];
 }
 
-if (selectedPitchSlug2) {
-  const pitchData2 = await reader.collections.pitches.read(selectedPitchSlug2);
-  if (pitchData2) {
-    selectedPitch2 = {
-      slug: selectedPitchSlug2,
-      tagline: pitchData2.tagline ?? '',
-      showTitle: !!pitchData2.showTitle,
-      text1: pitchData2.text1 ?? '',
-      text2: pitchData2.text2 ?? '',
-      text3: pitchData2.text3 ?? '',
-      subheading1: pitchData2.subheading1 ?? '',
-      subheading2: pitchData2.subheading2 ?? '',
-      subheading3: pitchData2.subheading3 ?? '',
-      image: pitchData2.image ?? null,
-      imageAlt: pitchData2.imageAlt ?? '',
-      description: pitchData2.description ?? '',
-      title: pitchData2.title ?? null,
-      divider: pitchData2.divider ?? null,
-      divider2: pitchData2.divider2 ?? null,
-      showTwocol: !!pitchData2.showTwocol, // Add this line
-    };
-  }
-}
+// Load settings for metadata
+pwaSettings = await getEntry('pwaSettings', 'index');
+siteSettings = await getEntry('siteSettings', 'main');
 
-if (selectedPitchSlug3) {
-  const pitchData3 = await reader.collections.pitches.read(selectedPitchSlug3);
-  if (pitchData3) {
-    selectedPitch3 = {
-      slug: selectedPitchSlug3,
-      tagline: pitchData3.tagline ?? '',
-      showTitle: !!pitchData3.showTitle,
-      text1: pitchData3.text1 ?? '',
-      text2: pitchData3.text2 ?? '',
-      text3: pitchData3.text3 ?? '',
-      subheading1: pitchData3.subheading1 ?? '',
-      subheading2: pitchData3.subheading2 ?? '',
-      subheading3: pitchData3.subheading3 ?? '',
-      image: pitchData3.image ?? null,
-      imageAlt: pitchData3.imageAlt ?? '',
-      description: pitchData3.description ?? '',
-      title: pitchData3.title ?? null,
-      divider: pitchData3.divider ?? null,
-      divider2: pitchData3.divider2 ?? null,
-      showTwocol: !!pitchData3.showTwocol, // Add this line
-    };
-  }
-}
-const showBioOnHome = homepage?.showBioOnHome ?? false;
-const showFaqOnHome = homepage?.showFaqOnHome ?? false;
-const showTestOnHome = homepage?.showTestOnHome ?? false;
-const showFeature = homepage?.showFeature ?? false;
-const showPosts = homepage?.showPosts ?? false;
-const ShowMore = homepage?.showMore ?? false;
-const ShowApp = homepage?.showApp ?? false;
-
-const showHomeGallery = homepage?.showHomeGallery ?? false;
-
-const allPosts = await getAllPosts();
-const allPostsSorted = sortMDByDate(allPosts, true).slice(0, MAX_POSTS);
-type Section = {
-  name: string;
-  show: boolean;
-  order: number;
-  component: any;
+const meta = {
+  title: pwaSettings?.data?.title || 'Home',
+  description: pwaSettings?.data?.description || 'Welcome to our site',
 };
-
-const createSection = (
-  name: string, 
-  show: boolean | undefined, 
-  order: number | null | undefined, 
-  component: any, 
-  defaultOrder: number
-): Section => ({
-  name,
-  show: !!show,
-  order: order ?? defaultOrder,
-  component
-});
-const sections: Section[] = (homeContent.data.sectionOrdering || []).map((sectionName: string, index: number) => {
-  switch (sectionName) {
-    case 'feature':
-      return createSection('feature', homepage?.showFeature, index, Feature, index);
-    case 'bio':
-      return createSection('bio', homepage?.showBioOnHome, index, Bio, index);
-    case 'app':
-      return createSection('app', homepage?.showApp, index, App, index);
-    case 'gallery':
-      return createSection('gallery', homepage?.showHomeGallery, index, PhotoSection, index);
-    case 'posts':
-      return createSection('posts', homepage?.showPosts, index, showPosts, index);
-    case 'faq':
-      return createSection('faq', homepage?.showFaqOnHome, index, Faqs, index);
-    case 'testimonials':
-      return createSection('testimonials', homepage?.showTestOnHome, index, Testimonials, index);
-    case 'resume':
-      return createSection('resume', homepage?.showResume, index, Resume, index);
-    case 'infoblock1':
-      return {
-        name: 'infoblock',
-        show: !!selectedPitch,
-        order: index,
-        component: InfoBlock
-      };
-    case 'infoblock2':
-      return {
-        name: 'infoblock2',
-        show: !!selectedPitch2,
-        order: index,
-        component: InfoBlock
-      };
-    case 'infoblock3':
-      return {
-        name: 'infoblock3',
-        show: !!selectedPitch3,
-        order: index,
-        component: InfoBlock
-      };
-    default:
-      return null;
-  }
-}).filter(Boolean) as Section[];
-
-  
-
-
-const sortedSections = sections  .filter(section => section.show)
-  .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-
 ---
 
-<style>
-	.scroll-snap-container {
-flex-direction: column;
-  height: 100%;
-  max-width:100vw;
-  /* overflow-x: hidden; */
-  /* overflow-y: scroll; */
-  scroll-snap-type: y proximity;
-}
-.scroll-snap-container > * {
-  scroll-snap-align: start;
-}
-
-</style>
-
-
-
-<PageLayout
-  title={homeContent.data.title}
-  description={pwaSettings.data.description}
-  themeMode={siteSettings.data.themeMode ?? 'user'}
->
-
-  
-  
-	<div class="scroll-snap-container prose-pirate flex flex-col home">
-		{sortedSections.map(section => (
-			<section class={section.name === 'resume' ? 'resume' : ''}>
-				{(() => {
-					switch (section.name) {
-						case 'feature':
-							return <Feature content={{
-								...homeContent.data,
-								youtube: homeContent.data.youtube?.value,
-								cta: cta ? {
-									title: cta.data.title,
-									description: cta.data.description || '',
-									ctaUrl: cta.data.ctaUrl,
-									showFancy: cta.data.showFancy,
-                  showTransition: cta.data.showTransition
-                  
-                  
-								} : undefined
-							}} />;
-						case 'bio':
-							return <Bio />;
-						case 'app':
-							return (<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg" style="margin-bottom:0;">{homeContent.data.locationtitle}</h2><App />);
-						case 'gallery':
-							return (<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">{homeContent.data.photosectiontitle}</h2><PhotoSection />);
-						case 'infoblock':
-							return selectedPitch && <InfoBlock pitch={{...selectedPitch, slug: selectedPitch.slug, showTwocol: selectedPitch.showTwocol}} />;
-						case 'infoblock2':
-							return (
-								<>
-									{selectedPitch2 && <InfoBlock pitch={{...selectedPitch2, slug: selectedPitch2.slug, showTwocol: selectedPitch2.showTwocol}} />}
-								</>
-							);
-						case 'infoblock3':
-							return (
-								<>
-									{selectedPitch3 && <InfoBlock pitch={{...selectedPitch3, slug: selectedPitch3.slug, showTwocol: selectedPitch3.showTwocol}} />}
-								</>
-							);
-						case 'resume':
-							return <Resume 
-								leftColumnItems={resumeSettings?.data?.leftColumnItems || []}
-								rightColumnItems={resumeSettings?.data?.rightColumnItems || []}
-							/>;
-              case 'posts':
-							return (
-								<>
-									
-									<div style="padding:2vh 3%" class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`}>
-									
-                    
-                    {homeContent.data.postsectiontitle && (
-                      <h2 class="posties glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg" style="display:grid; place-content:center; margin-bottom:2vh; min-width:50%; width:100%;">
-                        {homeContent.data.postsectiontitle}
-                      </h2>
-                    )}
-
-                    {allPostsSorted.map((p) => <PostPreview post={p} withDesc />)}
-										{ShowMore && (
-											<a class="viewmore no-underline text-white text-center block" href="/posts/" style="padding:1vh 1rem; margin:0 50px 50px 50px;">
-												{language.data.viewmore}
-											</a>
-										)}
-									</div>
-								</>
-							);
-						case 'faq':
-							return (
-								<>
-									<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">{homeContent.data.faqsectiontitle}</h2>
-									<Faqs />
-								</>
-							);
-						case 'testimonials':
-							return <div class="testi" style="">
-								<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">{homeContent.data.testimonialtitle}</h2><Testimonials /></div>;
-						default:
-							return null;
-					}
-				})()}
-
-        
-			</section>
-		))}
-    
-    {homeCTA && (      <section style="display:grid; place-content:center; padding:10vh 0">
-      <CTAs 
-        title={homeCTA.data.title}
-        description={homeCTA.data.description || ''}
-        ctaUrl={homeCTA.data.ctaUrl}
-        showFancy={homeCTA.data.showFancy}
-        showTransition={homeCTA.data.showTransition}
-      />
-    </section>
-  )}
-
-
-<br /><br /><br />
-
-{!showCheck && 
-
-<script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-<h2 class="glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent backdrop-blur-lg">Buy This Website</h2>
-<stripe-pricing-table pricing-table-id="prctbl_1Qe7TQIbXHwBH2q3OBiMeCaf"
-publishable-key="pk_test_51Qe75VIbXHwBH2q3XjaYKRUr0AUGprwFX2ottMpaxZqAqiEoBS5nGA4GatemfTmUHs6CSPWFhBzPJjH2qv0JuLLI00421mokn9">
-</stripe-pricing-table><br /><br />
-
-}
+<PageLayout meta={meta} themeMode={siteSettings?.data?.themeMode ?? 'user'}>
 
 
 
 
 
-	</div>
+
+
+  <!-- Template system rendering - clean and simple -->
+   <div class="home">
+  <DynamicPageRenderer 
+    sections={sections}
+    pageContent=""
+  />
+</div>
+          <!-- <Video /> -->
+<!-- <Features /> -->
 </PageLayout>
-
-
-
-

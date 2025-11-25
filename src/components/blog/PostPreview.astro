@@ -8,13 +8,16 @@ type Props = {
     withDesc?: boolean;
 };
 import { getEntry } from 'astro:content';
+import { formatDate } from '../../utils/date';
+
 const { post, withDesc = false } = Astro.props;
+const siteSettings = await getEntry('siteSettings', 'main');
+const { showTitles, showDates = true } = siteSettings?.data ?? {};
+const formattedDate = post.data.publishDate ? formatDate(post.data.publishDate) : '';
+
 const defaultImageSrc = `${import.meta.env.BASE_URL}socialCard.webp`;
 const defaultImageWidth = 900; 
 const defaultImageHeight = 600; 
-
-const siteSettings = await getEntry('siteSettings', 'main');
-const { showTitles } = siteSettings.data;
 
 function getYouTubeId(url: string) {
   const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
@@ -23,204 +26,460 @@ function getYouTubeId(url: string) {
 }
 
 function getYouTubeThumbnail(videoId: string) {
-  return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 }
 
+
+if ('slug' in post) {
+  const slug = post.slug;
+  // use slug
+}
 
 const videoId = post.data.youtube?.value?.url ? getYouTubeId(post.data.youtube.value.url) : null;
 const thumbnailUrl = videoId ? getYouTubeThumbnail(videoId) : null;
 const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
 ---
 
+<style>
+.post-video-card {
+  background: var(--theme-bg, #fff);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
+.post-video-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
 
-<div class="post-card1">
-    <div>
+/* Disable hover effects in slider mode to prevent layout jumping */
+.slider .post-video-card:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-video-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: #000;
+}
+
+.post-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: all 0.3s ease;
+  padding: 8px 0 0 2px;
+}
+
+.post-play-button:hover {
+  background: rgba(255, 0, 0, 0.9);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.post-video-info {
+  padding: 0.75rem;
+  background: var(--theme-bg, #fff);
+  color: var(--theme-text, #333);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.post-video-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--theme-text, #333);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--theme-text-muted, #666);
+  margin-top: auto;
+}
+
+.post-date {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.post-iframe-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: #000;
+}
+
+.post-iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+
+<div class="post-card1 post-video-card">
     {post.data.externalUrl ? (
-        <div data-active="false" class="iframe-container inactive panel"
-        style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        rowGap: "0",
-                        columnGap: "0.4vw",
-                        textAlign: "center",
-                        flexDirection: "column",
-                        padding: "1vh 1vw",
-                        fontSize: "clamp(1rem, 1rem, 1rem)",
-                    }}>
-            <iframe
-                src={post.data.externalUrl}
-                title={post.data.title}
-                width="100%"
-                height="400"
-                frameborder="0"
-                allowfullscreen
-                loading="lazy"
-                class="exturl"
-            ></iframe>
-        </div>
-        <a href={post.data.externalUrl} rel="noreferrer" target="_blank"><h2 class="title ext" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>{post.data.title}</h2></a>
-        
-    ) : post.data.youtube?.discriminant && post.data.youtube.value?.videoOnly && thumbnailUrl ? (
-        <div class="video-container" data-video-id={videoId} data-use-custom-player={useCustomPlayer}>
-            <img
-                src={thumbnailUrl}
-                alt={post.data.youtube.value.title || "Video thumbnail"}
-                class="object-contain video-thumbnail"
-                loading="eager"
-                fetchpriority="high"
-                width={defaultImageWidth}
-                height={defaultImageHeight}
-            />
-            
-            <div class="play-button" aria-label="Play video">&#x25B6;</div>
-            <div class="youtube-embed" style="display: none;">
-                <YouTubeEmbed
-                    url={post.data.youtube.value.url || ''}
-                    title={post.data.youtube.value.title}
-                    controls={post.data.youtube.value.controls}
-                    mute={post.data.youtube.value.mute}
-                    loop={post.data.youtube.value.loop}
-                    start={post.data.youtube.value.start}
-                    end={post.data.youtube.value.end}
-                    useCustomPlayer={useCustomPlayer}
-                />
+        <>
+            <div class="post-iframe-container">
+                <iframe
+                    src={post.data.externalUrl}
+                    title={post.data.title}
+                    width="100%"
+                    height="100%"
+                    frameborder="0"
+                    allowfullscreen
+                    loading="lazy"
+                    class="exturl"
+                ></iframe>
             </div>
-            {showTitles && (
-                        <h2 class="title" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>
-                            {post.data.title}
-                        </h2>
-                    )}
-        </div>
-    ) : (
-        <a href={`/posts/${post.slug}/`} class="pirate-link" rel="prefetch">
-            {post.data.coverImage && typeof post.data.coverImage === "object" && post.data.coverImage.src ? (
-                <Image
-                    src={post.data.coverImage.src}
-                    alt={post.data.coverImage.alt || "Cover image"}
-                    class="object-contain"
-                    loading="eager"
-                    fetchpriority="high"
-                    width={defaultImageWidth}
-                    height={defaultImageHeight}
-                />
-            ) : (
-                <Image
-                    alt="Default Image Alt Text"
-                    class="object-contain"
-                    fetchpriority="high"
-                    loading="eager"
-                    src={defaultImageSrc}
-                    width={defaultImageWidth}
-                    height={defaultImageHeight}
-                />
-            )}
             
-            {typeof showTitles !== 'undefined' && showTitles && (
-                <div
-                    class="panel"
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        rowGap: "0",
-                        columnGap: "0.4vw",
-                        textAlign: "center",
-                        flexDirection: "column",
-                        padding: "1vh 1vw",
-                        fontSize: "clamp(1rem, 1rem, 1rem)",
-                    }}
-                >
-                    {showTitles && (
-                        <h2 class="title" style={{ color: "", fontSize: "clamp(1.3rem, 2.4vw, 1rem)" }}>
-                            {post.data.title}
-                        </h2>
+            {showTitles && (
+                <div class="post-video-info">
+                    <h3 class="post-video-title">
+                        <a href={post.data.externalUrl} rel="noreferrer" target="_blank">{post.data.title}</a>
+                    </h3>
+                    {showDates && formattedDate && (
+                        <div class="post-meta">
+                            <span class="post-date">{formattedDate}</span>
+                        </div>
                     )}
-                    {withDesc && (
-                        <div class="line-clamp-1 block snippet" style={{ display: "none" }}>
-                            {post.data.description}
+                </div>
+            )}
+        </>
+    ) : post.data.youtube?.discriminant && post.data.youtube.value?.videoOnly && thumbnailUrl ? (
+        <>
+            <div class="post-video-container video-container" data-video-id={videoId} data-use-custom-player={useCustomPlayer}>
+                <img
+                    src={thumbnailUrl}
+                    alt={post.data.youtube.value.title || "Video thumbnail"}
+                    class="post-thumbnail video-thumbnail"
+                    loading="eager"
+                    fetchpriority="high"
+                    width={defaultImageWidth}
+                    height={defaultImageHeight}
+                />
+                
+                <div class="post-play-button play-button" aria-label="Play video">&#x25B6;</div>
+                <div class="youtube-embed" style="display: none;">
+                    <YouTubeEmbed
+                        url={post.data.youtube.value.url || ''}
+                        title={post.data.youtube.value.title}
+                        controls={post.data.youtube.value.controls}
+                        mute={false}
+                        loop={post.data.youtube.value.loop}
+                        start={post.data.youtube.value.start}
+                        end={post.data.youtube.value.end}
+                        clickToLoad={post.data.youtube.value.clickToLoad}
+                        useCustomPlayer={useCustomPlayer}
+                    />
+                </div>
+            </div>
+            
+            {showTitles && (
+                <div class="post-video-info">
+                    <h3 class="post-video-title">{post.data.title}</h3>
+                    {showDates && formattedDate && (
+                        <div class="post-meta">
+                            <span class="post-date">{formattedDate}</span>
+                        </div>
+                    )}
+                </div>
+            )}
+        </>
+    ) : (
+        <a href={`/posts/${post.slug}/`} class="pirate-link" rel="prefetch" style="text-decoration: none; color: inherit; height: 100%; display: flex; flex-direction: column;">
+            <div class="post-video-container">
+                {post.data.coverImage && typeof post.data.coverImage === "object" && post.data.coverImage.src ? (
+                    <Image
+                        src={post.data.coverImage.src}
+                        alt={post.data.coverImage.alt || "Cover image"}
+                        class="post-thumbnail"
+                        loading="eager"
+                        fetchpriority="high"
+                        width={defaultImageWidth}
+                        height={defaultImageHeight}
+                    />
+                ) : (
+                    <Image
+                        alt="Default Image Alt Text"
+                        class="post-thumbnail"
+                        fetchpriority="high"
+                        loading="eager"
+                        src={defaultImageSrc}
+                        width={defaultImageWidth}
+                        height={defaultImageHeight}
+                    />
+                )}
+            </div>
+            
+            {showTitles && (
+                <div class="post-video-info">
+                    <h3 class="post-video-title">{post.data.title}</h3>
+                    {showDates && formattedDate && (
+                        <div class="post-meta">
+                            <span class="post-date">{formattedDate}</span>
                         </div>
                     )}
                 </div>
             )}
         </a>
     )}
-    </div>
 </div>
 
-<style>
-    .iframe-container {
-        position: relative;
-        width: 100%;
-        /* padding-bottom: 56.25%;  */
-        aspect-ratio: 16/9;
-        /* height: 0; */
-        overflow: hidden;
-    }
 
-    .iframe-container iframe {
-        position: relative;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 90%;
-        aspect-ratio: 16/9;
-    }
-
-    @media(hover:none) {
-        .iframe-container iframe {z-index: 1; min-width: 100%;}
-    }
-    @media(max-width:48rem) {
-
-    }
-    
-    .video-container {
-        position: relative;
-        /* width: 100%;
-        height: 100%; */
-    
-    }
-    .play-button {
-        position: absolute;
-        top: 45%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        border: 1px solid white;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        font-size: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        filter: drop-shadow(0px 0px 1px #f6f3f3) !important;
-        box-shadow: 0 0 0 3px #111;
-    }
-
-/* .grid-container .video-container{max-height: 200px !important;} */
-
-
-
-/* .slider .video-container, .slider .post-card1, .slider .custom-youtube-player{ min-width: 80vw !important;} */
-.grid-container .custom-youtube-player {margin-bottom: 0;}
-    .iframe-container.inactive::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        /* background-color: rgba(128, 128, 128, 0.5); */
-        z-index: 1;
-        display:grid;
-        place-content: center;
-        color:white;
-    }
-</style>
 <script>
+(function() {
+  'use strict';
+  
+  // Global function to stop all videos
+  function stopAllVideos(excludeContainer?: Element) {
+    
+    document.querySelectorAll('.video-container').forEach(container => {
+      if (container === excludeContainer) return;
+      
+      const thumbnail = container.querySelector('.video-thumbnail') as HTMLElement;
+      const playButton = container.querySelector('.play-button') as HTMLElement;
+      const youtubeEmbed = container.querySelector('.youtube-embed') as HTMLElement;
+      
+      if (thumbnail && playButton && youtubeEmbed) {
+        // Reset to thumbnail state
+        thumbnail.style.display = 'block';
+        playButton.style.display = 'block';
+        youtubeEmbed.style.display = 'none';
+        
+        // Stop the iframe and clean up timers
+        const iframe = youtubeEmbed.querySelector('iframe');
+        if (iframe) {
+          // Store original src before clearing
+          if (iframe.src !== 'about:blank') {
+            iframe.dataset.originalSrc = iframe.src;
+          }
+          iframe.src = 'about:blank';
+          
+          // Try to call the timer cleanup function for this video if it exists
+          const containerEl = container as HTMLElement;
+          const videoId = containerEl.dataset.videoId;
+          if (videoId && (window as any).resetYouTubeEmbedTimer) {
+            try {
+              (window as any).resetYouTubeEmbedTimer(videoId);
+            } catch (e) {
+            }
+          }
+        }
+        
+        // Clean up any upgrade messages
+        const upgradeMessage = youtubeEmbed.querySelector('.compact-upgrade-message');
+        if (upgradeMessage) {
+          upgradeMessage.remove();
+        }
+        
+        const containerEl = container as HTMLElement;
+        const videoId = containerEl.dataset.videoId;
+        if (videoId) {
+          const specificMessage = document.querySelector(`.compact-upgrade-message-${videoId}`);
+          if (specificMessage) {
+            specificMessage.remove();
+          }
+        }
+      }
+    });
+  }
+  
+  // Make stopAllVideos globally available
+  (window as any).stopAllVideos = stopAllVideos;
+  
+  // Stop all videos immediately when script loads (before any can start playing)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Small delay to ensure all video containers are rendered
+      setTimeout(() => {
+        (window as any).stopAllVideos();
+      }, 50);
+    });
+  } else {
+    // Document is already loaded
+    setTimeout(() => {
+      (window as any).stopAllVideos();
+    }, 50);
+  }
+  
+  // Enhanced navigation detection
+  let isNavigatingAway = false;
+  
+  // Detect various navigation scenarios
+  window.addEventListener('beforeunload', () => {
+    isNavigatingAway = true;
+    (window as any).stopAllVideos();
+  });
+  
+  // Handle view transitions
+  document.addEventListener('astro:before-preparation', () => {
+    isNavigatingAway = true;
+    (window as any).stopAllVideos();
+  });
+  
+  document.addEventListener('astro:before-swap', () => {
+    (window as any).stopAllVideos();
+  });
+  
+  // Handle back/forward navigation
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      // Page was loaded from cache, stop all videos
+      setTimeout(() => {
+        (window as any).stopAllVideos();
+      }, 50);
+    }
+  });
+  
+  // Handle visibility changes (tab switching, etc.)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      (window as any).stopAllVideos();
+    }
+  });
+  
+  // Set up video click handlers when DOM is ready
+  function setupVideoHandlers() {
+    document.querySelectorAll('.video-container').forEach(container => {
+      const playButton = container.querySelector('.play-button') as HTMLElement;
+      const thumbnail = container.querySelector('.video-thumbnail') as HTMLElement;
+      const youtubeEmbed = container.querySelector('.youtube-embed') as HTMLElement;
+
+      // Remove any existing click handlers to prevent duplicates
+      const newPlayButton = playButton?.cloneNode(true) as HTMLElement;
+      playButton?.parentNode?.replaceChild(newPlayButton, playButton);
+
+      newPlayButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (thumbnail && youtubeEmbed) {
+          // Stop all other videos first
+          stopAllVideos(container);
+          
+          // Then play this video
+          thumbnail.style.display = 'none';
+          newPlayButton.style.display = 'none';
+          youtubeEmbed.style.display = 'block';
+          
+          // Restore iframe src if it was cleared
+          const iframe = youtubeEmbed.querySelector('iframe');
+          if (iframe && iframe.src === 'about:blank' && iframe.dataset.originalSrc) {
+            iframe.src = iframe.dataset.originalSrc;
+          }
+        }
+      });
+    });
+  }
+  
+  // Set up handlers when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupVideoHandlers);
+  } else {
+    setupVideoHandlers();
+  }
+  
+  // Also set up handlers after any dynamic content changes
+  const observer = new MutationObserver((mutations) => {
+    let shouldSetupHandlers = false;
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as Element;
+            if (element.querySelector('.video-container') || element.classList.contains('video-container')) {
+              shouldSetupHandlers = true;
+            }
+          }
+        });
+      }
+    });
+    
+    if (shouldSetupHandlers) {
+      setTimeout(() => {
+        (window as any).stopAllVideos();
+        setupVideoHandlers();
+      }, 100);
+    }
+  });
+  
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  
+})();
+
+  // Stop all videos when page becomes hidden (user navigates away)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      (window as any).stopAllVideos();
+    }
+  });
+
+  // Stop all videos before page unloads
+  window.addEventListener('beforeunload', () => {
+    (window as any).stopAllVideos();
+  });
+
+  // Stop all videos when page is about to be hidden (for view transitions)
+  document.addEventListener('astro:before-preparation', () => {
+    (window as any).stopAllVideos();
+  });
+
+  // Also stop videos on pagehide event (for mobile browsers)
+  window.addEventListener('pagehide', () => {
+    (window as any).stopAllVideos();
+  });
+
+  // Stop videos when user clicks on navigation links
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A' || target.closest('a')) {
+      // User is navigating away, stop videos
+      setTimeout(() => {
+        (window as any).stopAllVideos();
+      }, 100);
+    }
+  });
+
   document.querySelectorAll('.video-container').forEach(container => {
     const playButton = container.querySelector('.play-button') as HTMLElement;
     const thumbnail = container.querySelector('.video-thumbnail') as HTMLElement;
@@ -231,9 +490,66 @@ const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
       e.stopPropagation();
       
       if (thumbnail && youtubeEmbed) {
+        // Simple approach: just show this video and hide its thumbnail
         thumbnail.style.display = 'none';
         playButton.style.display = 'none';
         youtubeEmbed.style.display = 'block';
+        
+        // Restore iframe src if it was cleared
+        const iframe = youtubeEmbed.querySelector('iframe');
+        if (iframe && iframe.src === 'about:blank' && iframe.dataset.originalSrc) {
+          iframe.src = iframe.dataset.originalSrc;
+        }
+        
+        // Stop ALL other videos (simple approach)
+        document.querySelectorAll('.video-container').forEach(otherContainer => {
+          if (otherContainer !== container) {
+            const otherThumbnail = otherContainer.querySelector('.video-thumbnail') as HTMLElement;
+            const otherPlayButton = otherContainer.querySelector('.play-button') as HTMLElement;
+            const otherYoutubeEmbed = otherContainer.querySelector('.youtube-embed') as HTMLElement;
+            
+            if (otherThumbnail && otherPlayButton && otherYoutubeEmbed) {
+              // Reset other videos to thumbnail
+              otherThumbnail.style.display = 'block';
+              otherPlayButton.style.display = 'block';
+              otherYoutubeEmbed.style.display = 'none';
+              
+              // Clean up any existing upgrade messages (both types)
+              const upgradeMessage = otherYoutubeEmbed.querySelector('.compact-upgrade-message');
+              if (upgradeMessage) {
+                upgradeMessage.remove();
+              }
+              
+              // Also clean up any video-specific upgrade messages that might be in body
+              const videoId = (otherContainer as HTMLElement).dataset.videoId;
+              if (videoId) {
+                const specificMessage = document.querySelector(`.compact-upgrade-message-${videoId}`);
+                if (specificMessage) {
+                  specificMessage.remove();
+                }
+              }
+              
+              // Stop the iframe and clean up timers
+              const otherIframe = otherYoutubeEmbed.querySelector('iframe');
+              if (otherIframe) {
+                // Store original src before clearing
+                if (otherIframe.src !== 'about:blank') {
+                  (otherIframe as HTMLIFrameElement).dataset.originalSrc = otherIframe.src;
+                }
+                otherIframe.src = 'about:blank';
+                
+                // Try to call the timer cleanup function for this video if it exists
+                const videoId = (otherContainer as HTMLElement).dataset.videoId;
+                if (videoId && (window as any).resetYouTubeEmbedTimer) {
+                  try {
+                    (window as any).resetYouTubeEmbedTimer(videoId);
+                  } catch (e) {
+                  }
+                }
+              }
+            }
+          }
+        });
       }
     });
   });
@@ -256,6 +572,20 @@ const useCustomPlayer = post.data.youtube?.value?.useCustomPlayer ?? true;
             iframeContainers.forEach((container) => {
                 container.classList.remove('inactive');
             });
+        }
+        
+        // Listen for video preference changes and update mute states
+        window.addEventListener('video-preferences-changed', () => {
+            if ((window as any).VideoPreferences) {
+                const preferences = (window as any).VideoPreferences.getPreferences();
+                (window as any).VideoPreferences.updateAllVideoMuteStates(preferences.muted);
+            }
+        });
+        
+        // Apply initial mute preferences if VideoPreferences is available
+        if ((window as any).VideoPreferences) {
+            const preferences = (window as any).VideoPreferences.getPreferences();
+            (window as any).VideoPreferences.updateAllVideoMuteStates(preferences.muted);
         }
     });
 </script>

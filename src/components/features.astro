@@ -1,0 +1,547 @@
+---
+// import PageLayout from "../layouts/Base.astro";
+import { getEntry } from 'astro:content';
+
+// Get site settings
+const siteSettings = await getEntry('siteSettings', 'main');
+const videoTimeLimitMinutes = siteSettings?.data?.videoTimeLimitMinutes ?? 1;
+---
+
+<!-- <PageLayout title="Features - Break Free from Big Brother" description="Discover the power of true digital freedom with our privacy-first video platform" themeMode="dark"> -->
+
+<style>
+  .features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: #fff;
+    background:#333;
+    border-radius: 14px;
+  }
+
+  .hero-section {
+    text-align: center;
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border-radius: 20px;
+    margin-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-size: clamp(1.2rem, 4.5vw, 4rem);
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, #ef4444, #f97316, #eab308);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-tagline {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #60a5fa;
+    margin-bottom: 3rem;
+  }
+
+  .section {
+    margin: 4rem 0;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-subtitle {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #fbbf24;
+    margin-bottom: 1.5rem;
+  }
+
+  .privacy-section {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+    border-color: rgba(239, 68, 68, 0.2);
+  }
+
+  .custom-portal-section {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
+    border-color: rgba(139, 92, 246, 0.2);
+  }
+
+  .sovereignty-section {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .feature-card h3 {
+    color: #60a5fa;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .evil-list {
+    background: rgba(239, 68, 68, 0.1);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #ef4444;
+    margin: 1.5rem 0;
+  }
+
+  .evil-list h4 {
+    color: #fca5a5;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .comparison-section {
+    margin: 4rem 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 0 .5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    margin: 2rem 0;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .comparison-table th {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .comparison-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .checkmark {
+    color: #4ade80;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .crossmark {
+    color: #f87171;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  .cta-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border-radius: 20px;
+    margin: 4rem 0;
+    border: 2px solid rgba(139, 92, 246, 0.3);
+  }
+
+   .cta-section h2{text-align: center !important; justify-content: center;}
+
+  .cta-button {
+    display: inline-block;
+    padding: .5rem;
+    background: linear-gradient(45deg, #ef4444, #f97316);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    margin: 1rem auto;
+  }
+
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(239, 68, 68, 0.4);
+  }
+
+  .resistance-quote {
+    font-style: italic;
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 3rem 0;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border-left: 4px solid #fbbf24;
+  }
+
+  ul, ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+  }
+
+  li {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+  }
+
+  p {
+    line-height: 1.7;
+    margin: 1rem 0;
+  }
+
+  .big-brother-callout {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .big-brother-callout h3 {
+    color: #fca5a5;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .features-container {
+      padding: 1rem;
+    }
+
+    .hero-title {
+          font-size: clamp(1rem, 1.5vw, 2rem);
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      padding: 0 1rem;
+    }
+
+    .section {
+      padding: 2rem 1rem;
+    }
+
+    .section-title {
+          font-size: clamp(1rem, 1.5vw, 2rem);
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<div class="features-container onlypwa">
+  <!-- Hero Section -->
+  <!-- <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Break Free from Big Brother's Digital Surveillance</h1>
+      <p class="hero-subtitle">Your Private Video Portal - Where Privacy Isn't a Product, It's a Promise</p>
+      <p class="hero-tagline">🔒 They're Watching. We're Not.</p>
+
+      <a href="/membership" class="cta-button">
+      Reclaim Your Digital Freedom!
+    </a>
+    </div>
+  </section> -->
+
+  <!-- Privacy Section -->
+  <section class="section privacy-section">
+    <h2 class="section-title">🛡️ Complete Digital Privacy</h2>
+    <p class="section-subtitle">While Big Tech oligarchs harvest your every click, we offer something radical: genuine privacy.</p>
+    
+    <div class="big-brother-callout">
+      <h3>🎭 The Corporate Surveillance State</h3>
+      <p>YouTube, Facebook, and Google build detailed profiles of your interests, emotions, and behaviors. They know more about you than your family does.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>🚫 Zero Data Collection</h3>
+        <p>We don't know who you are, what you watch, or when you watch it. Your viewing habits are none of our business.</p>
+      </div>
+      <div class="feature-card">
+        <h3>💾 Local Storage Only</h3>
+        <p>All your data lives on YOUR device, not in corporate data centers where it can be sold or subpoenaed.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🔍 No Tracking Scripts</h3>
+        <p>No analytics, no cookies, no digital fingerprinting. We can't track you because we don't try to.</p>
+      </div>
+      <!-- <div class="feature-card">
+        <h4>👤 No User Profiles</h4>
+        <p>We can't build a profile on you because we don't store your data. You're truly anonymous.</p>
+      </div> -->
+    </div>
+  </section>
+
+  <!-- Custom Portal Section -->
+  <section class="section custom-portal-section">
+    <h2 class="section-title">🎭 Create Your Custom Video Universe</h2>
+    <p class="section-subtitle">Escape algorithmic manipulation and content censorship. Build your own curated experience:</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>📺 Custom Video Feeds</h3>
+        <p>Mix and match content from multiple sources. No algorithm decides what you see.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📡 Channel Subscriptions</h3>
+        <p>Follow creators without feeding the algorithm beast or revealing your interests.</p>
+      </div>
+      <div class="feature-card">
+        <h3>⭐ Personal Collections</h3>
+        <p>Organize videos your way, not theirs. Your favorites, your rules.</p>
+      </div>
+      <!-- <div class="feature-card">
+        <h4>🚫 Ad-Free Experience</h4>
+        <p>Watch content without corporate interruptions or manipulative advertising.</p>
+      </div> -->
+    </div>
+
+    <div class="evil-list">
+      <h4>What Your Viewing Habits Reveal to Big Tech:</h4>
+      <ul>
+        <li>Your political beliefs and voting intentions</li>
+        <li>Your purchasing power and future buying plans</li>
+        <li>Your relationship status and sexual orientation</li>
+        <li>Your mental health state and vulnerabilities</li>
+        <li>Your career aspirations and financial situation</li>
+        <li>Your location patterns and daily routines</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Digital Sovereignty Section -->
+  <section class="section sovereignty-section">
+    <h2 class="section-title">⚡ Digital Sovereignty in Action</h2>
+    <p class="section-subtitle">The Corporate Oligarchy wants you dependent. We give you the tools to take back control.</p>
+
+    <div class="features-grid">
+      <!-- <div class="feature-card">
+        <h4>🗑️ Instant Data Removal</h4>
+        <p>Delete all your data with one click. No waiting periods, no "deactivation" - just gone.</p>
+      </div> -->
+      <div class="feature-card">
+        <h3>🔐 No Account Required</h3>
+        <p>Use our platform without surrendering your identity or creating yet another corporate data profile.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🌐 Decentralized Access</h3>
+        <p>Your content sources, your rules. No single point of failure or censorship.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📱 Cross-Platform Freedom</h3>
+        <p>Access your custom feeds anywhere without being locked into a corporate ecosystem.</p>
+      </div>
+    </div>
+
+    <div class="evil-list">
+      <h4>Big Tech Corporations Sell Your Data To:</h4>
+      <ul>
+        <li>Political manipulators and propaganda operations</li>
+        <li>Insurance companies (to deny coverage)</li>
+        <li>Employers and landlords (to discriminate)</li>
+        <li>Government surveillance programs</li>
+        <li>Anyone willing to pay for your digital soul</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Features Comparison -->
+  <!-- <section class="comparison-section">
+    <h2 class="section-title">📊 Platform Features Comparison</h2>
+    <p class="section-subtitle">Choose the level of digital freedom that fits your needs:</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Free</th>
+          <th>Unlimited</th>
+          <th>Premium</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Video Streaming</strong></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr>
+          <td><strong>Time Limit</strong></td>
+          <td>{videoTimeLimitMinutes} min</td>
+          <td>Unlimited</td>
+          <td>Unlimited</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Controls</strong></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr>
+          <td><strong>Save Favorites</strong></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr>
+          <td><strong>Channel Subscriptions</strong></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr>
+          <td><strong>Custom Mixed Feeds</strong></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr>
+          <td><strong>Advanced Sharing</strong></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr>
+          <td><strong>Download/Backup To Local File</strong></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="crossmark">✗</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr style="background: rgba(16, 185, 129, 0.1);">
+          <td><strong>Progressive Web App (NO app store needed)</strong></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr style="background: rgba(16, 185, 129, 0.1);">
+          <td><strong>Zero Data Collection</strong></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr style="background: rgba(16, 185, 129, 0.1);">
+          <td><strong>No Tracking</strong></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+        <tr style="background: rgba(16, 185, 129, 0.1);">
+          <td><strong>Local Storage Only</strong></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+          <td><span class="checkmark">✓</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section> -->
+
+  <!-- Why Big Tech Fears Us -->
+  <section class="section">
+    <h2 class="section-title">🔥 Why Big Tech Fears Us</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>🏛️ We Don't Play Their Game</h3>
+        <p>Traditional platforms are digital prisons disguised as entertainment - designed to manipulate, not liberate.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🎯 You Control the Algorithm</h3>
+        <p>Choose what you want to see based on your interests, not corporate profit margins.</p>
+      </div>
+      <div class="feature-card">
+        <h3>⏰ Intentional Consumption</h3>
+        <p>Watch what matters to you, when you want - not endless scrolling designed to waste your time.</p>
+      </div>
+      <!-- <div class="feature-card">
+        <h4>🌍 Diverse Perspectives</h4>
+        <p>Access content from multiple sources without algorithmic echo chambers amplifying division.</p>
+      </div> -->
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta-section">
+    <h2 class="section-title">🚀 Join the Digital Resistance</h2>
+    <p>Ready to break free from digital surveillance?</p>
+    <p>The revolution starts with a single click. Take back your digital autonomy and experience video content the way it was meant to be - <strong>private, personal, and free from corporate manipulation.</strong></p>
+    
+    <a href="/membership" class="cta-button">
+      Reclaim Your Digital Freedom!
+    </a>
+    
+    <p style="margin-top: 2rem; opacity: 0.9;">Join thousands who have already escaped the Big Tech panopticon.</p>
+  </section>
+
+  <!-- Resistance Quote -->
+  <div class="resistance-quote">
+    <p><em>"In the digital age, <strong>privacy is resistance</strong>. Every minute you spend on our platform is a minute Big Tech can't monetize your attention or harvest your data. That's not just good for you - it's good for humanity."</em></p>
+    <p style="margin-top: 1rem; font-weight: 600;">💪 "The price of freedom is eternal vigilance." - We're vigilant so you can be free.</p>
+  </div>
+</div>
+
+<!-- </PageLayout> -->

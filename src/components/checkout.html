@@ -1,0 +1,905 @@
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>Dog Poopers</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" cross-origin="anonymous" />
+<link rel="preconnect" href="https://fonts.gstatic.com" cross-origin="anonymous" />
+    <link
+	href="https://fonts.googleapis.com/css2?family=Bowlby+One&display=swap"
+	rel="stylesheet"
+	cross-origin="anonymous"
+	referrer-policy="no-referrer-when-downgrade"
+/>
+
+
+
+<style>   
+
+
+    .gmnoprint[role="menubar"]{display:none !important;}
+    body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden ;
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        /* overscroll-behavior: none !important; */
+        position: relative;
+      }
+    #tip::placeholder{font-size:.9rem !important;}
+    
+    
+    
+    body:has(#map){height:calc(100dvh - 110px);}
+    body:has(#menu) #map {height:calc(100dvh - 110px);}
+        
+        body:has(#menu) .maplogo{display: none !important;}
+        body:has(:not #menu) .maplogo{display: block !important;}
+    
+    
+    .search-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.6);
+        filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));
+        padding: 0 1vw;
+        gap:2vw;
+        width:100%;
+        z-index: 2;
+        top:0;
+      right:0;
+        border-radius: 0;
+        margin: 0 auto 0 auto;
+      }
+      .search-container input, #customer-email, #customer-name {
+        font-size: 16px;
+        padding:.4vh 2vw  ;
+        background:#000;
+        border: 1px solid #1f3829 !important;
+        color:#fff;
+      }
+      .search-container input{width:100%; max-width: 500px; padding:.4vh 2vw !important; height:30px !important; outline:1px solid #12b83c !important; border-radius: 5px; background:rgba(28, 23, 23, 0.8);}
+      .search-container input::placeholder{color:rgb(253, 255, 253); font-size:clamp(.8rem,1.5vw,2.2rem) !important;}
+    
+      .payarea input::placeholder{color:rgb(119, 150, 119) !important;}
+    
+      .search-container input, .payarea input{width:100%; max-width: 500px; height:30px; outline:1px solid #12b83c !important; border-radius: 5px; background:rgba(28, 23, 23, 0.8);}
+    
+      #tip{ max-width: 70px; height:20px; outline:1px solid #12b83c !important; border-radius: 5px; background:rgba(28, 23, 23, 0.8);}
+    
+      .search-container select{ font-size:clamp(.8rem, .8vw, 1.4rem) !important; background:#000;
+        color:#fff; padding:0vh 1vw; margin: 6px 0;
+      }
+    
+    
+              #area {
+      position:absolute;
+      top:180px ;
+      /* left:0;  */
+      right:1vw;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.7);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+        padding: 1vh 0 2vh 0;
+        margin: 0 auto .5vh auto;
+        color:#fff;
+        font-size: 16px;
+        max-width: 480px;
+        height: 360px;
+        text-align: center;
+        z-index: 3;
+        filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));
+      }
+      @media(min-width:48rem) {
+        /* #applogo{display: none;} */
+        #area{ border-radius:10px; }
+        #bottomblocker {height: 24px !important;}
+      }
+      @media(max-width:48rem) {
+        #area{ top:120px !important;  left:1vw; border-radius:0; }
+      /* #applogo{display: none;} */
+      #bottomblocker {height: 24px !important;}
+      #clearButton{top:120px !important;}
+      #drawPolygonControl{top:120px !important;}
+      /* #missioncontrol{display:none;} */
+      }
+      @media( display-mode:standalone) {
+        #bottomblocker::after {display: none !important;}
+      }
+    
+      .search-container input::placeholder{font-size:clamp(1rem,1vw,1rem) !important; }
+    
+      a, a:hover, a:visited{color:#fff;}
+      
+      #drawPolygonControl{position:absolute; top:130px; right: 0 !important;  z-index: 2; font-size:clamp(1rem, 1.5vw, 2rem); padding:.4vh 2vw; background:#06a154;  color:#fff; border:1px solid #a3d4a9; border-radius: 3px; font-weight: bold; filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8)); display:flex; align-items: center; text-shadow: 1px 2px 1px #1f3829;}
+      
+    
+      #editShapesButton{position:absolute; top: 170px; right: 0 !important;  z-index: 2; font-size:clamp(1rem, 1.5vw, 2rem); padding:.4vh 2vw; background:#08ba32;  color:#fff; border:1px solid #a3d4a9; border-radius: 3px; font-weight: bold; filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));}
+    
+      #clearButton{position:absolute; left:0!important; top:130px; z-index: 2; font-size:clamp(1rem, 1.5vw, 2rem); padding:.4vh 2vw; background:#000; color:#fff; border:1px solid #d10c0c; border-radius: 3px; font-weight: bold; filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));}
+    
+      #clearButton:hover {background-color: #e03a3a;}
+      #drawPolygonControl:hover {background-color: #12b83c;}
+      
+          
+              /* #menu {display:none !important;} */
+              /* .topmenu{visibility: hidden !important;} */
+              /* footer{display:none !important;} */
+      
+              #bottomblocker{position:absolute; bottom:0; height:10vh; background:rgba(1, 24, 6, 0.7); display:block; width:100%; z-index: 999999; backdrop-filter:blur(22px); -webkit-backdrop-filter: blur(22px); opacity:.9;}
+              #bottomblocker::after{content:'Click "Share" / "Add To Home Screen" to install our Web App'; position:absolute; width:100%; top:0; left:2px; text-shadow: 1px 1px 2px #222; text-align: center; font-size:clamp(.9rem, .6vw, 1rem); color:#fff }
+      
+      
+              .green{color:rgba(27, 39, 33, 0.5)}
+              
+      
+        input, select {
+        font-size: 16px;
+      }
+      
+      
+      .custom-control {
+        color: #fff;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        margin: 5px;
+        padding: 10px;
+        text-align: center;
+      }
+      .custom-control.draw-polygon {
+        color: white;
+        background: #068445;
+    
+        font-weight: bold;
+        padding:.4vh 2vw;
+        border:1px solid;
+      }
+      
+      .custom-control.draw-rectangle {
+        color: rgba(0, 172, 3, 0.407);
+        display: none;
+      } 
+      
+      #address {
+          outline-color: #07d56e; 
+          color: #fff; 
+      }
+      
+      
+      .alert-box {border:1px solid red; display:block; width:480px;}
+      
+      
+      .pac-container {
+          background-color: #111 !important; 
+          color: #fff !important;
+      }
+      .pac-item {
+          background-color: #111 !important;
+          color: #24f703 !important;
+          border-top: #666;
+      }
+      .pac-item-query{color:#fff !important;}
+      .hdpi .pac-icon { color:#fff !important; fill: #fff !important; }
+      .pac-icon-marker{fill:greenyellow !important;}
+      .pac-item:hover {
+          background-color: #1c1717 !important; color:#fff !important;  
+      }
+      
+      
+      .custom-control {
+        color: #fff;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        margin: 5px;
+        padding: 10px;
+        text-align: center;
+      }
+      .custom-control.draw-polygon {
+        color: white;
+        background: #06a154;
+        font-size:clamp(1rem, 1.5vw, 2rem);
+        font-weight: bold;
+        padding:.4vh 2vw;
+      }
+      
+      .custom-control.draw-rectangle {
+        color: rgba(0, 172, 3, 0.407);
+        display: none;
+      } 
+      
+      
+      #area-info, #rate-info {font-size:clamp(1.8rem, 1.8vw, 2rem);}
+      
+      #cost-info {font-size:clamp(2rem, 2vw, 3rem); color:#07d56e;}
+      
+      
+      #dogSelect {background: #03914a !important; color:#ddd !important; outline:1px solid #06a154 !important; font-size: clamp(.8rem, .9vw, 1.8rem) !important; margin:6px 0; border-radius: 3px; padding:.6rem 1vw .6rem 1vw; filter:drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8)); cursor: pointer; text-shadow: 1px 1px 1px #1c1717; font-weight: bold;}
+    
+    
+      
+      #frequencySelect {background: transparent !important; color:#ddd !important; outline:1px solid #06a154 !important; font-size: clamp(1rem, 1vw, 1.8rem) !important; margin:3px 0; cursor: pointer; border-radius: 3px; padding:.6rem 1vw .6rem 1vw; margin-right: 10px;}
+      
+      
+      select {
+        --webkit-appearance: none;
+        appearance: none;
+    }
+    
+    
+    
+    
+      .sqfoot {
+        font-size: clamp(1.4rem,3.4vw,3.2rem);
+        fill: #fff !important;
+        /* text-shadow: 2px 3px 3px #eeff00; */
+        filter: drop-shadow(2px 2px 3px #000);
+        font-weight: bold; font-style: bold; border-radius:0.675em; text-align: center;  transition: all 0.2s ease-in-out; text-shadow: .3vw .2vh .2vw #444, 0 3px .3vw rgb(189, 202, 8),0px 2px .3vw rgb(240, 240, 240),0 2px rgba(224, 227, 39, 0.954),0 2px .3vw rgb(211, 227, 39),0 0 .3vw rgb(221, 227, 39),0 0 .2vw rgb(227, 202, 39),0 0 .3vw rgb(227, 221, 39);
+      }
+    
+    
+      .stripe-button {
+        background-color:#06a154;
+        color: #ffffff;
+        border: none;
+        padding: 1vh 1.5vw;
+        font-size:clamp(1.1rem, 1vw, 1.4rem);
+        font-weight: bold;
+        text-shadow: 0px 1px 2px #111;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        margin:1vh auto .5vh auto;
+        transition: opacity 0.5s ease-in;
+      }
+      .stripe-button:hover{
+        background-color:#12b83c;
+        color: #ffffff;
+      }
+      
+      .hidden{display:none !important;}
+    
+      #map{filter: invert(80%) grayscale(.2) !important;
+        -webkit-filter: sepia(30%) hue-rotate(80deg) !important; position:relative;}
+        
+    
+        
+        </style>
+
+<script>
+    async function loadGoogleMapsApi() {
+      try {
+        const response = await fetch('/.netlify/functions/getGoogleMapsApiKey');
+        const data = await response.json();
+        const apiKey = data.apiKey;
+
+        if (!apiKey) {
+          throw new Error('API key is missing');
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=drawing,places,geometry&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      } catch (error) {
+        console.error('Error fetching the Google Maps API key:', error);
+      }
+    }
+
+    window.onload = loadGoogleMapsApi;
+  </script>
+
+
+
+</head>
+
+
+
+
+    
+    <div class="search-container">
+
+        <!-- <a href="../" target="_top"><img src="/dogpooper-logo-text.svg" alt="Dog Poopers Logo" class="" 
+            style="
+                position: relative;
+                top: 1%;
+                left: 1%;
+                padding: 0 0 0 0;
+                max-height: 60px;
+                min-height: 60px;
+                max-width: 100px;
+        "
+
+                loading="eager"
+                fetchpriority="high" id="applogo" /></a> -->
+
+        <input type="text" id="address" placeholder="Enter your address">
+    
+        <select id="dogSelect">
+            <option value=""># Dogs</option>
+            <option value="1">1 Dog</option>
+            <option value="1.1">2 Dogs</option>
+            <option value="1.2">3 Dogs</option>
+            <option value="1.3">4 Dogs</option>
+            <option value="1.5">5+ Dogs</option>
+        </select>
+        <select id="frequencySelect">
+            <option value="1">1X Weekly</option>
+            <option value="2">2X Weekly</option>
+            <option value="3">Bi-Weekly</option>
+            <option value="4">Once Only</option>
+        </select>
+    </div>
+
+    <div class="custom-control draw-polygon" id="drawPolygonControl"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 320 512" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));"><path d="M16 144a144 144 0 1 1 288 0A144 144 0 1 1 16 144zM160 80c8.8 0 16-7.2 16-16s-7.2-16-16-16c-53 0-96 43-96 96c0 8.8 7.2 16 16 16s16-7.2 16-16c0-35.3 28.7-64 64-64zM128 480V317.1c10.4 1.9 21.1 2.9 32 2.9s21.6-1 32-2.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32z"></path></svg> &nbsp; Draw Yard</div>
+    <div class="custom-control draw-rectangle" id="drawRectangleControl">Draw Rectangle</div>
+    <button class="custom-control button" id="clearButton">Clear</button>
+
+
+
+<div class="notification" id="notification"></div>
+
+
+<form id="area" class="hidden" onsubmit="return false;" style="margin-top:3rem;">
+    <span style="font-size:.7rem; text-align: center; padding:1vh 0 0 0;">Your Selected Area:</span>
+        <div style="display:flex; align-items: center; width:100%; justify-content: space-around; border:1px 0 1px 0 solid #233a23; box-shadow: 0 0 2px rgba(22, 212, 12, 0.5); border-radius:0; gap:10px; padding: 1vh 0; margin:1vh 0;">
+
+            <div style="display:flex; flex-direction: column; line-height: 1;">
+                <span class="info" id="area-info">0.00</span><span style="font-size:.7rem; text-align: left;">total sq. ft.</span>
+            </div>
+
+            <div style="display:flex; flex-direction: column; line-height: 1;">
+                <span style="font-size:.7rem; text-align: center;">cost only</span><span class="info" id="cost-info">0.00</span></div>
+
+            <div style="display:flex; flex-direction: column; line-height: 1;"><span class="info" id="rate-info">0.00</span><span style="font-size:.7rem; text-align: right;">per sq. ft.</span></div>
+        </div>
+        <div style="font-size: clamp(1rem,1.5vw,2.2rem); line-height: 1; padding:1vh 0;text-shadow: 0px 1px 2px #111;">Place Your Order</div>
+    
+    <span style=" color:#999; font-size:.7rem; text-align: center; padding:1vh 0 1vh 0;">Enter your name and email:</span>
+<div class="payarea" data-astro-reload class="hidden1" style="display:flex; flex-direction: column; gap:1vw; margin: 0vh auto; align-items: center;">
+
+
+<div style="display:flex; gap:1rem; margin-bottom: 0; align-items: center; padding:0 1vw; ">
+<input type="text" id="customer-name" placeholder="Your Name" required style="width:100%; border:1px solid green !important; border-radius: 5px;background:rgba(28, 23, 23, 0.8);" />
+<input type="email" id="customer-email" placeholder="your@email.com" required style="width:100%; border:1px solid green !important; border-radius: 5px;background:rgba(28, 23, 23, 0.8);" />
+</div>
+
+<input type="hidden" id="poopArea" name="poopArea" />
+
+<label for="tip" style="margin:1vh 0 0 0; font-size: .7rem; display: flex; align-items: center; gap:.5vw; color:#999;">Optional<input class="" type="number" id="tip" name="tip" min="0" step="1" placeholder="Tip your Pooper?" style="max-width: 140px; color:#ddd;"></label>
+    
+
+<button type="submit" id="checkout-button" class="stripe-button hidden">Order Now</button>
+
+</div>
+
+<span style="margin:1vh 0 0 0;"><a style=" color:#999;" href="/contact"  target="mapframe">Need Help? Contact Us</a></span>
+
+    </form>
+
+
+    
+
+    
+<script>
+        function isRunningStandalone() {
+        if (typeof window !== 'undefined') {
+            return window.matchMedia('(display-mode: standalone)').matches;
+        }
+        return false;
+    }
+    {!isRunningStandalone() ? (
+        ""
+      ) : (
+        ""
+      )} 
+</script>
+    
+
+<div id="bottomblocker"></div>
+
+    <div id="map" ></div>
+
+
+
+
+
+
+
+    <script>
+        let map;
+        let drawingManager;
+        let drawnShapes = [];
+        let marker = null;
+        let autocomplete;
+        let totalCost = 0; 
+        let numberOfDogs = 0;
+    
+        const BASE_RATES = [
+    { maxArea: 501, rate: 0.038 },
+    { maxArea: 550, rate: 0.037 },
+    { maxArea: 600, rate: 0.036 },
+    { maxArea: 650, rate: 0.035 },
+    { maxArea: 700, rate: 0.034 },
+    { maxArea: 750, rate: 0.033 },
+    { maxArea: 800, rate: 0.032 },
+    { maxArea: 850, rate: 0.031 },
+    { maxArea: 900, rate: 0.030 },
+    { maxArea: 950, rate: 0.029 },
+    { maxArea: 1000, rate: 0.028 },
+    { maxArea: 1050, rate: 0.027 },
+    { maxArea: 1100, rate: 0.026 },
+    { maxArea: 1150, rate: 0.025 },
+    { maxArea: 1200, rate: 0.024 },
+    { maxArea: 1250, rate: 0.023 },
+    { maxArea: 1300, rate: 0.022 },
+    { maxArea: 1350, rate: 0.021 },
+    { maxArea: 1400, rate: 0.020 },
+    { maxArea: 1450, rate: 0.019 },
+    { maxArea: 1500, rate: 0.018 },
+    { maxArea: 1550, rate: 0.0175 },
+    { maxArea: 1600, rate: 0.017 },
+    { maxArea: 1650, rate: 0.0165 },
+    { maxArea: 1700, rate: 0.016 },
+    { maxArea: 1750, rate: 0.0155 },
+    { maxArea: 1800, rate: 0.015 },
+    { maxArea: 1850, rate: 0.0145 },
+    { maxArea: 1900, rate: 0.014 },
+    { maxArea: 1950, rate: 0.0135 },
+    { maxArea: 2000, rate: 0.013 },
+    { maxArea: 2050, rate: 0.0125 },
+    { maxArea: 2100, rate: 0.012 },
+    { maxArea: 2150, rate: 0.0115 },
+    { maxArea: 2200, rate: 0.011 },
+    { maxArea: 2250, rate: 0.01075 },
+    { maxArea: 2300, rate: 0.0105 },
+    { maxArea: 2350, rate: 0.01025 },
+    { maxArea: 2400, rate: 0.010 },
+    { maxArea: 2450, rate: 0.00975 },
+    { maxArea: 2500, rate: 0.0095 },
+    { maxArea: 2550, rate: 0.00925 },
+    { maxArea: 2600, rate: 0.009 },
+    { maxArea: 2650, rate: 0.009 },
+    { maxArea: 2700, rate: 0.009 },
+    { maxArea: 2750, rate: 0.009 },
+    { maxArea: 2800, rate: 0.009 },
+    { maxArea: 2850, rate: 0.009 },
+    { maxArea: 2900, rate: 0.009 },
+    { maxArea: 2950, rate: 0.009 },
+    { maxArea: 3000, rate: 0.009 },
+    { maxArea: 3050, rate: 0.009 },
+    { maxArea: 3100, rate: 0.009 },
+    { maxArea: 3150, rate: 0.009 },
+    { maxArea: 3200, rate: 0.009 },
+    { maxArea: 3250, rate: 0.009 },
+    { maxArea: 3300, rate: 0.009 },
+    { maxArea: 3350, rate: 0.009 },
+    { maxArea: 3400, rate: 0.00875 },
+    { maxArea: 3450, rate: 0.0085 },
+    { maxArea: 3500, rate: 0.0085 },
+    { maxArea: 3550, rate: 0.00825 },
+    { maxArea: 3600, rate: 0.008 },
+    { maxArea: 3650, rate: 0.008 },
+    { maxArea: 3700, rate: 0.008 },
+    { maxArea: 3750, rate: 0.008 },
+    { maxArea: 3800, rate: 0.0078 },
+    { maxArea: 3850, rate: 0.0076 },
+    { maxArea: 3900, rate: 0.0074 },
+    { maxArea: 3950, rate: 0.0072 },
+    { maxArea: 4000, rate: 0.007 },
+    { maxArea: 4050, rate: 0.007 },
+    { maxArea: 4100, rate: 0.007 },
+    { maxArea: 4150, rate: 0.007 },
+    { maxArea: 4200, rate: 0.007 },
+    { maxArea: 4250, rate: 0.007 },
+    { maxArea: 4300, rate: 0.007 },
+    { maxArea: 4350, rate: 0.007 },
+    { maxArea: 4400, rate: 0.007 },
+    { maxArea: 4450, rate: 0.007 },
+    { maxArea: 4500, rate: 0.007 },
+    { maxArea: 4550, rate: 0.007 },
+    { maxArea: 4600, rate: 0.007 },
+    { maxArea: 4650, rate: 0.007 },
+    { maxArea: 4700, rate: 0.007 },
+    { maxArea: 4750, rate: 0.007 },
+    { maxArea: 4800, rate: 0.007 },
+    { maxArea: 4850, rate: 0.007 },
+    { maxArea: 4900, rate: 0.007 },
+    { maxArea: 4950, rate: 0.007 },
+    { maxArea: 5000, rate: 0.00725 },
+    { maxArea: 5050, rate: 0.0075 },
+    { maxArea: 5100, rate: 0.007 },
+    { maxArea: 5150, rate: 0.007 },
+    { maxArea: 5200, rate: 0.007 },
+    { maxArea: 5250, rate: 0.007 },
+    { maxArea: 5300, rate: 0.007 },
+    { maxArea: 5350, rate: 0.007 },
+    { maxArea: 5400, rate: 0.007 },
+    { maxArea: 5450, rate: 0.007 },
+    { maxArea: 5500, rate: 0.007 },
+    { maxArea: 5550, rate: 0.007 },
+    { maxArea: 5600, rate: 0.007 },
+    { maxArea: 5650, rate: 0.007 },
+    { maxArea: 5700, rate: 0.007 },
+    { maxArea: 5750, rate: 0.007 },
+    { maxArea: 5800, rate: 0.007 },
+    { maxArea: 5850, rate: 0.007 },
+    { maxArea: 5900, rate: 0.007 },
+    { maxArea: 5950, rate: 0.0065 },
+    { maxArea: 6000, rate: 0.006 },
+    { maxArea: Infinity, rate: 0.006 }
+];
+
+
+    
+
+
+
+
+const SQ_METERS_TO_SQ_FEET = 10.7639;
+const MIN_AREA_SQ_FEET = 500;
+const MAX_AREA_SQ_FEET = 10000;
+const MIN_PRICE = 25;
+const MAX_PRICE = 85;
+    </script>
+
+
+        <script>
+            function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 30.38, lng: -89.03 },
+                zoom: 12,
+                mapTypeId: 'hybrid',
+                fullscreenControl: false,
+                mapTypeControl: false,
+                streetViewControl: false,
+                scaleControl: false,
+                zoomControl: false,
+                tilt: 0
+            });
+    
+            drawingManager = new google.maps.drawing.DrawingManager({
+                drawingMode: null,
+                drawingControl: false,
+                polygonOptions: {
+                    editable: true,
+                    draggable: true,
+                    clickable: true
+                }
+            });
+            drawingManager.setMap(map);
+    
+            google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+                if (event.overlay instanceof google.maps.Polygon) {
+                    const shape = event.overlay;
+                    shape.setEditable(true);
+                    drawnShapes.push(shape);
+                    attachListeners(shape);
+                    updateQueryString();
+                    updateCalculations();
+                    toggleDrawingMode(); 
+                }
+            });
+    
+            document.getElementById('drawPolygonControl').addEventListener('click', toggleDrawingMode);
+            document.getElementById('clearButton').addEventListener('click', clearDrawnShapes);
+            document.getElementById('dogSelect').addEventListener('change', updateCalculations);
+            document.getElementById('frequencySelect').addEventListener('change', updateCalculations);
+    
+            const input = document.getElementById('address');
+            autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo('bounds', map);
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    console.error("Autocomplete's returned place contains no geometry");
+                    return;
+                }
+                map.setCenter(place.geometry.location);
+                map.setZoom(21);
+                if (marker) marker.setMap(null);
+                marker = new google.maps.Marker({
+                    position: place.geometry.location,
+                    map: map,
+                    title: place.formatted_address
+                });
+                document.getElementById('address').value = place.formatted_address;
+                updateQueryString();
+            });
+    
+            setTimeout(loadFromQueryString, 500);
+        }
+    
+        function attachListeners(shape) {
+            google.maps.event.addListener(shape.getPath(), 'set_at', updateCalculations);
+            google.maps.event.addListener(shape.getPath(), 'insert_at', updateCalculations);
+            google.maps.event.addListener(shape.getPath(), 'remove_at', updateCalculations);
+        }
+    
+        function toggleDrawingMode() {
+            const drawingMode = drawingManager.getDrawingMode();
+            const drawButton = document.getElementById('drawPolygonControl');
+            if (drawingMode) {
+                drawingManager.setDrawingMode(null);
+                document.getElementById('map').style.cursor = '';
+                drawButton.innerHTML = '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 320 512" height="20px" width="20px" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));"><path d="M16 144a144 144 0 1 1 288 0A144 144 0 1 1 16 144zM160 80c8.8 0 16-7.2 16-16s-7.2-16-16-16c-53 0-96 43-96 96c0 8.8 7.2 16 16 16s16-7.2 16-16c0-35.3 28.7-64 64-64zM128 480V317.1c10.4 1.9 21.1 2.9 32 2.9s21.6-1 32-2.9V480c0 17.7-14.3 32-32 32s-32-14.3-32-32z"></path></svg> &nbsp; Draw Yard';
+            } else {
+                drawingManager.setDrawingMode(google.maps.drawing.OverlayType.POLYGON);
+                document.getElementById('map').style.cursor = 'crosshair';
+                drawButton.textContent = 'Stop Drawing'; 
+            }
+        }
+    
+        function updateQueryString() {
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            const frequency = document.getElementById('frequencySelect').value;
+            const numDogs = document.getElementById('dogSelect').value;
+            const shapes = drawnShapes.map(shape => shape.getPath().getArray().map(latLng => ({ lat: latLng.lat(), lng: latLng.lng() })));
+            const markerPosition = marker ? marker.getPosition() : null;
+            const address = document.getElementById('address').value;
+    
+            const query = new URLSearchParams({
+                lat: center.lat(),
+                lng: center.lng(),
+                zoom: zoom,
+                frequency: frequency,
+                numDogs: numDogs,
+                shapes: JSON.stringify(shapes),
+                markerLat: markerPosition ? markerPosition.lat() : '',
+                markerLng: markerPosition ? markerPosition.lng() : '',
+                address: address
+            }).toString();
+    
+            window.history.replaceState({}, '', `${window.location.pathname}?${query}`);
+        }
+    
+        function loadFromQueryString() {
+            const params = new URLSearchParams(window.location.search);
+            const lat = parseFloat(params.get('lat'));
+            const lng = parseFloat(params.get('lng'));
+            const zoom = parseInt(params.get('zoom'), 10);
+            const shapesData = JSON.parse(params.get('shapes') || '[]');
+            const markerLat = parseFloat(params.get('markerLat'));
+            const markerLng = parseFloat(params.get('markerLng'));
+            const address = params.get('address') || '';
+    
+            if (!isNaN(lat) && !isNaN(lng) && !isNaN(zoom)) {
+                map.setCenter(new google.maps.LatLng(lat, lng));
+                map.setZoom(zoom);
+            }
+            document.getElementById('frequencySelect').value = params.get('frequency') || 1;
+            document.getElementById('dogSelect').value = params.get('numDogs') || '';
+            document.getElementById('address').value = address;
+    
+            if (!isNaN(markerLat) && !isNaN(markerLng)) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(markerLat, markerLng),
+                    map: map,
+                    title: address
+                });
+            }
+    
+            clearDrawnShapes();
+    
+            shapesData.forEach(shapeData => {
+                const shape = new google.maps.Polygon({
+                    paths: shapeData.map(point => new google.maps.LatLng(point.lat, point.lng)),
+                    editable: true,
+                    draggable: true,
+                    clickable: true
+                });
+                shape.setMap(map);
+                attachListeners(shape);
+                drawnShapes.push(shape);
+            });
+    
+            updateCalculations();
+        }
+            </script>
+    
+    <script>
+        function updateCalculations() {
+            let totalArea = 0;
+            drawnShapes.forEach(polygon => {
+                const path = polygon.getPath();
+                const area = google.maps.geometry.spherical.computeArea(path) * SQ_METERS_TO_SQ_FEET;
+                totalArea += area;
+            });
+    
+            document.getElementById('area-info').textContent = totalArea.toFixed(2);
+    
+            const dogCount = document.getElementById('dogSelect').value;
+            const frequency = document.getElementById('frequencySelect').value;
+            const showCalculations = dogCount && totalArea >= MIN_AREA_SQ_FEET && totalArea <= MAX_AREA_SQ_FEET;
+    
+            if (totalArea < MIN_AREA_SQ_FEET) {
+                // showAlert('The area is too small for our services.');
+            } else if (totalArea > MAX_AREA_SQ_FEET) {
+                showAlert('The area is too large for our services.');
+            } else {
+                const rate = calculateRate(totalArea);
+                const cost = calculateTotalCost(totalArea);
+                document.getElementById('cost-info').textContent = `$${cost.toFixed(2)}`;
+                document.getElementById('rate-info').textContent = `$${rate.toFixed(3)}`;
+                document.getElementById('poopArea').value = totalArea.toFixed(2);
+            }
+    
+            document.getElementById('area').classList.toggle('hidden', !showCalculations);
+            document.getElementById('checkout-button').classList.toggle('hidden', !showCalculations);
+    
+            const checkoutButton = document.getElementById('checkout-button');
+            checkoutButton.innerHTML  = `<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="30px" width="30px" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));"><path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5v1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3v-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"></path></svg> &nbsp; Pick Up The Poop! ($${totalCost.toFixed(2)})`;
+        }
+    
+        function calculateTotalCost(area) {
+            const numDogs = document.getElementById('dogSelect').value;
+            const rate = calculateRate(area);
+            const cost = area * rate * numDogs;
+            totalCost = cost;
+            return totalCost;
+        }
+    
+        function calculateRate(area) {
+            if (area < BASE_RATES[0].maxArea) {
+                return BASE_RATES[0].rate;
+            }
+            if (area >= BASE_RATES[BASE_RATES.length - 1].maxArea) {
+                return BASE_RATES[BASE_RATES.length - 1].rate;
+            }
+    
+            for (let i = 0; i < BASE_RATES.length - 1; i++) {
+                const lowerRate = BASE_RATES[i];
+                const upperRate = BASE_RATES[i + 1];
+                if (area >= lowerRate.maxArea && area < upperRate.maxArea) {
+                    const rateRange = upperRate.rate - lowerRate.rate;
+                    const areaRange = upperRate.maxArea - lowerRate.maxArea;
+                    const interpolatedRate = lowerRate.rate + (area - lowerRate.maxArea) * rateRange / areaRange;
+                    return interpolatedRate;
+                }
+            }
+    
+            return BASE_RATES[BASE_RATES.length - 1].rate;
+        }
+    
+        function enableEditingForShapes() {
+            drawnShapes.forEach(shape => {
+                shape.setEditable(true);
+                shape.setDraggable(true);
+                attachListeners(shape);
+            });
+            showAlert('Editing enabled for drawn shapes.');
+        }
+    
+        function clearDrawnShapes() {
+            drawnShapes.forEach(shape => shape.setMap(null));
+            drawnShapes = [];
+            updateQueryString();
+            updateCalculations();
+        }
+    
+        function showAlert(message) {
+            const alertElement = document.getElementById('alert');
+            alertElement.textContent = message;
+            alertElement.classList.remove('hidden');
+            setTimeout(() => {
+                alertElement.classList.add('hidden');
+            }, 3000);
+        }
+    
+        window.initMap = initMap;
+
+
+// function toggleCheckoutButton() {
+//     const button = document.getElementById('checkout-button');
+
+//     if (button.classList.contains('hidden')) {
+//         button.classList.remove('hidden');
+//         button.classList.add('active');
+//         button.innerHTML = '<span class="button-text">Cancel Order</span>';
+//     } else {
+//         button.classList.remove('active');
+//     }
+// }
+
+
+
+document.getElementById('checkout-button').addEventListener('click', function() {
+    
+    const checkoutButton = document.getElementById('checkout-button');
+
+    toggleCheckoutButton();
+    
+    checkoutButton.innerHTML  = `<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="30px" width="30px" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(2px 3px 2px rgba(8, 38, 27, 0.8));"><path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5v1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3v-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"></path></svg> &nbsp; Pick Up The Poop! ($${totalCost.toFixed(2)})`
+
+
+
+
+});
+
+
+
+</script>
+    
+    
+    
+    
+
+
+    
+
+
+<script>
+    
+        document.getElementById('checkout-button').addEventListener('click', async () => {
+    const currentUrl = window.location.href;
+    const email = document.getElementById('customer-email').value;
+    const dynamicAmount = totalCost;
+    const tipAmount = parseInt(document.getElementById('tip').value, 10) || 0;
+
+    // Get the selected option
+    const dogSelect = document.getElementById('dogSelect');
+    const selectedOption = dogSelect.options[dogSelect.selectedIndex];
+    
+    const customerName = document.getElementById('customer-name').value;
+
+    // Check if the selected option is not the default option
+    const numberOfDogs = selectedOption.value && selectedOption.value !== '' ? selectedOption.text : 'N/A';
+    
+    const poopArea = area; 
+
+    try {
+        const response = await fetch('/.netlify/functions/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                pageUrl: currentUrl,
+                customerEmail: email,
+                poopArea: document.getElementById('poopArea').value,
+                dynamicAmount: parseFloat(document.getElementById('cost-info').innerText.replace('$', '')),
+                cost: totalCost.toFixed(2),
+                customerName: customerName,
+                numberOfDogs: numberOfDogs,
+                serviceFrequency: parseInt(document.getElementById('frequencySelect').value),
+                tipAmount: tipAmount,
+            })
+        });
+
+        const session = await response.json();
+
+        if (response.ok) {
+            const stripe = Stripe('pk_live_51O3tWYKHJvXfkmw3F98KZ7I7367B5T8zSl7qIWhmDzP5o4XR4hRlCWdsAdiLDaLZ3Kfal2jTTitRIDC2azwyuwgl00T2NoCR5m');
+            const result = await stripe.redirectToCheckout({ sessionId: session.id });
+            if (result.error) {
+                console.error(result.error.message);
+            }
+        } else {
+            console.error(session.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+
+
+
+    </script>
+    
+</body>
+</html>

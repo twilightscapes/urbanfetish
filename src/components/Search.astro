@@ -2,8 +2,16 @@
 // Heavy inspiration taken from Astro Starlight -> https://github.com/withastro/starlight/blob/main/packages/starlight/components/Search.astro
 
 import "@pagefind/default-ui/css/ui.css";
-import { getEntry } from 'astro:content';
-const language = await getEntry('language', 'index');
+import { getEntry } from "astro:content";
+
+// Add error handling and default values
+let closeText = "Close";
+try {
+	const language = await getEntry("language", "index");
+	closeText = language?.data?.close || "Close";
+} catch (error) {
+	console.warn("Language settings not found, using defaults");
+}
 ---
 
 <site-search class="" id="search">
@@ -34,12 +42,14 @@ const language = await getEntry('language', 'index');
 		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-bgColor shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-md"
 		style="background:var(--header-bg); background:#222; opacity:.9; color:#fff;"
 	>
-		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6" >
+		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6">
 			<button
 				class="ms-auto cursor-pointer rounded-md p-2 font-semibold"
 				style="color:#fff"
-				data-close-modal>{language.data.close}</button
+				data-close-modal
 			>
+				{closeText}
+			</button>
 			{
 				import.meta.env.DEV ? (
 					<div class="mx-auto text-center" style="background:var(--header-bg); color:#fff;">
@@ -60,13 +70,13 @@ const language = await getEntry('language', 'index');
 
 <script>
 	class SiteSearch extends HTMLElement {
-		private closeBtn: HTMLButtonElement;
-		private dialog: HTMLDialogElement;
-		private dialogFrame: HTMLDivElement;
-		private openBtn: HTMLButtonElement;
+		closeBtn;
+		dialog;
+		dialogFrame;
+		openBtn;
 
 		closeModal = () => {
-			if (this.dialog.open) {
+			if (this.dialog && this.dialog.open) {
 				this.dialog.close();
 				window.removeEventListener("click", this.onWindowClick);
 			}
@@ -79,36 +89,43 @@ const language = await getEntry('language', 'index');
 			if (
 				isLink ||
 				(document.body.contains(event.target as Node) &&
-					!this.dialogFrame.contains(event.target as Node))
+					!(this.dialogFrame && this.dialogFrame.contains(event.target as Node)))
 			)
 				this.closeModal();
 		};
 
 		onWindowKeydown = (e: KeyboardEvent) => {
 			// check if it's the / key
-			if (e.key === "/" && !this.dialog.open) {
+			if (e.key === "/" && this.dialog && !this.dialog.open) {
 				this.openModal();
 				e.preventDefault();
 			}
 		};
 
 		openModal = (event?: MouseEvent) => {
-			this.dialog.showModal();
-			this.querySelector("input")?.focus();
-			event?.stopPropagation();
-			window.addEventListener("click", this.onWindowClick);
+			if (this.dialog) {
+				this.dialog.showModal();
+				this.querySelector("input")?.focus();
+				event?.stopPropagation?.();
+				window.addEventListener("click", this.onWindowClick);
+			}
 		};
 
 		constructor() {
 			super();
-			this.openBtn = this.querySelector<HTMLButtonElement>("button[data-open-modal]")!;
-			this.closeBtn = this.querySelector<HTMLButtonElement>("button[data-close-modal]")!;
-			this.dialog = this.querySelector("dialog")!;
-			this.dialogFrame = this.querySelector(".dialog-frame")!;
+			this.openBtn = this.querySelector("button[data-open-modal]");
+			this.closeBtn = this.querySelector("button[data-close-modal]");
+			this.dialog = this.querySelector("dialog");
+			this.dialogFrame = this.querySelector(".dialog-frame");
 
-			this.openBtn.addEventListener("click", this.openModal);
-			this.openBtn.disabled = false;
-			this.closeBtn.addEventListener("click", this.closeModal);
+			if (this.openBtn) {
+				this.openBtn.addEventListener("click", ((event: MouseEvent) =>
+					this.openModal(event)) as EventListener);
+				(this.openBtn as HTMLButtonElement).disabled = false;
+			}
+			if (this.closeBtn) {
+				this.closeBtn.addEventListener("click", this.closeModal);
+			}
 		}
 
 		connectedCallback() {
@@ -147,7 +164,7 @@ const language = await getEntry('language', 'index');
 		width: calc(60px * var(--pagefind-ui-scale));
 		padding: 0;
 		background-color: #222;
-		color:#fff;
+		color: #fff;
 		overflow: hidden;
 	}
 	#pirate__search .pagefind-ui__search-clear:focus {
@@ -205,6 +222,6 @@ const language = await getEntry('language', 'index');
 		--pagefind-ui-background: theme("colors.bgColor");
 		--pagefind-ui-border: theme("colors.zinc.400");
 		--pagefind-ui-border-width: 1px;
-		color:#fff;
+		color: #fff;
 	}
 </style>

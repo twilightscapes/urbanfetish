@@ -1,0 +1,850 @@
+---
+import PostPreview from "@/components/blog/PostPreview.astro";
+import { getAllPosts, sortMDByDate } from "@/data/post";
+import Faqs from "@/components/Faqs.astro";
+import Testimonials from '@/components/Testimonials.astro';
+import { getEntry, getCollection } from 'astro:content';
+import CTAs from '@/components/CTAs.astro';
+import App from "@/components/App.astro";
+import InfoBlock from "@/components/InfoBlock.astro";
+import Resume from '@/components/Resume.astro';
+import YouForm from '@/components/YouForm.astro';
+import YouTubeFeed from "@/components/YouTubeFeed.astro";
+import ViewModeSwitch from "@/components/ViewModeSwitch.jsx";
+import PhotoSection from "@/components/PhotoGallery.astro";
+import ContactForm from "@/components/ContactForm.astro";
+import { renderMarkdown } from "../utils/utils";
+
+// Simple markdown-to-HTML converter for inline content - now using enhanced marked plugin
+function processMarkdown(text: string): string {
+  if (!text) return '';
+  
+  // Use the enhanced markdown renderer from utils which includes proper line break handling
+  return renderMarkdown(text);
+}
+
+interface Props {
+  sections: any[];
+  pageContent?: string;
+}
+
+const { sections, pageContent } = Astro.props;
+
+// Debug logging
+// console.log('DynamicPageRenderer: sections received:', sections);
+// console.log('DynamicPageRenderer: pageContent received:', pageContent);
+// console.log('DynamicPageRenderer: sections length:', sections?.length);
+
+// Get necessary data for section rendering
+const siteSettings = await getEntry('siteSettings', 'main');
+const { defaultView, MAX_POSTS } = siteSettings?.data ?? { defaultView: 'list', MAX_POSTS: 5 };
+const resumeSettings = await getEntry('resumeSettings', 'index');
+
+// Get posts for posts sections
+const allPosts = await getAllPosts();
+const sortedPosts = sortMDByDate(allPosts);
+
+// Get testimonials for testimonials sections
+const allTestimonials = await getCollection('testimonials');
+const sortedTestimonials = allTestimonials.sort((a, b) => {
+  return (a.data.order || 999) - (b.data.order || 999);
+});
+
+// Get FAQs for FAQ sections
+const allFaqs = await getCollection('faqs');
+const sortedFaqs = allFaqs.sort((a, b) => {
+  return (a.data.order || 999) - (b.data.order || 999);
+});
+
+// Get YouTube feeds for YouTube sections
+const allYouTubeFeeds = await getCollection('youtubeFeeds');
+
+// Get section data for CTAs and content blocks - need to load these for sections that reference them
+const sectionData = await Promise.all(
+  sections.map(async (section, index) => {
+    if (section.type === 'ctas' && section.cta) {
+      try {
+        return { type: 'cta', data: await getEntry('CTAs', section.cta) };
+      } catch (error) {
+        console.log(`CTA not found: ${section.cta}`);
+        return { type: 'cta', data: null };
+      }
+    } else if ((section.type === 'content' || section.type === 'contentblock') && section.contentBlockSlug) {
+      try {
+        return { type: 'content', data: await getEntry('pitches', section.contentBlockSlug) };
+      } catch (error) {
+        console.log(`Content block not found: ${section.contentBlockSlug}`);
+        return { type: 'content', data: null };
+      }
+    }
+    return { type: 'none', data: null };
+  })
+);
+
+// Utility function to get section width class
+function getSectionWidthClass(width?: string) {
+  switch (width) {
+    case 'narrow':
+      return 'max-w-4xl mx-auto px-4';
+    case 'wide':
+      return 'max-w-full px-2';
+    case 'full':
+      return 'w-full px-0';
+    default:
+      return 'w-full px-0';
+  }
+}
+---
+
+<div class="template-page">
+
+  {pageContent && (
+    <section class={getSectionWidthClass('normal')}>
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <Fragment set:html={renderMarkdown(pageContent)} />
+      </div>
+    </section>
+  )}
+
+
+  {sections.map((section, index) => {
+    const hideCollapseButton = section.hideCollapseButton ?? false;
+    const customTitle = section.customTitle || section.title;
+    const customDescription = section.customDescription || section.description;
+    const showTitle = section.showTitle ?? true;
+    
+    return (
+      <div class={getSectionWidthClass(section.sectionWidth)} style="margin-bottom: 0rem;">
+        {(() => {
+
+          switch (section.type) {
+            case 'contentblock':
+            case 'pitch':
+              const pitchTitle = customTitle || "Content Block";
+              const pitchDescription = customDescription || "";
+              const pitchShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`pitch-section-${index}`}>
+                  {((pitchShowTitle && (pitchTitle || pitchDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {pitchShowTitle && pitchTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${pitchDescription ? '1rem' : '0'};`}>
+                            {pitchTitle}
+                          </h2>
+                        )}
+                        {pitchShowTitle && pitchDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {pitchDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`pitch-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer; border:1px solid red !important"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content">
+                    {section.contentBlockSlug && <InfoBlock sectionId={section.contentBlockSlug} />}
+                  </div>
+                </div>
+              );
+
+            case 'youform':
+              const youformTitle = customTitle || "YouTube Channel Form";
+              const youformDescription = customDescription || "";
+              const youformShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`youform-section-${index}`}>
+                  {((youformShowTitle && (youformTitle || youformDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {youformShowTitle && youformTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${youformDescription ? '1rem' : '0'};`}>
+                            {youformTitle}
+                          </h2>
+                        )}
+                        {youformShowTitle && youformDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {youformDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`youform-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content">
+                    <YouForm />
+                  </div>
+                </div>
+              );
+
+            case 'form':
+              const formTitle = customTitle || "Contact Form";
+              const formDescription = customDescription || "";
+              const formShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`form-section-${index}`}>
+                  {((formShowTitle && (formTitle || formDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {formShowTitle && formTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${formDescription ? '1rem' : '0'};`}>
+                            {formTitle}
+                          </h2>
+                        )}
+                        {formShowTitle && formDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {formDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`form-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content">
+                    <ContactForm 
+                      showTitle={false}
+                      customTitle={formTitle}
+                      customDescription={formDescription}
+                      formName="homepage-contact"
+                    />
+                  </div>
+                </div>
+              );
+
+            case 'posts':
+              const postsTitle = customTitle || "Latest Posts";
+              const postsDescription = customDescription || "";
+              const postsShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`posts-section-${index}`}>
+                  {((postsShowTitle && (postsTitle || postsDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {postsShowTitle && postsTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${postsDescription ? '1rem' : '0'};`}>
+                            {postsTitle}
+                          </h2>
+                        )}
+                        {postsShowTitle && postsDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {postsDescription}
+                          </p>
+                        )}
+                      </div>
+                      <div class="section-controls" style="display: flex; align-items: center;">
+                        {/* @ts-ignore - client:load is valid Astro directive */}
+                        <ViewModeSwitch 
+                          sectionId={`posts-section-${index}`}
+                          defaultView={defaultView}
+                          client:load
+                        />
+                        {!hideCollapseButton && (
+                          <button 
+                            class="section-collapse-toggle" 
+                            data-section={`posts-section-${index}`}
+                            style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                            title="Collapse/Expand Section">
+                            ▼
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div style="padding:0 3%" class="section-content grid-container">
+                    {sortedPosts.slice(0, MAX_POSTS).map((post) => (
+                      <PostPreview post={post} withDesc />
+                    ))}
+                  </div>
+                </div>
+          //         <div class="load-more-container font" style="grid-column: 1 / -1; text-align: center; padding: 0; width:80vw; max-width:500px; margin:0 auto; color:white;">
+          // <a class="button" onmouseover="this.style.background='#333'" onmouseout="this.style.background='#222'" href="./watch" style="display:grid; place-self:center; margin:0 auto 2rem auto; border: 2px solid #000;
+          //       padding: 12px 24px;  background:#222;">Watch Videos: By Category</a>
+          // </div>
+              );
+
+            case 'testimonials':
+              const testimonialsTitle = customTitle || "What People Say";
+              const testimonialsDescription = customDescription || "";
+              const testimonialsShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`testimonials-section-${index}`}>
+                  {((testimonialsShowTitle && (testimonialsTitle || testimonialsDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {testimonialsShowTitle && testimonialsTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${testimonialsDescription ? '1rem' : '0'};`}>
+                            {testimonialsTitle}
+                          </h2>
+                        )}
+                        {testimonialsShowTitle && testimonialsDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {testimonialsDescription}
+                          </p>
+                        )}
+                      </div>
+                      <div class="section-controls" style="display: flex; align-items: center;">
+                        {/* @ts-ignore - client:load is valid Astro directive */}
+                        <ViewModeSwitch 
+                          sectionId={`testimonials-section-${index}`}
+                          defaultView="grid"
+                          client:load
+                        />
+                        {!hideCollapseButton && (
+                          <button 
+                            class="section-collapse-toggle" 
+                            data-section={`testimonials-section-${index}`}
+                            style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                            title="Collapse/Expand Section">
+                            ▼
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div class="section-content" style="padding:0;">
+                    <div class="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }} />
+                    <Testimonials testimonials={sortedTestimonials} />
+                  </div>
+                </div>
+              );
+
+            case 'faqs':
+              const faqsTitle = customTitle || "Frequently Asked Questions";
+              const faqsDescription = customDescription || "";
+              const faqsShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`faqs-section-${index}`}>
+                  {((faqsShowTitle && (faqsTitle || faqsDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {faqsShowTitle && faqsTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${faqsDescription ? '1rem' : '0'};`}>
+                            {faqsTitle}
+                          </h2>
+                        )}
+                        {faqsShowTitle && faqsDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {faqsDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`faqs-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content" style="padding:0;">
+                    <Faqs faqs={sortedFaqs} />
+                  </div>
+                </div>
+              );
+
+            case 'app':
+              const appTitle = customTitle || "Map & Video";
+              const appDescription = customDescription || "";
+              const appShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`app-section-${index}`}>
+                  {((appShowTitle && (appTitle || appDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {appShowTitle && appTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${appDescription ? '1rem' : '0'};`}>
+                            {appTitle}
+                          </h2>
+                        )}
+                        {appShowTitle && appDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {appDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`app-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content">
+                    <App />
+                  </div>
+                </div>
+              );
+
+            case 'photos':
+              const galleryTitle = customTitle || "Photo Gallery";
+              const galleryDescription = customDescription || "";
+              const galleryShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`gallery-section-${index}`}>
+                  {((galleryShowTitle && (galleryTitle || galleryDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {galleryShowTitle && galleryTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${galleryDescription ? '1rem' : '0'};`}>
+                            {galleryTitle}
+                          </h2>
+                        )}
+                        {galleryShowTitle && galleryDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {galleryDescription}
+                          </p>
+                        )}
+                      </div>
+                      <div class="section-controls" style="display: flex; align-items: center;">
+                        {/* @ts-ignore - client:load is valid Astro directive */}
+                        <ViewModeSwitch 
+                          sectionId={`gallery-section-${index}`}
+                          defaultView={defaultView}
+                          client:load
+                        />
+                        {!hideCollapseButton && (
+                          <button 
+                            class="section-collapse-toggle" 
+                            data-section={`gallery-section-${index}`}
+                            style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                            title="Collapse/Expand Section">
+                            ▼
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div class="section-content" style="position:relative">
+                    <PhotoSection sectionId={`gallery-section-${index}`} />
+                  </div>
+                </div>
+              );
+
+            case 'resume':
+              const resumeTitle = customTitle || "Resume";
+              const resumeDescription = customDescription || "";
+              const resumeShowTitle = showTitle;
+              
+              return (
+                <div data-section-id="resume-section">
+                  {((resumeShowTitle && (resumeTitle || resumeDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {resumeShowTitle && resumeTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${resumeDescription ? '1rem' : '0'};`}>
+                            {resumeTitle}
+                          </h2>
+                        )}
+                        {resumeShowTitle && resumeDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {resumeDescription}
+                          </p>
+                        )}
+                      </div>
+                      <div class="section-controls" style="display: flex; align-items: center;">
+                        {!hideCollapseButton && (
+                          <button 
+                            class="section-collapse-toggle" 
+                            data-section="resume-section"
+                            style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                            title="Collapse/Expand Section">
+                            ▼
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div class="section-content">
+                    <Resume hideTitle={true} />
+                  </div>
+                </div>
+              );
+
+            case 'youtubefeeds':
+              const currentFeedConfig = section.feedConfig;
+              const currentYoutubeFeed = allYouTubeFeeds.find(feed => feed.id === currentFeedConfig);
+              
+              if (!currentYoutubeFeed) {
+                return (
+                  <div data-section-id={`youtube-feed-section-${index}`}>
+                    <div class="section-content">
+                      <p>No YouTube feed configured for section {index} (looking for: {currentFeedConfig})</p>
+                    </div>
+                  </div>
+                );
+              }
+              
+              const youtubeFeedTitle = customTitle || currentYoutubeFeed.data.title || "YouTube Videos";
+              const youtubeFeedDescription = customDescription || currentYoutubeFeed.data.description || "";
+              const youtubeFeedShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`youtube-feed-section-${index}`}>
+                  {((youtubeFeedShowTitle && (youtubeFeedTitle || youtubeFeedDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {youtubeFeedShowTitle && youtubeFeedTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${youtubeFeedDescription ? '1rem' : '0'};`}>
+                            {youtubeFeedTitle}
+                          </h2>
+                        )}
+                        {youtubeFeedShowTitle && youtubeFeedDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {youtubeFeedDescription}
+                          </p>
+                        )}
+                      </div>
+                      <div class="section-controls" style="display: flex; align-items: center;">
+                        {/* @ts-ignore - client:load is valid Astro directive */}
+                        <ViewModeSwitch 
+                          sectionId={`youtube-feed-section-${index}`}
+                          defaultView="grid"
+                          client:load
+                        />
+                        {!hideCollapseButton && (
+                          <button 
+                            class="section-collapse-toggle" 
+                            data-section={`youtube-feed-section-${index}`}
+                            style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                            title="Collapse/Expand Section">
+                            ▼
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <YouTubeFeed
+                    channelIds={currentYoutubeFeed.data.channelIds?.join(',') || ''}
+                    maxVideos={currentYoutubeFeed.data.maxVideos}
+                    includeSitePosts={currentYoutubeFeed.data.includeSitePosts}
+                    maxSitePosts={currentYoutubeFeed.data.maxSitePosts}
+                    sectionId={`youtube-feed-section-${index}`}
+                    showSectionTitle={false}
+                    showViewModeSwitch={false}
+                  />
+                  
+                </div>
+              );
+
+            case 'ctas':
+              // Get the CTA from the pre-loaded section data
+              const ctaData = sectionData[index];
+              const cta = ctaData?.type === 'cta' ? ctaData.data : null;
+              if (!cta) {
+                return null;
+              }
+              
+              const ctaTitle = customTitle || "Call to Action";
+              const ctaDescription = customDescription || "";
+              const ctaShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`cta-section-${index}`}>
+                  {((ctaShowTitle && (ctaTitle || ctaDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
+                      <div style="flex: 1;">
+                        {ctaShowTitle && ctaTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${ctaDescription ? '1rem' : '0'};`}>
+                            {ctaTitle}
+                          </h2>
+                        )}
+                        {ctaShowTitle && ctaDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {ctaDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`cta-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content">
+                    <CTAs 
+                      title={cta.data?.title || ''}
+                      description={cta.data?.description || ''}
+                      ctaUrl={cta.data?.ctaUrl || '/'}
+                      showFancy={cta.data?.showFancy}
+                      showTransition={cta.data?.showTransition}
+                    />
+                  </div>
+                </div>
+              );
+
+            case 'content':
+              // Handle content blocks by slug
+              const contentTitle = customTitle || section.title || "Content";
+              const contentDescription = customDescription || section.description || "";
+              const contentShowTitle = showTitle;
+              
+              return (
+                <div data-section-id={`content-section-${index}`}>
+                  {((contentShowTitle && (contentTitle || contentDescription)) || !hideCollapseButton) && (
+                    <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 20px 0 3%;">
+                      <div style="flex: 1;">
+                        {contentShowTitle && contentTitle && (
+                          <h2 class="posties glow text-[clamp(1.4rem,1.9vw,4rem)] shadow-text theme-accent" style={`margin: 0; margin-bottom: ${contentDescription ? '1rem' : '0'};`}>
+                            {contentTitle}
+                          </h2>
+                        )}
+                        {contentShowTitle && contentDescription && (
+                          <p style="font-size: 1.2rem; color: var(--theme-text); opacity: 0.8; margin: 0;">
+                            {contentDescription}
+                          </p>
+                        )}
+                      </div>
+                      {!hideCollapseButton && (
+                        <button 
+                          class="section-collapse-toggle" 
+                          data-section={`content-section-${index}`}
+                          style="background: var(--theme-surface, #333); border: none; border-radius: 4px; color: white; padding: 6px 12px; font-size: 18px; cursor: pointer;"
+                          title="Collapse/Expand Section">
+                          ▼
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div class="section-content">
+                    {section.contentBlockSlug ? (
+                      <InfoBlock sectionId={section.contentBlockSlug} />
+                    ) : section.content ? (
+                      // <div class="prose prose-lg dark:prose-invert max-w-none">
+                        <Fragment set:html={processMarkdown(section.content)} />
+                      // </div>
+                    ) : (
+                      // <div class="prose prose-lg dark:prose-invert max-w-none">
+                        <p>No content available for this section.</p>
+                      // </div>
+                    )}
+                  </div>
+                </div>
+              );
+
+            default:
+              return null;
+          }
+        })()}
+      </div>
+    );
+  })}
+</div>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleButtons = document.querySelectorAll('.section-collapse-toggle');
+    
+    toggleButtons.forEach(button => {
+      const sectionId = button.getAttribute('data-section');
+      if (!sectionId) return;
+      
+
+      let sectionContent = null;
+      
+      if (sectionId.includes('youtube-feed-section')) {
+        const youtubeContent = document.querySelector(`[data-section-id="${sectionId}"] .youtube-content`);
+        const youtubeLoading = document.querySelector(`[data-section-id="${sectionId}"] .youtube-loading`);
+        
+        if (youtubeContent) {
+          sectionContent = youtubeContent;
+          if (youtubeLoading) {
+            youtubeLoading.style.display = 'none';
+          }
+        }
+      } else {
+        sectionContent = document.querySelector(`[data-section-id="${sectionId}"] .section-content`);
+      }
+      
+      if (!sectionContent) {
+        return;
+      }
+      
+
+      const hasDisplayOverride = sectionId.includes('posts-section') || 
+                                 sectionId.includes('testimonials-section') || 
+                                 sectionId.includes('gallery-section') ||
+                                 sectionId.includes('youtube-feed-section');
+      
+
+      const storageKey = `section-${sectionId}-collapsed`;
+      const isCollapsed = localStorage.getItem(storageKey) === 'true';
+      
+
+      if (isCollapsed) {
+        if (hasDisplayOverride) {
+          sectionContent.style.visibility = 'hidden';
+          sectionContent.style.height = '0';
+          sectionContent.style.overflow = 'hidden';
+        } else {
+          sectionContent.style.display = 'none';
+        }
+        
+
+        if (sectionId.includes('youtube-feed-section')) {
+          const youtubeLoading = document.querySelector(`[data-section-id="${sectionId}"] .youtube-loading`);
+          if (youtubeLoading) {
+            youtubeLoading.style.display = 'none';
+          }
+        }
+        
+        button.textContent = '▲';
+        button.setAttribute('title', 'Expand Section');
+      } else {
+        if (hasDisplayOverride) {
+          sectionContent.style.visibility = 'visible';
+          sectionContent.style.height = 'auto';
+          sectionContent.style.overflow = '';
+        } else {
+          sectionContent.style.display = 'block';
+        }
+        
+
+        if (sectionId.includes('youtube-feed-section')) {
+          const youtubeLoading = document.querySelector(`[data-section-id="${sectionId}"] .youtube-loading`);
+          if (youtubeLoading && sectionContent.style.display === 'none') {
+            youtubeLoading.style.display = 'block';
+          }
+        }
+        
+        button.textContent = '▼';
+        button.setAttribute('title', 'Collapse Section');
+      }
+      
+
+      button.addEventListener('click', () => {
+        const isCurrentlyCollapsed = hasDisplayOverride 
+          ? sectionContent.style.visibility === 'hidden'
+          : sectionContent.style.display === 'none';
+        
+        if (isCurrentlyCollapsed) {
+          if (hasDisplayOverride) {
+            sectionContent.style.visibility = 'visible';
+            sectionContent.style.height = 'auto';
+            sectionContent.style.overflow = '';
+          } else {
+            sectionContent.style.display = 'block';
+          }
+          
+
+          if (sectionId.includes('youtube-feed-section')) {
+            const youtubeLoading = document.querySelector(`[data-section-id="${sectionId}"] .youtube-loading`);
+            if (youtubeLoading && sectionContent.style.display === 'none') {
+              youtubeLoading.style.display = 'block';
+            }
+          }
+          
+          button.textContent = '▼';
+          button.setAttribute('title', 'Collapse Section');
+          localStorage.setItem(storageKey, 'false');
+        } else {
+          if (hasDisplayOverride) {
+            sectionContent.style.visibility = 'hidden';
+            sectionContent.style.height = '0';
+            sectionContent.style.overflow = 'hidden';
+          } else {
+            sectionContent.style.display = 'none';
+          }
+          
+
+          if (sectionId.includes('youtube-feed-section')) {
+            const youtubeLoading = document.querySelector(`[data-section-id="${sectionId}"] .youtube-loading`);
+            if (youtubeLoading) {
+              youtubeLoading.style.display = 'none';
+            }
+          }
+          
+          button.textContent = '▲';
+          button.setAttribute('title', 'Expand Section');
+          localStorage.setItem(storageKey, 'true');
+        }
+      });
+    });
+
+
+    const observer = new MutationObserver((mutations) => {
+      // Observer is kept for potential future use but no longer triggers setupHorizontalScrolling
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target;
+          if (target.classList.contains('section-content')) {
+            const sectionId = target.closest('[data-section-id]')?.getAttribute('data-section-id') || 'unknown';
+          }
+        }
+      });
+    });
+
+    // Also listen for the ViewModeSwitch custom event
+    window.addEventListener('viewModeChanged', (event) => {
+      // ViewModeSwitch now handles its own scroll setup
+    });
+
+    // Observe all section content elements for class changes
+    const sectionContents = document.querySelectorAll('.section-content');
+    sectionContents.forEach(section => {
+      observer.observe(section, { attributes: true, attributeFilter: ['class'] });
+    });
+  });
+</script>
+
+<style>
+  .template-page {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 2vh 0;
+  }
+  
+  .template-section {
+    min-height: fit-content;
+  }
+  
+  .section-header {
+    width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    /* padding: 0 5% !important; */
+  }
+</style>

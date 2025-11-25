@@ -2,9 +2,10 @@
 import PageLayout from "@/layouts/Base.astro";
 import { getAllPosts, getUniqueTagsWithCount } from "@/data/post";
 import GoBack from "@/components/GoBack.astro";
+import ViewModeSwitch from "@/components/ViewModeSwitch.jsx";
 import { getEntry } from 'astro:content';
 const siteSettings = await getEntry('siteSettings', 'main');
-const { defaultView } = siteSettings.data;
+const defaultView = siteSettings?.data?.defaultView ?? 'default';
 const language = await getEntry('language', 'index');
 
 const allPosts = await getAllPosts();
@@ -16,16 +17,22 @@ const meta = {
 };
 ---
 
-<PageLayout meta={meta}>
+<PageLayout meta={meta} themeMode="user">
 	<GoBack  />
 	<span class="prose prose-lg dark:prose-invert">
-	<div class="" style="padding:0 4%;">
-	<h1 class="title my-4">{language.data.tags}</h1>
-</div>
-	<ul class="" style="padding:0 1%; margin:0 auto; width: 99%">
-
-		<div class={`contentpanel ${defaultView === 'swipe' ? 'slider panels horizontal-slider' : 'grid-container'}`} >
-			<!-- <div class="sliderSpacer" style={{ height: "", paddingTop: "", display: "" }} /> -->
+		<div data-section-id="tags-page">
+			<div class="tags-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 4%;">
+				<h1 class="title my-4" style="margin: 0; flex: 1;">{language?.data?.tags}</h1>
+				<ViewModeSwitch 
+					sectionId="tags-page" 
+					defaultView={defaultView} 
+					client:load
+				/>
+			</div>
+			
+			<ul class="" style="padding:0 1%; margin:0 auto; width: 99%">
+				<div class={`contentpanel section-content ${defaultView === 'swipe' ? 'slider' : 'grid-container'}`} >
+				<div class="sliderSpacer"></div>
 		
 		{
 			allTags.map(([tag, val]) => (
@@ -48,8 +55,8 @@ const meta = {
 
 
 
-
-
-	</ul>
-
+				</div>
+			</ul>
+		</div>
+	</span>
 </PageLayout>

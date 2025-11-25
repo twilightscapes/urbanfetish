@@ -1,49 +1,118 @@
 ---
 import ThemeToggle from "../ThemeToggle.astro";
 import Search from "../Search.astro";
-import Switch from "@/components/Switch.jsx";
-import BlueCheck from "@/components/BlueCheck.astro";
-import { getEntry } from 'astro:content';
-import { getMenuLinks, siteConfig } from "@/site-config";
+import { getEntry, getCollection } from 'astro:content';
+import { siteConfig } from "@/site-config";
 import GoBack from "@/components/GoBack.astro";
-const siteSettings = await getEntry('siteSettings', 'main');
-const { showHeader, showLogo, showTheme, showSearch, showSwitch, showHome, logoImage, defaultView, showCheck } = siteSettings.data;
-const language = await getEntry('language', 'index');
 
-const styleAppearance = await getEntry('styleapps', 'index');
-const { backgroundImage } = styleAppearance.data;
-const { backgroundVideo } = styleAppearance.data;
+// Add default values
+let showHeader = true;
+let showLogo = true;
+let showTheme = true;
+let showSearch = true;
+let showSwitch = true;
+let showHome = true;
+let logoImage = '';
+let defaultView = 'grid';
+let showCheck = false;
+let backgroundImage = '';
+let backgroundVideo = '';
+let topText = 'Top';
+// Get menu items and sort them
+let sortedMenuLinks: Array<{title: string, path: string}> = [];
+try {
+  const menuItems = await getCollection('menuItems');
+  if (menuItems) {
+    sortedMenuLinks = menuItems
+      .sort((a, b) => (a.data.order || 0) - (b.data.order || 0))
+      .map(item => ({
+        title: item.data.title || '',
+        path: item.data.path || '/',
+      }));
+  }
+} catch (error) {
+  console.error('Error loading menu items:', error);
+}
+
+const siteSettings = await getEntry('siteSettings', 'main');
+try {
+  const language = await getEntry('language', 'index');
+  const styleapps = await getEntry('styleapps', 'index');
+
+  if (siteSettings?.data) {
+    ({ 
+      showHeader = true, 
+      showLogo = true, 
+      showTheme = true, 
+      showSearch = true, 
+      showSwitch = true, 
+      showHome = true, 
+      logoImage = '', 
+      defaultView = 'grid', 
+    } = siteSettings.data);
+  }
+
+  if (styleapps?.data) {
+    backgroundImage = styleapps.data.backgroundImage ?? '';
+    backgroundVideo = styleapps.data.backgroundVideo ?? '';
+  }
+
+  if (language?.data) {
+    topText = language.data.top ?? 'Top';
+  }
+} catch (error) {
+  console.error('Error loading content:', error);
+}
 
 const url = new URL(Astro.request.url);
-const menuLinks = await getMenuLinks();
+
+
 ---
 
 
+<style>
+
+  @media all and (display-mode: browser) {
+        .pwaonly {
+          position:absolute;
+          left:-9999px;
+          visibility: hidden;
+        }
+    }
+    
+@media all and (display-mode: standalone) {
+        .pwaonly {
+          display:flex; flex-direction: row;
+        }
+    }
+
+.pwa-button{display:flex; justify-content: center;}
+</style>
 
 
 {showHeader && (
   <div id="menu" class="menu header" style="min-height:60px; padding: 2px 0 2px 0;">
     {showLogo && (
       <a href="/" aria-current={url.pathname === "/" ? "page" : false} class="relative px-1">
-        {logoImage ? (
+        {siteSettings?.data?.logoImage ? (
           <img 
-            src={logoImage}
+            src={siteSettings.data.logoImage}
             alt="Site Logo"
             class="headerlogo"
             loading="eager"
             fetchpriority="high"
             width="auto"
             height="auto"
-            style="max-height:60px;"
+            style="max-height:60px; min-width: 50px;"
           />
         ) : (
-          <span class="text-lg font-bold logotext" style="margin-left:10px;">{siteConfig.author}</span>
+          <span class="text-lg font-bold logotext" style="margin-left:10px;">Dog Poopers</span>
         )}
       </a>
     )}
 
     <ul class="topmenu flex justify-around items-center gap-4 m-auto p-0 h-15 text-center text-[clamp(0.6rem,1.6vw,1.8rem)]">
-      {menuLinks.map((link: { path: string; title: string }) => (
+      {sortedMenuLinks.map((link: { path: string; title: string }) => (
         <li>
           <a
             href={link.path}
@@ -60,13 +129,14 @@ const menuLinks = await getMenuLinks();
 
     
   </div>
+  
 )}
 
 
-<div id="missioncontrol" class="missioncontrol1 sitecontrols flex justify-center items-center panel" style="padding-right:2vw; gap:3vw;">
-  
-  <!-- {showCheck && <div style="position:absolute; bottom:1vh; left: 1vw; opacity:.2;"><BlueCheck /></div>} -->
-  
+
+<div id="missioncontrol" class="missioncontrol1 sitecontrols flex items-center panel" style="padding:0 2vw 0 2vw; gap:3vw;">
+
+
   {showHome && (
     <button
     aria-label="Return to Home"
@@ -78,8 +148,10 @@ const menuLinks = await getMenuLinks();
     )}
 
   {showTheme && <ThemeToggle style="margin-left:1vw;" />}
+
   {showSearch && <Search />}
-  {showSwitch && <Switch client:load defaultView={defaultView} />}
+
+  
 
   
 
@@ -97,7 +169,7 @@ id="to-top-btn"
 style="flex-direction: column;"
 >
 <svg  class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 20h-4v-9l-3.5 3.5l-2.42-2.42L12 4.16l7.92 7.92l-2.42 2.42L14 11z"/></svg>
-<span class="--theme-header" style="font-size:10px; font-weight: bold;">{language.data.top}</span>
+<span class="--theme-header" style="font-size:10px; font-weight: bold;">{topText}</span>
 </button>
 
 </div>
@@ -154,4 +226,3 @@ style="flex-direction: column;"
   // Re-initialize after each page navigation
   document.addEventListener('astro:after-swap', initializeBackToTopButton);
 </script>
-

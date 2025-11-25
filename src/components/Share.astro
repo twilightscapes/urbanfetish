@@ -7,30 +7,429 @@ const currentUrl = Astro.url.href;
 <div class="" style="padding: 1vh 0 2vh 0; margin:0 auto;">
   <div style="background: transparent; border-radius: var(--border-radius); width: 400px; padding: 0; display: flex; flex-direction: row; justify-content: space-around; align-items: center; margin: 0 auto;">
     <div style="display: flex; gap: 1vw; align-items: center; padding: 0;">
-      <input class="copylink dark:prose-invert" type="text" value={currentUrl} readonly style="padding:.5rem; min-width: 305px; width: 100%; max-width: 380px; font-size: clamp(.6rem,1vw,1rem); transition: all 1s ease-in-out; background-color: var(--theme-header); outline: 1px solid var(--theme-accent2); border: 0px solid var(--theme-accent2); border-radius: var(--border-radius);" />
-      <button class="non" id="copyButton" aria-label="Copy Url" style="display: flex; gap: .5vw; justify-content: center; padding: .6vh .8vw; width: 100px; min-width: 30px; margin: 0 auto; text-align: center; font-size: 14px; font-weight: light; text-shadow: 0 1px 0 #444; outline: 1px solid var(--theme-accent2);">{language.data.copyButton}</button>
+      <input class="copylink dark:prose-invert" type="text" value={currentUrl} readonly style="padding:.5rem; min-width: 305px; width: 100%; max-width: 380px; font-size: clamp(.6rem,1vw,1rem); transition: all 1s ease-in-out; background-color: var(--theme-header); outline: 1px solid var(--theme-accent2); color:white; border: 0px solid var(--theme-accent2); border-radius: var(--border-radius);" />
+      <button class="non" id="copyButton" aria-label="Copy Url" style="display: flex; gap: .5vw; justify-content: center; padding: .6vh .8vw; width: 100px; min-width: 30px; margin: 0 auto; text-align: center; font-size: 14px; font-weight: light; text-shadow: 0 1px 0 #444; outline: 1px solid var(--theme-accent2);">{language?.data?.copyButton || 'Copy'}</button>
     </div>
   </div>
-  <p class="pleaseshare1" style="margin: 1vh auto; text-align: center; font-size: 13px; font-weight: bold;">{language.data.shareText}</p>
+  <p class="pleaseshare1" style="margin: 1vh auto; text-align: center; font-size: 13px; font-weight: bold;">{language?.data?.shareText || 'Share this page'}</p>
 </div><script>
   const copyButton = document.getElementById('copyButton');
   const urlInput = document.querySelector('.copylink') as HTMLInputElement;
 
+  // Share dialog functionality
+  function openShareDialog() {
+    const shareUrl = urlInput ? urlInput.value : window.location.href;
+    
+    // Create share dialog if it doesn't exist
+    let shareDialog = document.getElementById('share-dialog');
+    if (!shareDialog) {
+      shareDialog = document.createElement('div');
+      shareDialog.id = 'share-dialog';
+      shareDialog.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+      `;
+      
+      shareDialog.innerHTML = `
+        <div style="
+          background: var(--theme-surface, #1a1a1a);
+          color: var(--theme-text, #fff);
+          border-radius: 12px;
+          padding: 2rem;
+          max-width: 500px;
+          width: 90%;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          border: 1px solid var(--theme-border, #333);
+          position: relative;
+        ">
+          <button id="close-share-dialog" style="
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--theme-text-secondary, #aaa);
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+          " onmouseover="this.style.background='var(--theme-hover, #333)'" onmouseout="this.style.background='none'">
+            ×
+          </button>
+          
+          <h3 style="margin: 0 0 1.5rem 0; color: white; font-size: 1.5rem;">
+            🔗 Share Page
+          </h3>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--theme-text-secondary, #aaa);">
+              Share URL:
+            </label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input 
+                id="share-url-input" 
+                type="text" 
+                readonly 
+                value="${shareUrl}"
+                style="
+                  flex: 1;
+                  padding: 12px;
+                  border: 1px solid var(--theme-border, #333);
+                  border-radius: 6px;
+                  background: var(--theme-input-bg, #2a2a2a);
+                  color: var(--theme-text, #fff);
+                  font-family: monospace;
+                  font-size: 14px;
+                  outline: none;
+                "
+              />
+              <button 
+                id="copy-share-url" 
+                style="
+                  background: #4CAF50;
+                  color: #ffffff;
+                  border: none;
+                  padding: 12px 16px;
+                  border-radius: 6px;
+                  cursor: pointer;
+                  font-weight: 600;
+                  transition: all 0.2s ease;
+                  white-space: nowrap;
+                "
+                onmouseover="this.style.transform='translateY(-1px)'"
+                onmouseout="this.style.transform='translateY(0)'"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--theme-text-secondary, #aaa);">
+              Share via:
+            </label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="share-platform-btn" data-platform="bluesky" style="
+                background: #00A8E8;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                Bluesky
+              </button>
+              <button class="share-platform-btn" data-platform="twitter" style="
+                background: #000;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                X
+              </button>
+              <button class="share-platform-btn" data-platform="facebook" style="
+                background: #4267B2;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                Facebook
+              </button>
+              <button class="share-platform-btn" data-platform="reddit" style="
+                background: #FF4500;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                Reddit
+              </button>
+              
+              <button class="share-platform-btn" data-platform="email" style="
+                background: #34495e;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              ">
+                Email
+              </button>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 1rem;">
+            <div style="
+              background: var(--theme-info-bg, #1e3a8a20);
+              border: 1px solid var(--theme-info-border, #3b82f6);
+              border-radius: 6px;
+              padding: 12px;
+              font-size: 14px;
+              color: var(--theme-info-text, #93c5fd);
+            ">
+              Sharing IS Caring - <strong>Thank you!</strong>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button id="share-dialog-close" style="
+              background: var(--theme-secondary, #666);
+              color: white;
+              border: none;
+              padding: 10px 20px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: 600;
+              transition: all 0.2s ease;
+            ">
+              Close
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(shareDialog);
+      
+      // Add event listeners with null checks
+      const closeBtn = document.getElementById('close-share-dialog');
+      const dialogCloseBtn = document.getElementById('share-dialog-close');
+      const copyBtn = document.getElementById('copy-share-url');
+      
+      if (closeBtn) closeBtn.addEventListener('click', closeShareDialog);
+      if (dialogCloseBtn) dialogCloseBtn.addEventListener('click', closeShareDialog);
+      if (copyBtn) copyBtn.addEventListener('click', copyShareUrl);
+      
+      // Add platform share listeners
+      document.querySelectorAll('.share-platform-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          if (target) {
+            const platformBtn = target.closest('.share-platform-btn') as HTMLElement;
+            if (platformBtn && platformBtn.dataset.platform) {
+              shareToplatform(platformBtn.dataset.platform, shareUrl);
+            }
+          }
+        });
+        
+        // Add hover effects
+        const htmlBtn = btn as HTMLElement;
+        btn.addEventListener('mouseover', () => {
+          htmlBtn.style.transform = 'translateY(-1px)';
+          htmlBtn.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+        });
+        btn.addEventListener('mouseout', () => {
+          htmlBtn.style.transform = 'translateY(0)';
+          htmlBtn.style.boxShadow = 'none';
+        });
+      });
+      
+      // Close dialog when clicking outside
+      shareDialog.addEventListener('click', (e) => {
+        if (e.target === shareDialog) {
+          closeShareDialog();
+        }
+      });
+      
+      // Close dialog with Escape key
+      document.addEventListener('keydown', (e) => {
+        const dialog = document.getElementById('share-dialog');
+        if (e.key === 'Escape' && dialog && dialog.style.display === 'flex') {
+          closeShareDialog();
+        }
+      });
+    }
+    
+    // Update the URL in case it changed
+    const shareUrlInput = document.getElementById('share-url-input') as HTMLInputElement;
+    if (shareUrlInput) {
+      shareUrlInput.value = shareUrl;
+    }
+    
+    // Show the dialog
+    shareDialog.style.display = 'flex';
+    
+    // Focus on the URL input for easy copying
+    setTimeout(() => {
+      if (shareUrlInput) {
+        shareUrlInput.select();
+      }
+    }, 100);
+  }
+
+  function closeShareDialog() {
+    const shareDialog = document.getElementById('share-dialog');
+    if (shareDialog) {
+      shareDialog.style.display = 'none';
+    }
+  }
+
+  function copyShareUrl() {
+    const shareUrlInput = document.getElementById('share-url-input') as HTMLInputElement;
+    const copyBtn = document.getElementById('copy-share-url');
+    
+    if (shareUrlInput && shareUrlInput.value && copyBtn) {
+      navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.style.background = '#22c55e';
+        
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = '#4CAF50';
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy URL:', err);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '❌ Failed';
+        copyBtn.style.background = '#ef4444';
+        
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+          copyBtn.style.background = '#4CAF50';
+        }, 2000);
+      });
+    }
+  }
+
+  function shareToplatform(platform: string, url: string) {
+    const pageTitle = document.title || 'Check out this page!';
+    const shareText = encodeURIComponent(pageTitle);
+    const shareUrl = encodeURIComponent(url);
+    
+    let shareLink = '';
+    
+    switch (platform) {
+      case 'twitter':
+        shareLink = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+        break;
+      case 'facebook':
+        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+        break;
+      case 'reddit':
+        shareLink = `https://reddit.com/submit?url=${shareUrl}&title=${shareText}`;
+        break;
+      case 'bluesky':
+        shareLink = `https://bsky.app/intent/compose?text=${shareText}%20${shareUrl}`;
+        break;
+      case 'email':
+        shareLink = `mailto:?subject=${shareText}&body=Check out this page: ${url}`;
+        break;
+      default:
+        return;
+    }
+    
+    window.open(shareLink, '_blank', 'width=600,height=400');
+  }
+
+  // Main button click handler
   if (copyButton && urlInput) {
     copyButton.addEventListener('click', () => {
-      urlInput.select();
-      document.execCommand('copy');
-      copyButton.textContent = 'Copied';
-      setTimeout(() => {
-        copyButton.textContent = 'Copy';
-      }, 2000);
+      // Open the new share dialog
+      openShareDialog();
+      
+      // Fallback behavior for older browsers or if dialog fails
+      try {
+        urlInput.select();
+        
+        // Try modern clipboard API first
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(urlInput.value).then(() => {
+            if (copyButton) {
+              copyButton.textContent = 'Copied';
+              setTimeout(() => {
+                if (copyButton) copyButton.textContent = 'Copy';
+              }, 2000);
+            }
+          }).catch(() => {
+            // Fallback for older browsers
+            try {
+              (document as any).execCommand('copy');
+              if (copyButton) {
+                copyButton.textContent = 'Copied';
+                setTimeout(() => {
+                  if (copyButton) copyButton.textContent = 'Copy';
+                }, 2000);
+              }
+            } catch (fallbackErr) {
+              console.error('All copy methods failed:', fallbackErr);
+            }
+          });
+        } else {
+          // Use older copy method for very old browsers
+          try {
+            (document as any).execCommand('copy');
+            if (copyButton) {
+              copyButton.textContent = 'Copied';
+              setTimeout(() => {
+                if (copyButton) copyButton.textContent = 'Copy';
+              }, 2000);
+            }
+          } catch (execErr) {
+            console.error('execCommand copy failed:', execErr);
+          }
+        }
 
-      if (navigator.share) {
-        navigator.share({
-          title: 'SHARE',
-          url: urlInput.value
-        }).then(() => {
-        }).catch(console.error);
+        // Native share API as additional option (mobile)
+        if (navigator.share) {
+          navigator.share({
+            title: document.title || 'SHARE',
+            url: urlInput.value
+          }).then(() => {
+            // Share completed successfully
+          }).catch((shareErr) => {
+          });
+        }
+      } catch (err) {
+        console.error('Copy operation failed:', err);
       }
     });
   }

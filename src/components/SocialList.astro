@@ -1,17 +1,15 @@
 ---
 import { getEntry, getCollection } from 'astro:content';
 import { Icon } from "astro-icon/components";
-// import BlueCheck from "@/components/BlueCheck.astro";
 
 const siteSettings = await getEntry('siteSettings', 'main');
-const { showCheck } = siteSettings.data;
+const showCheck = siteSettings?.data?.showCheck;
 
 interface SocialLink {
   id: string;
   data: {
     link: string;
     icon: string;
-    isWebmention: boolean;
     order: number | undefined;
     friendlyName?: string;
     standaloneOnly?: boolean;
@@ -48,7 +46,7 @@ const socialLinks = (await getCollection('socialLinks'))
         <a
           class="inline-block p-1 sm:hover:text-link"
           href={link.data.link}
-          rel={`noopener noreferrer ${link.data.isWebmention ? "me authn" : ""}`}
+          rel={`noopener noreferrer`}
           target="_blank"
           aria-label="Link to Social Site"
         >
@@ -65,7 +63,6 @@ const socialLinks = (await getCollection('socialLinks'))
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                   document.referrer.includes('android-app://');
     
-    console.log('PWA Status:', isPWA);x
                   
     document.querySelectorAll('[data-standalone-only="true"]').forEach((el) => {
       if (el instanceof HTMLElement) {

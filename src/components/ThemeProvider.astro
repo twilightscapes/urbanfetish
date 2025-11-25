@@ -10,35 +10,77 @@ const { themeMode } = Astro.props;
     const lightModePref = window.matchMedia("(prefers-color-scheme: light)");
 
     function getUserPref() {
+        // If themeMode is explicitly light or dark, always use that
         if (themeMode === 'light' || themeMode === 'dark') {
             return themeMode;
         }
+        
+        // If user has a stored preference, use that
         const storedTheme = typeof localStorage !== "undefined" && localStorage.getItem("theme");
-        return storedTheme || (lightModePref.matches ? "light" : "dark");
+        if (storedTheme === 'light' || storedTheme === 'dark') {
+            return storedTheme;
+        }
+        
+        // If themeMode is 'user', respect system preference
+        return lightModePref.matches ? "light" : "dark";
     }
 
     function setTheme(newTheme) {
         const root = document.documentElement;
         root.setAttribute("data-theme", newTheme);
         
-        const bgColor = getComputedStyle(root).getPropertyValue(newTheme === 'light' ? '--theme-bg-light' : '--theme-bg-dark');
-        document.body.style.backgroundColor = bgColor;
+        // Only set body styles if body exists
+        if (document.body) {
+            const bgColor = getComputedStyle(root).getPropertyValue(newTheme === 'light' ? '--theme-bg-light' : '--theme-bg-dark');
+            document.body.style.backgroundColor = bgColor;
+        }
         
+        // Update theme-dependent elements
+        document.querySelectorAll('[data-theme-dependent]').forEach(element => {
+            const el = /** @type {HTMLElement} */ (element);
+            if (el.style.scale === '0') {
+                el.style.scale = newTheme === 'dark' ? '1' : '0';
+                el.style.opacity = newTheme === 'dark' ? '1' : '0';
+            } else {
+                el.style.scale = newTheme === 'light' ? '1' : '0';
+                el.style.opacity = newTheme === 'light' ? '1' : '0';
+            }
+        });
+        
+        // Set theme-color meta tag to proper hex values for PWA compliance
         const colorThemeMetaTag = document.querySelector("meta[name='theme-color']");
-        const bgColour = getComputedStyle(document.body).getPropertyValue("--theme-bg");
-        colorThemeMetaTag.setAttribute("content", `hsl(${bgColour})`);
+        if (colorThemeMetaTag) {
+            const themeColorHex = newTheme === 'light' ? '#ffffff' : '#222222'; // Use high contrast colors
+            colorThemeMetaTag.setAttribute("content", themeColorHex);
+        }
+        
         if (typeof localStorage !== "undefined") {
             localStorage.setItem("theme", newTheme);
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        setTheme(getUserPref());
-    });
+    // Initialize theme immediately to prevent FOUC
+    function initializeTheme() {
+        const theme = getUserPref();
+        if (theme) {
+            setTheme(theme);
+        }
+    }
 
-    // View Transitions hook to restore theme
+    // Run initialization immediately
+    initializeTheme();
+
+    // Also ensure it runs when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+    }
+
+    // Handle both regular navigation and view transitions (if enabled later)
     document.addEventListener("astro:after-swap", () => setTheme(getUserPref()));
+    document.addEventListener("astro:page-load", () => setTheme(getUserPref()));
 
+
+    
     // listen for theme-change custom event, fired in src/components/ThemeToggle.astro
     document.addEventListener("theme-change", (e) => {
         setTheme(e.detail.theme);

@@ -2,6 +2,12 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { getEntry } from 'astro:content';
 
+interface Props {
+  hideTitle?: boolean;
+}
+
+const { hideTitle = false } = Astro.props;
+
 const allResumeItems = await getCollection('resume');
 const resumeSettings = await getEntry('resumeSettings', 'index');
 
@@ -32,7 +38,7 @@ const leftColumnRendered = await renderContent(leftColumn);
 const rightColumnRendered = await renderContent(rightColumn);
 ---
 
-{resumeSettings?.data?.showTitle && <div class="resumetitle font glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent">{resumeSettings.data.title}</div>}
+{!hideTitle && resumeSettings?.data?.showTitle && <div class="resumetitle font glow text-[clamp(1.4rem,3.9vw,4rem)] shadow-text text-center theme-accent">{resumeSettings.data.title}</div>}
 <!-- <div class="keyboard panel" style="display:flex; justify-content:center; margin:0 auto; line-height:calc(2em + .4vw);"><span style="font-weight:bold; font-size:1.3rem;">To Print:</span>  <kbd>⌘</kbd> + <kbd>p</kbd>   OR   <kbd>Ctrl</kbd> + <kbd>p</kbd></div> -->
 
 <ul id="details">

@@ -1,11 +1,11 @@
 import type { Config } from "tailwindcss";
 
-import { fontFamily } from "tailwindcss/defaultTheme";
+import defaultTheme from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
 
 export default {
 	content: [
-		"./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}",
+		"./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
 		"!./src/pages/og-image/[slug].png.ts",
 	],
 	corePlugins: {
@@ -50,14 +50,12 @@ export default {
 			},
 			fontFamily: {
 				// Add any custom fonts here
-				sans: [...fontFamily.sans],
-				serif: [...fontFamily.serif],
+				sans: [...defaultTheme.fontFamily.sans],
+				serif: [...defaultTheme.fontFamily.serif],
 			},
 			transitionProperty: {
 				height: "height",
 			},
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
 			// Remove above once tailwindcss exposes theme type
 			typography: (theme) => ({
 				DEFAULT: {

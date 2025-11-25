@@ -1,41 +1,75 @@
 ---
+import type { StyleSettings } from '@/types';
 import { getEntry } from 'astro:content';
-const styleAppearance = await getEntry('styleapps', 'index');
-const resumeSettings = await getEntry('resumeSettings', 'index');
-const siteSettings = await getEntry('siteSettings', 'main');
-const customCSS = styleAppearance.data.customCSS || '';
-const resumeName = resumeSettings.data.name;
-const themeMode = siteSettings.data.themeMode || 'user';
----
-<script is:inline define:vars={{ styleAppearance, themeMode }}>
-  function getInitialTheme() {
-    if (themeMode === 'light' || themeMode === 'dark') {
-      return themeMode;
-    }
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+// Add type annotation for styleSettings
+const defaultStyleSettings: StyleSettings = {
+  lightBg: '#ffffff',
+  lightLink: '#000000',
+  lightText: '#000000',
+  lightAccent: '#000000',
+  lightAccent2: '#000000',
+  lightHeader: '#000000',
+  darkBg: '#000000',
+  darkLink: '#ffffff',
+  darkText: '#ffffff',
+  darkAccent: '#ffffff',
+  darkAccent2: '#ffffff',
+  darkHeader: '#ffffff',
+  borderRadius: '0px'
+};
+
+let customCSS = '';
+let resumeName = '';
+let themeMode: 'light' | 'dark' | 'user' = 'user';
+let styleSettings: StyleSettings = defaultStyleSettings;
+
+try {
+  const styleapps = await getEntry('styleapps', 'index');
+  const resumeSettings = await getEntry('resumeSettings', 'index');
+  const siteSettings = await getEntry('siteSettings', 'main');
+
+  if (styleapps?.data) {
+    customCSS = styleapps.data.customCSS || '';
+    styleSettings = {
+      ...defaultStyleSettings,
+      ...styleapps.data
+    };
   }
 
+  if (resumeSettings?.data) {
+    resumeName = resumeSettings.data.name || '';
+  }
+
+  if (siteSettings?.data) {
+    themeMode = siteSettings.data.themeMode || 'user';
+  }
+} catch (error) {
+  console.error('Error loading theme settings:', error);
+}
+---
+
+<script is:inline define:vars={{ styleSettings, themeMode }}>
   function applyTheme() {
     const root = document.documentElement;
     const body = document.body;
-    const theme = root.dataset.theme;
+    const theme = root.dataset.theme || 'light'; // Default fallback if no theme set yet
   
-    root.style.setProperty('--theme-bg-light', styleAppearance.data.lightBg);
-    root.style.setProperty('--theme-link-light', styleAppearance.data.lightLink);
-    root.style.setProperty('--theme-text-light', styleAppearance.data.lightText);
-    root.style.setProperty('--theme-accent-light', styleAppearance.data.lightAccent);
-    root.style.setProperty('--theme-accent2-light', styleAppearance.data.lightAccent2);
-    root.style.setProperty('--theme-header-light', styleAppearance.data.lightHeader);
+    root.style.setProperty('--theme-bg-light', styleSettings.lightBg);
+    root.style.setProperty('--theme-link-light', styleSettings.lightLink);
+    root.style.setProperty('--theme-text-light', styleSettings.lightText);
+    root.style.setProperty('--theme-accent-light', styleSettings.lightAccent);
+    root.style.setProperty('--theme-accent2-light', styleSettings.lightAccent2);
+    root.style.setProperty('--theme-header-light', styleSettings.lightHeader);
 
-    root.style.setProperty('--theme-bg-dark', styleAppearance.data.darkBg);
-    root.style.setProperty('--theme-link-dark', styleAppearance.data.darkLink);
-    root.style.setProperty('--theme-text-dark', styleAppearance.data.darkText);
-    root.style.setProperty('--theme-accent-dark', styleAppearance.data.darkAccent);
-    root.style.setProperty('--theme-accent2-dark', styleAppearance.data.darkAccent2);
-    root.style.setProperty('--theme-header-dark', styleAppearance.data.darkHeader);
+    root.style.setProperty('--theme-bg-dark', styleSettings.darkBg);
+    root.style.setProperty('--theme-link-dark', styleSettings.darkLink);
+    root.style.setProperty('--theme-text-dark', styleSettings.darkText);
+    root.style.setProperty('--theme-accent-dark', styleSettings.darkAccent);
+    root.style.setProperty('--theme-accent2-dark', styleSettings.darkAccent2);
+    root.style.setProperty('--theme-header-dark', styleSettings.darkHeader);
 
-    root.style.setProperty('--border-radius', styleAppearance.data.borderRadius);
+    root.style.setProperty('--border-radius', styleSettings.borderRadius);
 
     // Add this check before setting the body background color
     if (body) {
@@ -46,21 +80,22 @@ const themeMode = siteSettings.data.themeMode || 'user';
   }
 
   function updateCurrentTheme(theme) {
-    const root = document.documentElement;
-    root.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
+    // DynamicTheme no longer manages theme state - only applies styling
+    // Theme state is managed by ThemeProvider
   }
 
-  document.documentElement.dataset.theme = getInitialTheme();
+  // Apply theme styling immediately and on navigation
   applyTheme();
+  
+  // Handle both regular navigation and view transitions (if enabled later)
+  document.addEventListener('DOMContentLoaded', applyTheme);
   document.addEventListener('astro:page-load', applyTheme);
-
-  window.toggleTheme = function() {
-    const currentTheme = document.documentElement.dataset.theme;
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    updateCurrentTheme(newTheme);
+  document.addEventListener('astro:after-swap', applyTheme);
+  
+  // Listen for theme changes from ThemeProvider
+  document.addEventListener('theme-change', (e) => {
     applyTheme();
-  }
+  });
 </script>
 <style set:html={customCSS}></style>
 <style define:vars={{ resumeName }}>
