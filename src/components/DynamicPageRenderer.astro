@@ -125,7 +125,7 @@ function getSectionWidthClass(width?: string) {
               const pitchShowTitle = showTitle;
               
               return (
-                <div data-section-id={`pitch-section-${index}`}>
+                <div data-section-id={`pitch-section-${index}`} style="position:relative">
                   {((pitchShowTitle && (pitchTitle || pitchDescription)) || !hideCollapseButton) && (
                     <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0 3%;">
                       <div style="flex: 1;">

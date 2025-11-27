@@ -112,7 +112,7 @@ const processedImages = allImages.map(image => ({
 
 <!-- Gallery selector - fixed positioned to stay visible -->
 {showGallerySelector && (
-  <div class="cattags gallery-selector-sticky" style={{ position: 'fixed', top: '0', left: '0', right: '0', width: '80%', display: 'grid', placeSelf:'top', justifyContent:'', zIndex: '1', background: '', padding: '0', borderRadius: 'var(--border-radius)', margin:'10px auto 0 auto', }}>
+  <div class="cattags gallery-selector-sticky" style={{ position: 'relative', top: '0', left: '0', right: '0', width: '100%', display: 'grid', placeSelf:'top', justifyContent:'center', zIndex: '1', background: '', padding: '0 0 10px 0', borderRadius: 'var(--border-radius)', margin:'10px auto 0 auto', }}>
   Choose A Gallery:  <select aria-label="View Available Galleries" id="directorySelect" name="directorySelect" value={defaultDirectory} style={{ background: '', border: '1px solid #000', borderRadius: 'var(--border-radius)', padding: '8px', boxShadow: '0px 0px 0px 1px #000', opacity:'.9', color:'#fff' }}>
       {directories.map((dir) => (
         <option value={dir}>
